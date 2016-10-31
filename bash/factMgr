@@ -1,45 +1,107 @@
 #!/bin/bash
 
 #VARIABLES
-mode=js
 OpSys=$(uname -rv)
-UpdateDir="/usr/games/minecraft"
-UpdateScript="update_webui.sh"
-UpdatePath=$UpdateDir"/"$UpdateScript
-cmdPath=$UpdateDir/mineos_console.$mode
+UpdateCmd="/usr/games/minecraft"
+//cmdPath=$UpdateDir/mineos_console.$mode
+
+//Directories
+baseDir=/home/mc/factorio
+versionsDIR=$baseDir/versions
+mapsDIR=$baseDir/maps
+modsDIR=$baseDir/mods
+
+downloadURL=https://www.factorio.com/get-download/$VER/headless/linux64
+downloadFILE=linux64
+mapName=$1.zip
+VER=$2
+
+SAVEINT=20
+PASS=hello
+PORT=7890
 
 #FUNCTIONS
 
 function Syntax {
 	echo ""
-	echo "Syntax: mcMgr [-{s:u}:servername] [command] [args]"
+	echo "Syntax: factMgr [-{s:u:d:c:v:s:m:h}] [args]"
 	echo ""
-	echo "	-s	Start/Stop/Status	1:0"
-	echo "	-u	Update webUI"
-	echo "	-h	Show this help page"
+	echo "	-r 	[MapName] [Version#]			Start server"
+	echo "	-k 														Stop server"
+	echo "	-u 														Update to latest version"
+	echo "	-d 	[Version#]								Download specific version"
+	echo "	-c 	[name]										Create new save"
+	echo ""
+	echo "	-v 	[Version#]								List downloaded versions"
+	echo "	-s 	[MapName]									List saves"
+	echo "	-m 	[ModName]									List mods"
+	echo ""
+	echo "	-h														Show this help page"
 	echo ""
 }
 
 function Saves {
 
+}
+function MakeMap{
+	VER=$1
+	NAME=$2
+
+	./versions/$VER/bin/x64/factorio --create $DIR/$NAME
 }
 function Versions {
 	if [ -e ]; then
 
 	else
-		
+
 	fi
 }
 function Mods {
-	
-}
-function Saves {
-	
+
 }
 function Update {
+	VER=$1
 
+	if [ -z $VER ]; then
+		echo "Error: No version specified"
+	else
+		wget $URL &&
+		tar -xzf $FILE &&
+		mv factorio ./versions/$VER &&
+		rm $FILE
+	fi
 }
+function Run {
+	if [ "$4" = "1" ];then
+		AUTO=--autosave-interval $SAVEINT
+	else
+		AUTO=""
+	fi
 
+	if [ -z $1 ] || [ -z $2 ]; then
+		Syntax
+	else
+
+		if [ -z $3 ]; then
+			MOD=""
+		else
+			MODPATH=$MODIR/$3
+			echo $MODPATH
+			if [ -d $MODPATH ]; then
+				MOD=$MODPATH
+			else
+				ERRORMSG="Specified Mod directory does not exist"
+			fi
+		fi
+		if [ -z $ERRORMSG ]; then
+			($baseDir/versions/$VER/bin/x64/factorio --start-server $DIR/$MAP --mod-directory $MOD $AUTO &)>log
+			echo "Factorio" $VER " started using map" $MAP
+			echo "Connect using UDP on port 34197"
+		else
+			echo "ERROR: "$ERRORMSG
+		fi
+	fi
+}
 #MAIN
 
 if [[ $EUID -ne 0 ]]; then
@@ -59,10 +121,10 @@ else
 			Versions $2
 			;;
 		-r)
-			Run $2 $3 $4
+			Run $2 $3 $4 $5
 			;;
 		*)
-			Syntax				
+			Syntax
 			;;
 	esac
 fi

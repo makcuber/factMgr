@@ -2,7 +2,6 @@
 
 VER=$1
 NAME=$2
-DIR=/home/mc/factorio/maps
+mapsDIR=/home/mc/factorio/maps
 
 ./versions/$VER/bin/x64/factorio --create $DIR/$NAME
-
