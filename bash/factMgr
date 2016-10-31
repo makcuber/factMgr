@@ -1,79 +1,261 @@
 #!/bin/bash
 
-#VARIABLES
-OpSys=$(uname -rv)
-UpdateCmd="/usr/games/minecraft"
-//cmdPath=$UpdateDir/mineos_console.$mode
+#Developer: Mak Cuber
+#DC: 7/30/10/2016
+#UD1: 1/31/10/2016
 
-//Directories
-baseDir=/home/mc/factorio
+#VARIABLES
+execPath="$0"
+OpSys=$(uname -rv)
+verboseOn="1"
+
+#defaults
+progName=factMgr
+configSuffix=conf
+SAVEINT=20
+BinPathDEF="/bin/"
+ConfigPathDEF="/etc/$progName"
+RunPathDEF="/var/factorio"
+binFileDEF="/bin/$progName"
+configFileDEF="$ConfigPathDEF/$progName.$configSuffix"
+
+#Directories
+baseDir=$RunPathDEF
 versionsDIR=$baseDir/versions
 mapsDIR=$baseDir/maps
 modsDIR=$baseDir/mods
+savesDIR=$baseDir/saves
 
-downloadURL=https://www.factorio.com/get-download/$VER/headless/linux64
+#file names
+runFile=/bin/x64/factorio
 downloadFILE=linux64
-mapName=$1.zip
-VER=$2
 
-SAVEINT=20
+#commands
+createSaveCMD=--create
+AutoSaveIntCMD=--autosave-interval
+startCMD=--start-server
+setModCMD=--mod-directory
+
+#rcon
 PASS=hello
-PORT=7890
+rconPORT=7890
 
 #FUNCTIONS
+function verbose{
+	if [ "$verboseOn" = "1" ]; then
+		if ! [ -z $1 ]; then
+			var_name=(${!1@})
+			echo $var_name"="$1
+		fi
+	fi
+}
+function init{
+	if ! [ -e $binFileDEF ]; then
 
+	fi
+	if ! [ -e $configFileDEF ]; then
+
+	fi
+	BinPath="/bin/"
+	ConfigPath="/etc/$progName"
+	RunPath="/var/factorio"
+
+	baseDir=$RunPath
+	versionsDIR=$baseDir/versions
+	mapsDIR=$baseDir/maps
+	modsDIR=$baseDir/mods
+	savesDIR=$baseDir/saves
+
+	configFile="$ConfigPath/$progName.conf"
+}
 function Syntax {
 	echo ""
-	echo "Syntax: factMgr [-{s:u:d:c:v:s:m:h}] [args]"
+	echo "Syntax: $progName [-{i:s:k:u:d:c:v:s:m:h}] [args]"
 	echo ""
-	echo "	-r 	[MapName] [Version#]			Start server"
-	echo "	-k 														Stop server"
-	echo "	-u 														Update to latest version"
-	echo "	-d 	[Version#]								Download specific version"
-	echo "	-c 	[name]										Create new save"
+	echo "	-install 	[BinPath] [ConfigPath] [RunPath]				Install $progName"
+	echo "	-remove 																					Uninstall $progName"
+	echo "	-r 				[MapName] [Version#] [ModPackName]			Start server"
+	echo "	-k 																								Stop server"
+	echo "	-u 																								Update to latest version"
+	echo "	-d 				[Version#]															Download specific version"
+	echo "	-c 				[name]																	Create new save"
 	echo ""
-	echo "	-v 	[Version#]								List downloaded versions"
-	echo "	-s 	[MapName]									List saves"
-	echo "	-m 	[ModName]									List mods"
+	echo "	-v 				[Version#]															List downloaded versions"
+	echo "	-s 				[MapName]																List saves"
+	echo "	-m 				[ModName]																List mods"
 	echo ""
-	echo "	-h														Show this help page"
+	echo "	-h																								Show this help page"
 	echo ""
 }
+function uninstall{
+	if [ -e "$BinPath/$progName" ]; then
+		echo "$progName does not appear to be installed on this system"
+		echo "Uninstallation cancelled"
+	else
+		read "Uninstall $progName script? (y/n):" select
+		if [ $select = "y" ]; then
+			rm "$BinPath/$progName"
+			if [ -e "$BinPath/$progName" ]; then
+				echo "Uninstallation failed!"
+			else
+				echo "Uninstallation suceeded"
+			fi
+		else
+			echo "Uninstallation cancelled"
+		fi
+	fi
 
-function Saves {
-
+	if [ -e "$ConfigPath/$progName" ]; then
+		echo "$progName does not appear to be installed on this system"
+		echo "Uninstallation cancelled"
+	else
+		read "Uninstall $progName script? (y/n):" select
+		if [ $select = "y" ]; then
+			rm "$BinPath/$progName"
+			if [ -e "$BinPath/$progName" ]; then
+				echo "Uninstallation failed!"
+			else
+				echo "Uninstallation suceeded"
+			fi
+		else
+			echo "Uninstallation cancelled"
+		fi
+	fi
 }
-function MakeMap{
-	VER=$1
-	NAME=$2
-
-	./versions/$VER/bin/x64/factorio --create $DIR/$NAME
+function installScript{
+	echo "Installing script..."
+	cat "$execPath" > "$BinPath/$progName"
+	echo "Creating configuration files..."
+	if ! [ -d "$ConfigPath" ]; then
+		mkdir "$ConfigPath"
+	fi
+	if ! [ -e "$ConfigPath" ]; then
+		touch "$ConfigPath/$progName.conf"
+		(echo "$conf")>>"$ConfigPath/$progName.conf"
+	fi
 }
-function Versions {
-	if [ -e ]; then
+function install{
+	if [ -z "$1" ]; then
+		BinPath="$1"
+	else
+		BinPath="$BinPathDEF"
+	fi
+	if [ -z "$2" ]; then
+		ConfigPath="$2"
+	else
+		ConfigPath="$ConfigPathDEF"
+	fi
+	if [ -z "$3" ]; then
+		RunPath="$3"
+	else
+		RunPath="$RunPathDEF"
+	fi
+
+	echo "Will install script to: 				$BinPath"
+	echo "Creating configuration file in: $ConfigPath"
+	echo "Creating file structure in: 		$RunPath"
+	echo ""
+	read "Install with this configuration? (y/n):" select
+	if [ "$select" = "y" ]; then
+		#install scripts
+		echo "Checking for existing installation..."
+		if [ -e "$BinPath/$progName" ]; then
+				echo "$progName Script appears to already be installed on this system"
+				read "Do you want to reinstall the script? (y/n):" select
+				if [ "$select" = "y" ]; then
+					installScript
+				else
+					echo "Skipping script installation"
+				fi
+		else
+			installScript
+		fi
+
+		#generate configuration files
+		echo "Checking for existing configuration files..."
+		if [ -e "$configFile" ]; then
+				echo "A $progName configuration file appears to already exist on this system"
+				read "Do you want overwrite the existing configuration file? (y/n):" select
+				if [ "$select" = "y" ]; then
+					installConfig
+				else
+					echo "Skipping configuration generation"
+				fi
+		else
+			echo "Checking for existing configuration directory..."
+			if [ -d $ConfigPath ]; then
+				installScript
+			else
+				echo "Creating configuration directory..."
+				if [ -d $ConfigPath ]; then
+					installScript
+				else
+					echo "ERROR: Failed to create configuration directory! :("
+				fi
+			fi
+
+		fi
 
 	else
+		echo "Installation cancelled"
+	fi
+}
+function Saves {
+	if [ -z $1 ]; then
+		ls $versionsDIR
+	else
+		check=$(ls $versionsDIR | grep $1)
+		if [ -z $check ]; then
+			echo $1 "is not available on the local system"
+			echo "Do you want to download this version? (y/n)"
 
+		else
+			echo $1 "is available on the local system"
+		fi
+	fi
+}
+function MakeMap{
+	VER=$(checkVer($1))
+	NAME=$(checkSave($2))
+
+	$versionsDIR/$VER/$runFile $createSaveCMD $savesDIR/$NAME
+}
+function Versions {
+	if [ -d versionsDIR ]; then
+
+	else
+		echo "Versions directory not found, $progName may not be installed"
 	fi
 }
 function Mods {
 
 }
-function Update {
-	VER=$1
+function getVersion {
+	VER="$1"
 
-	if [ -z $VER ]; then
-		echo "Error: No version specified"
+	if [ -z "$VER" ]; then
+		echo "Checking for latest version"
+		getLatestVersion
 	else
-		wget $URL &&
-		tar -xzf $FILE &&
-		mv factorio ./versions/$VER &&
-		rm $FILE
+		if [ -d "$versionsDIR/$VER" ]; then
+			echo "Version $VER appears to already exist on the local system"
+			read "Do you want to re-download this version? (y/n)" select
+		else
+			if [ $(wget --spider -v "") ]; then
+				wget $URL --output-document "$versionsDIR/tmp.tar.gz" &&
+				tar -xzf "$versionsDIR/$VER" &&
+				rm "$versionsDIR/tmp.tar.gz"
+			else
+
+			fi
+		fi
 	fi
 }
 function Run {
-	if [ "$4" = "1" ];then
-		AUTO=--autosave-interval $SAVEINT
+	logPath="$baseDir/factMgr.log"
+	if ! [ -z "$4" ];then
+		SAVEINT="$4"
+		AUTO="$AutoSaveIntCMD $SAVEINT"
 	else
 		AUTO=""
 	fi
@@ -81,38 +263,67 @@ function Run {
 	if [ -z $1 ] || [ -z $2 ]; then
 		Syntax
 	else
-
-		if [ -z $3 ]; then
+		mapName="$1.zip"
+		VER=$2
+		if [ -e "$savesDIR/$mapName" ]; then
+			SAVE="$savesDIR/$mapName"
+		else
+			ERRORMSG="Specified save file does not exist"
+		fi
+		if [ -z "$3" ]; then
 			MOD=""
 		else
-			MODPATH=$MODIR/$3
-			echo $MODPATH
-			if [ -d $MODPATH ]; then
-				MOD=$MODPATH
+			MODPATH="$modDIR/$3"
+			echo "$MODPATH"
+			if [ -d "$MODPATH" ]; then
+				if [ "$(ls -A /path/to/dir)" ]; then
+				   MOD="$MODPATH"
+				else
+				   ERRORMSG="Specified Mod pack is empty"
+				fi
 			else
-				ERRORMSG="Specified Mod directory does not exist"
+				ERRORMSG="Specified Mod pack does not exist"
 			fi
 		fi
-		if [ -z $ERRORMSG ]; then
-			($baseDir/versions/$VER/bin/x64/factorio --start-server $DIR/$MAP --mod-directory $MOD $AUTO &)>log
-			echo "Factorio" $VER " started using map" $MAP
+		if [ -z "$ERRORMSG" ]; then
+			($versionsDIR/$VER/$runFile $startCMD $SAVE $setModCMD $MOD $AUTO &)>"$logPath"
+			echo "Factorio" $VER " started using map:" $SAVE
+			if ! [ "$MOD" = "" ]; then
+				echo "Using Mod pack: $MOD"
+			fi
+			if ! [ "$AUTO" = "" ]; then
+				echo "Set auto save interval to $AUTO"
+			fi
 			echo "Connect using UDP on port 34197"
 		else
 			echo "ERROR: "$ERRORMSG
 		fi
 	fi
 }
+function secret{
+	echo "This is a Bunny, and he is unimpressed that you found his secret command"
+	echo ""
+	echo "(\(\\"
+	echo "(- -)"
+	echo "((‘)((‘)"
+}
 #MAIN
 
 if [[ $EUID -ne 0 ]]; then
-	echo "ERROR: Either you do not have root privilages or you forgot to use Sudo"
+	echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
 else
 	case $1 in
 		-s)
 			Saves $2
 			;;
 		-u)
-			Update $2
+			getVersion $2
+			;;
+		-install)
+			Install
+			;;
+		-remove)
+			Uninstall
 			;;
 		-m)
 			Mods $2
@@ -122,6 +333,9 @@ else
 			;;
 		-r)
 			Run $2 $3 $4 $5
+			;;
+		-secret)
+			secret
 			;;
 		*)
 			Syntax
