@@ -1,0 +1,68 @@
+#!/bin/bash
+
+#VARIABLES
+mode=js
+OpSys=$(uname -rv)
+UpdateDir="/usr/games/minecraft"
+UpdateScript="update_webui.sh"
+UpdatePath=$UpdateDir"/"$UpdateScript
+cmdPath=$UpdateDir/mineos_console.$mode
+
+#FUNCTIONS
+
+function Syntax {
+	echo ""
+	echo "Syntax: mcMgr [-{s:u}:servername] [command] [args]"
+	echo ""
+	echo "	-s	Start/Stop/Status	1:0"
+	echo "	-u	Update webUI"
+	echo "	-h	Show this help page"
+	echo ""
+}
+
+function Saves {
+
+}
+function Versions {
+	if [ -e ]; then
+
+	else
+		
+	fi
+}
+function Mods {
+	
+}
+function Saves {
+	
+}
+function Update {
+
+}
+
+#MAIN
+
+if [[ $EUID -ne 0 ]]; then
+	echo "ERROR: Either you do not have root privilages or you forgot to use Sudo"
+else
+	case $1 in
+		-s)
+			Saves $2
+			;;
+		-u)
+			Update $2
+			;;
+		-m)
+			Mods $2
+			;;
+		-v)
+			Versions $2
+			;;
+		-r)
+			Run $2 $3 $4
+			;;
+		*)
+			Syntax				
+			;;
+	esac
+fi
