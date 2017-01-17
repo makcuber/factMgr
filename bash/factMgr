@@ -79,7 +79,7 @@ function Syntax {
 	echo "	-r		[MapName] [Version#] [ModPackName]	Start server"
 	echo "	-k 							Stop server"
 	echo "	-u 							Update to latest version"
-	echo "	-d		[#.#.#]					Download specific version"
+	echo "	-d		[#.#.#]					Download a version"
 	echo "	-c		[name]					Create new save"
 	echo "	-mp		[name]					Create a mod pack"
 	echo ""
