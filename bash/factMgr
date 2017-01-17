@@ -135,20 +135,20 @@ function installScript {
 	fi
 }
 function Install {
-	if [ -z "$1" ]; then
-		let BinPath="$1"
+	if [ "$1" == "" ]; then
+		BinPath="$BinPathDEF"
 	else
-		let BinPath="$BinPathDEF"
+		BinPath="$1"
 	fi
-	if [ -z "$2" ]; then
-		let ConfigPath="$2"
+	if [ "$2" == "" ]; then
+		ConfigPath="$ConfigPathDEF"
 	else
-		let ConfigPath="$ConfigPathDEF"
+		ConfigPath="$2"
 	fi
-	if [ -z "$3" ]; then
-		let RunPath="$3"
+	if [ "$3" == "" ]; then
+		RunPath="$RunPathDEF"
 	else
-		let RunPath="$RunPathDEF"
+		RunPath="$3"
 	fi
 
 	echo "Will install script to: 				$BinPath"
