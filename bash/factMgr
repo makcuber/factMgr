@@ -156,6 +156,7 @@ function writeConf {
 }
 function installFileStructure {
 	#file structure
+	echo ""
 	echo "Checking for existing file structure..."
 	if ! [ -d "$RunPath" ]; then
 		echo "Building file structure:"
@@ -221,19 +222,7 @@ function Install {
 
 		#generate configuration files
 		echo ""
-		echo "Checking for existing configuration files..."
-		if [ -e "$configFile" ]; then
-				echo "A $progName configuration file appears to already exist on this system"
-				echo -n "Do you want overwrite the existing configuration file? (y/n): "
-				read select
-				if [ "$select" = "y" ]; then
-					installConfig
-				else
-					echo "Skipping configuration generation"
-				fi
-		else
-			installConfig
-		fi
+		installConfig
 
 		#build file structure
 		installFileStructure
