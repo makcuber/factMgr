@@ -133,6 +133,20 @@ function installScript {
 		touch "$ConfigPath/$progName.conf"
 		(echo "$conf")>>"$ConfigPath/$progName.conf"
 	fi
+	echo "Building file structure..."
+	if ! [ -d "$RunPath" ]; then
+		mkdir "$RunPath"
+	fi
+	echo "	Creating versions folder..."
+	mkdir "$RunPath"/versions
+	echo "	Creating mods folder..."
+	mkdir "$RunPath"/mods
+	echo "	Creating saves folder..."
+	mkdir "$RunPath"/saves
+	echo "	Creating modPacks folder..."
+	mkdir "$RunPath"/modPacks
+	echo ""
+	echo "DONE"
 }
 function Install {
 	if [ "$1" == "" ]; then
