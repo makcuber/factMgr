@@ -61,7 +61,7 @@ function init {
 	modsDIR=$baseDir/mods
 	savesDIR=$baseDir/saves
 
-	configFile="$ConfigPath/$progName.conf"
+	configFile=$configFileDEF
 }
 function Syntax {
 	echo ""
@@ -121,32 +121,62 @@ function Uninstall {
 	fi
 }
 function installScript {
+	#script
 	echo "Installing script..."
 	cat "$execPath" > "$BinPath/$progName"
 	echo "Creating executable..."
 	chmod +x "$BinPath/$progName"
-	echo "Creating configuration files..."
+}
+function installConfig {
+	#config
+	echo ""
+	echo "Checking for existing configuration directory..."
 	if ! [ -d "$ConfigPath" ]; then
+		echo "Creating configuration directory..."
 		mkdir "$ConfigPath"
 	fi
-	if ! [ -e "$ConfigPath" ]; then
-		touch "$ConfigPath/$progName.conf"
-		(echo "$conf")>>"$ConfigPath/$progName.conf"
+	echo "Checking for existing configuration files..."
+	if [ -e "$configFile" ]; then
+			echo "A $progName configuration file appears to already exist on this system"
+			echo -n "Do you want overwrite the existing configuration file? (y/n): "
+			read select
+			if [ "$select" = "y" ]; then
+				writeConf
+			else
+				echo "Skipping configuration file generation"
+			fi
+	else
+		echo "Creating configuration file..."
+		writeConf
 	fi
-	echo "Building file structure..."
+}
+function writeConf {
+	touch "$configFile"
+	(echo "$conf")>>"$configFile"
+}
+function installFileStructure {
+	#file structure
+	echo "Checking for existing file structure..."
 	if ! [ -d "$RunPath" ]; then
+		echo "Building file structure:"
 		mkdir "$RunPath"
+	else
+		echo "Verifying file structure:"
 	fi
-	echo "	Creating versions folder..."
-	mkdir "$RunPath"/versions
-	echo "	Creating mods folder..."
-	mkdir "$RunPath"/mods
-	echo "	Creating saves folder..."
-	mkdir "$RunPath"/saves
-	echo "	Creating modPacks folder..."
-	mkdir "$RunPath"/modPacks
-	echo ""
-	echo "DONE"
+
+	buildVerifyFolder $RunPath versions
+	buildVerifyFolder $RunPath saves
+	buildVerifyFolder $RunPath mods
+	buildVerifyFolder $RunPath modPacks
+}
+function buildVerifyFolder {
+	echo "	$2 folder..."
+	if ! [ -d "$1" ]; then
+		echo -n "BUILT"
+		mkdir "$1"/"$2"
+	else
+		echo -n "FOUND"
+	fi
 }
 function Install {
 	if [ "$1" == "" ]; then
@@ -170,14 +200,15 @@ function Install {
 	echo "Creating configuration file in: 	$ConfigPath"
 	echo "Creating file structure in:		$RunPath"
 	echo ""
-	echo -n "Install with this configuration? (y/n):"
+	echo -n "Install with this configuration? (y/n): "
 	read select
 	if [ "$select" = "y" ]; then
 		#install scripts
+		echo ""
 		echo "Checking for existing installation..."
 		if [ -e "$BinPath/$progName" ]; then
 				echo "$progName Script appears to already be installed on this system"
-				echo -n "Do you want to reinstall the script? (y/n):"
+				echo -n "Do you want to reinstall the script? (y/n): "
 				read select
 				if [ "$select" = "y" ]; then
 					installScript
@@ -189,10 +220,11 @@ function Install {
 		fi
 
 		#generate configuration files
+		echo ""
 		echo "Checking for existing configuration files..."
 		if [ -e "$configFile" ]; then
 				echo "A $progName configuration file appears to already exist on this system"
-				echo -n "Do you want overwrite the existing configuration file? (y/n):"
+				echo -n "Do you want overwrite the existing configuration file? (y/n): "
 				read select
 				if [ "$select" = "y" ]; then
 					installConfig
@@ -200,20 +232,14 @@ function Install {
 					echo "Skipping configuration generation"
 				fi
 		else
-			echo "Checking for existing configuration directory..."
-			if [ -d $ConfigPath ]; then
-				installScript
-			else
-				echo "Creating configuration directory..."
-				if [ -d $ConfigPath ]; then
-					installScript
-				else
-					echo "ERROR: Failed to create configuration directory! :("
-				fi
-			fi
-
+			installConfig
 		fi
 
+		#build file structure
+		installFileStructure
+
+		echo ""
+		echo "DONE"
 	else
 		echo "Installation cancelled"
 	fi
