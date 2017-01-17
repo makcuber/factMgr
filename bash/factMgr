@@ -170,12 +170,12 @@ function installFileStructure {
 	buildVerifyFolder $RunPath modPacks
 }
 function buildVerifyFolder {
-	echo "	$2 folder..."
+	echo -n "	$2 folder..."
 	if ! [ -d "$1" ]; then
-		echo -n "BUILT"
+		echo "BUILT"
 		mkdir "$1"/"$2"
 	else
-		echo -n "FOUND"
+		echo "FOUND"
 	fi
 }
 function Install {
