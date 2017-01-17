@@ -76,7 +76,7 @@ function Syntax {
 	echo ""
 	echo "	-install	[BinPath] [ConfigPath] [RunPath]	Install $progName"
 	echo "	-remove							Uninstall $progName"
-	echo "	-r		[MapName] [Version#] [ModPackName]	Start server"
+	echo "	-r		[MapName] [#.#.#] [ModPackName]		Start server"
 	echo "	-k 							Stop server"
 	echo "	-u 							Update to latest version"
 	echo "	-d		[#.#.#]					Download a version"
