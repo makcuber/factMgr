@@ -151,11 +151,12 @@ function Install {
 		RunPath="$3"
 	fi
 
-	echo "Will install script to: 				$BinPath"
-	echo "Creating configuration file in: $ConfigPath"
-	echo "Creating file structure in: 		$RunPath"
+	echo "Will install script to:		$BinPath"
+	echo "Creating configuration file in: 	$ConfigPath"
+	echo "Creating file structure in:		$RunPath"
 	echo ""
-	read "Install with this configuration? (y/n):" select
+	echo "Install with this configuration? (y/n):"
+	read select
 	if [ "$select" = "y" ]; then
 		#install scripts
 		echo "Checking for existing installation..."
