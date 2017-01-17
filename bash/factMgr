@@ -222,7 +222,7 @@ function MakeMap {
 }
 function Versions {
 	if [ -d versionsDIR ]; then
-
+		echo "tmp"
 	else
 		echo "Versions directory not found, $progName may not be installed"
 	fi
