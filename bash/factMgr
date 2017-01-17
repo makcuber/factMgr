@@ -253,14 +253,14 @@ function MakeMap {
 	$versionsDIR/$VER/$runFile $createSaveCMD $savesDIR/$NAME
 }
 function Versions {
-	if [ -d versionsDIR ]; then
-		echo "tmp"
+	if [ -d $versionsDIR ]; then
+		echo "is of versions"
 	else
 		echo "Versions directory not found, $progName may not be installed"
 	fi
 }
 function Mods {
-	echo "tmp"
+	echo "is of mods"
 }
 function getVersion {
 	VER="$1"
