@@ -1,0 +1,14 @@
+#!/bin/bash
+
+VER=$1
+URL=https://www.factorio.com/get-download/$VER/headless/linux64
+FILE=linux64
+
+if [ -z $VER ]; then
+	echo "Error: No version specified"
+else
+	wget $URL &&
+	tar -xzf $FILE &&
+	mv factorio ./versions/$VER &&
+	rm $FILE
+fi

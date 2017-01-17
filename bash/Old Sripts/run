@@ -1,0 +1,40 @@
+#!/bin/bash
+
+baseDir=/home/mc/factorio
+MAP=$1.zip
+VER=$2
+MODIR=/home/mc/factorio/mods
+SAVEINT=20
+PASS=hello
+PORT=7890
+DIR=/home/mc/factorio/maps
+
+if [ "$4" = "1" ];then
+	AUTO=--autosave-interval $SAVEINT
+else
+	AUTO=""
+fi
+
+if [ -z $1 ] || [ -z $2 ]; then
+	echo "Syntax: run [MapName] [Version#]"
+else
+	
+	if [ -z $3 ]; then
+		MOD=""
+	else
+		MODPATH=$MODIR/$3
+		echo $MODPATH
+		if [ -d $MODPATH ]; then
+			MOD=$MODPATH
+		else
+			ERRORMSG="Specified Mod directory does not exist"
+		fi
+	fi
+	if [ -z $ERRORMSG ]; then
+		($baseDir/versions/$VER/bin/x64/factorio --start-server $DIR/$MAP --mod-directory $MOD $AUTO &)>log
+		echo "Factorio" $VER " started using map" $MAP
+		echo "Connect using UDP on port 34197"
+	else
+		echo "ERROR: "$ERRORMSG
+	fi
+fi
