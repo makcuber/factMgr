@@ -41,7 +41,7 @@ PASS=hello
 rconPORT=7890
 
 #FUNCTIONS
-function verbose{
+function verbose {
 	if [ "$verboseOn" = "1" ]; then
 		if ! [ -z $1 ]; then
 			var_name=(${!1@})
@@ -49,7 +49,7 @@ function verbose{
 		fi
 	fi
 }
-function init{
+function init {
 	if ! [ -e $binFileDEF ]; then
 
 	fi
@@ -87,7 +87,7 @@ function Syntax {
 	echo "	-h																								Show this help page"
 	echo ""
 }
-function uninstall{
+function uninstall {
 	if [ -e "$BinPath/$progName" ]; then
 		echo "$progName does not appear to be installed on this system"
 		echo "Uninstallation cancelled"
@@ -122,7 +122,7 @@ function uninstall{
 		fi
 	fi
 }
-function installScript{
+function installScript {
 	echo "Installing script..."
 	cat "$execPath" > "$BinPath/$progName"
 	echo "Creating configuration files..."
@@ -134,7 +134,7 @@ function installScript{
 		(echo "$conf")>>"$ConfigPath/$progName.conf"
 	fi
 }
-function install{
+function install {
 	if [ -z "$1" ]; then
 		BinPath="$1"
 	else
@@ -214,7 +214,7 @@ function Saves {
 		fi
 	fi
 }
-function MakeMap{
+function MakeMap {
 	VER=$(checkVer($1))
 	NAME=$(checkSave($2))
 
@@ -300,7 +300,7 @@ function Run {
 		fi
 	fi
 }
-function secret{
+function secret {
 	echo "This is a Bunny, and he is unimpressed that you found his secret command"
 	echo ""
 	echo "(\(\\"
