@@ -70,7 +70,7 @@ function init {
 }
 function Syntax {
 	echo ""
-	echo "Syntax: $progName [-{i:s:k:u:d:c:v:s:m:h}] [args]"
+	echo "Syntax: $progName [-{install:remove:s:k:u:d:c:v:s:m:h}] [args]"
 	echo ""
 	echo "	-install	[BinPath] [ConfigPath] [RunPath]			Install $progName"
 	echo "	-remove									Uninstall $progName"
@@ -87,7 +87,7 @@ function Syntax {
 	echo "	-h									Show this help page"
 	echo ""
 }
-function uninstall {
+function Uninstall {
 	if [ -e "$BinPath/$progName" ]; then
 		echo "$progName does not appear to be installed on this system"
 		echo "Uninstallation cancelled"
@@ -134,7 +134,7 @@ function installScript {
 		(echo "$conf")>>"$ConfigPath/$progName.conf"
 	fi
 }
-function install {
+function Install {
 	if [ -z "$1" ]; then
 		BinPath="$1"
 	else
