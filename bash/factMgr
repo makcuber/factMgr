@@ -51,13 +51,6 @@ function verbose {
 	fi
 }
 function init {
-	if ! [ -e $binFileDEF ]; then
-		echo "tmp"
-	fi
-	if ! [ -e $configFileDEF ]; then
-		echo "tmp"
-	fi
-
 	BinPath="$BinPathDEF"
 	ConfigPath="$ConfigPathDEF"
 	RunPath="$RunPathDEF"
