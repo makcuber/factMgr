@@ -75,7 +75,7 @@ function Syntax {
 	echo "Syntax: $progName [-{install:remove:s:k:u:d:c:v:s:m:h}] [args]"
 	echo ""
 	echo "	-install	[BinPath] [ConfigPath] [RunPath]	Install $progName"
-	echo "	-remove									Uninstall $progName"
+	echo "	-remove							Uninstall $progName"
 	echo "	-r		[MapName] [Version#] [ModPackName]	Start server"
 	echo "	-k 							Stop server"
 	echo "	-u 							Update to latest version"
