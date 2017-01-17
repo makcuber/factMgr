@@ -92,7 +92,8 @@ function Uninstall {
 		echo "$progName does not appear to be installed on this system"
 		echo "Uninstallation cancelled"
 	else
-		read "Uninstall $progName script? (y/n):" select
+		echo -n "Uninstall $progName script? (y/n):"
+		read select
 		if [ $select = "y" ]; then
 			rm "$BinPath/$progName"
 			if [ -e "$BinPath/$progName" ]; then
@@ -109,7 +110,8 @@ function Uninstall {
 		echo "$progName does not appear to be installed on this system"
 		echo "Uninstallation cancelled"
 	else
-		read "Uninstall $progName script? (y/n):" select
+		echo -n "Uninstall $progName script? (y/n):"
+		read select
 		if [ $select = "y" ]; then
 			rm "$BinPath/$progName"
 			if [ -e "$BinPath/$progName" ]; then
@@ -151,18 +153,20 @@ function Install {
 		RunPath="$3"
 	fi
 
-	echo "Will install script to:		$BinPath"
+	echo ""
+	echo "Will install script to:				$BinPath"
 	echo "Creating configuration file in: 	$ConfigPath"
 	echo "Creating file structure in:		$RunPath"
 	echo ""
-	echo "Install with this configuration? (y/n):"
+	echo -n "Install with this configuration? (y/n):"
 	read select
 	if [ "$select" = "y" ]; then
 		#install scripts
 		echo "Checking for existing installation..."
 		if [ -e "$BinPath/$progName" ]; then
 				echo "$progName Script appears to already be installed on this system"
-				read "Do you want to reinstall the script? (y/n):" select
+				echo -n "Do you want to reinstall the script? (y/n):"
+				read select
 				if [ "$select" = "y" ]; then
 					installScript
 				else
@@ -176,7 +180,8 @@ function Install {
 		echo "Checking for existing configuration files..."
 		if [ -e "$configFile" ]; then
 				echo "A $progName configuration file appears to already exist on this system"
-				read "Do you want overwrite the existing configuration file? (y/n):" select
+				echo -n "Do you want overwrite the existing configuration file? (y/n):"
+				read select
 				if [ "$select" = "y" ]; then
 					installConfig
 				else
@@ -240,7 +245,8 @@ function getVersion {
 	else
 		if [ -d "$versionsDIR/$VER" ]; then
 			echo "Version $VER appears to already exist on the local system"
-			read "Do you want to re-download this version? (y/n)" select
+			echo -n "Do you want to re-download this version? (y/n)"
+			read select
 		else
 			if [ $(wget --spider -v "") ]; then
 				wget $URL --output-document "$versionsDIR/tmp.tar.gz" &&
