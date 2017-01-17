@@ -56,9 +56,10 @@ function init {
 	if ! [ -e $configFileDEF ]; then
 		echo "tmp"
 	fi
-	BinPath="/bin/"
-	ConfigPath="/etc/$progName"
-	RunPath="/var/factorio"
+
+	BinPath="$BinPathDEF"
+	ConfigPath="$ConfigPathDEF"
+	RunPath="$RunPathDEF"
 
 	baseDir=$RunPath
 	versionsDIR=$baseDir/versions
@@ -127,6 +128,8 @@ function Uninstall {
 function installScript {
 	echo "Installing script..."
 	cat "$execPath" > "$BinPath/$progName"
+	echo "Creating executable..."
+	chmod +x "$BinPath/$progName"
 	echo "Creating configuration files..."
 	if ! [ -d "$ConfigPath" ]; then
 		mkdir "$ConfigPath"
@@ -154,7 +157,7 @@ function Install {
 	fi
 
 	echo ""
-	echo "Will install script to:				$BinPath"
+	echo "Will install script to:			$BinPath"
 	echo "Creating configuration file in: 	$ConfigPath"
 	echo "Creating file structure in:		$RunPath"
 	echo ""
@@ -308,13 +311,17 @@ function Run {
 	fi
 }
 function secret {
+	echo ""
 	echo "This is a Bunny, and he is unimpressed that you found his secret command"
 	echo ""
-	echo "(\(\\"
+	echo "(\(\"
 	echo "(- -)"
 	echo "((‘)((‘)"
+	echo ""
 }
 #MAIN
+
+init
 
 if [[ $EUID -ne 0 ]]; then
 	echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
