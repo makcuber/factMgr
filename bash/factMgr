@@ -51,10 +51,10 @@ function verbose {
 }
 function init {
 	if ! [ -e $binFileDEF ]; then
-
+		echo "tmp"
 	fi
 	if ! [ -e $configFileDEF ]; then
-
+		echo "tmp"
 	fi
 	BinPath="/bin/"
 	ConfigPath="/etc/$progName"
@@ -228,7 +228,7 @@ function Versions {
 	fi
 }
 function Mods {
-
+	echo "tmp"
 }
 function getVersion {
 	VER="$1"
@@ -246,7 +246,7 @@ function getVersion {
 				tar -xzf "$versionsDIR/$VER" &&
 				rm "$versionsDIR/tmp.tar.gz"
 			else
-
+					echo "tmp"
 			fi
 		fi
 	fi
