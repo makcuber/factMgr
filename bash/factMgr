@@ -254,13 +254,17 @@ function MakeMap {
 }
 function Versions {
 	if [ -d $versionsDIR ]; then
-		echo "is of versions"
+		ls $versionsDIR
 	else
 		echo "Versions directory not found, $progName may not be installed"
 	fi
 }
 function Mods {
-	echo "is of mods"
+	if [ -d $modsDIR ]; then
+		ls $modsDIR
+	else
+		echo "Mods directory not found, $progName may not be installed"
+	fi
 }
 function getVersion {
 	VER="$1"
