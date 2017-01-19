@@ -256,7 +256,7 @@ function Versions {
 	echo ""
 	if [ -d $versionsDIR ]; then
 		currentVerisons=$(ls $versionsDIR)
-		if [ $currentVerisons == "" ]; then
+		if [ "$currentVerisons" == "" ]; then
 			echo "No versions are currently installed on the local system"
 			echo "Use \"sudo $progName -u\" to download the latest version"
 		else
@@ -275,7 +275,7 @@ function Mods {
 	echo ""
 	if [ -d $modsDIR ]; then
 		currentVerisons=$(ls $versionsDIR)
-		if [ $currentVerisons == "" ]; then
+		if [ "$currentVerisons" == "" ]; then
 			echo "No mods are currently installed on the local system"
 		else
 			echo "Mods currently available on local system:"
