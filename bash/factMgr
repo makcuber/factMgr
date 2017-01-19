@@ -25,7 +25,7 @@ configFileDEF="$ConfigPathDEF/$progName.$configSuffix"
 runFileDEF=/bin/x64/factorio
 downloadFileDEF=linux64
 
-urlDEF=https://www.factorio.com/get-download/
+urlDEF=https://www.factorio.com/get-download
 urlTailDEF=headless/$downloadFileDEF
 
 #Directories
