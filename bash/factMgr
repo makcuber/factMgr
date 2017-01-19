@@ -317,11 +317,16 @@ function getVersion {
 			read select
 		else
 			URL=$URL/$VER/$urlTail
-			verbose $URL
+			#verbose $URL
 			if [ $(wget --spider -v $URL) ]; then
+				echo "Downloading factorio headless server version $VER to local system..."
 				wget $URL --output-document "$versionsDIR/tmp.tar.gz" &&
+				echo "Unpacking headless server..."
 				tar -xzf "$versionsDIR/$VER" &&
+				echo "Cleaning up..."
 				rm "$versionsDIR/tmp.tar.gz"
+				echo ""
+				echo "DONE"
 			else
 					echo "tmp"
 			fi
