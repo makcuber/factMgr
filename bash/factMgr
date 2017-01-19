@@ -4,6 +4,8 @@
 #DC: 7/30/10/2016
 #UD: 1/31/10/2016
 #UD: 2/17/1/2017
+#UD: 3/18/1/2017
+#UD: 4/19/1/2017
 
 #VARIABLES
 execPath="$0"
@@ -20,16 +22,18 @@ RunPathDEF="/var/factorio"
 binFileDEF="/bin/$progName"
 configFileDEF="$ConfigPathDEF/$progName.$configSuffix"
 
+runFileDEF=/bin/x64/factorio
+downloadFileDEF=linux64
+
+urlDEF=https://www.factorio.com/get-download/
+urlTailDEF=headless/$downloadFileDEF
+
 #Directories
 baseDir=$RunPathDEF
 versionsDIR=$baseDir/versions
 mapsDIR=$baseDir/maps
 modsDIR=$baseDir/mods
 savesDIR=$baseDir/saves
-
-#file names
-runFile=/bin/x64/factorio
-downloadFILE=linux64
 
 #commands
 createSaveCMD=--create
@@ -51,6 +55,7 @@ function verbose {
 	fi
 }
 function init {
+	#add config file load and parse here
 	BinPath="$BinPathDEF"
 	ConfigPath="$ConfigPathDEF"
 	RunPath="$RunPathDEF"
@@ -61,7 +66,11 @@ function init {
 	modsDIR=$baseDir/mods
 	savesDIR=$baseDir/saves
 
+	runFile=/bin/x64/factorio
+	downloadFILE=linux64
 	configFile=$configFileDEF
+	URL=$urlDEF
+	urlTail=$urlTailDEF
 }
 function Syntax {
 	echo ""
@@ -80,7 +89,7 @@ function Syntax {
 	echo "	-s 		[MapName]				List saves"
 	echo "	-m 		[ModName]				List mods & mod packs"
 	echo ""
-	echo "	-h							Show this help page"
+	echo "	-h		[command]				Show this help page"
 	echo ""
 }
 function Uninstall {
@@ -263,7 +272,7 @@ function Versions {
 			echo "Versions currently available on local system:"
 			for i in $(echo $(ls $versionsDIR) | sed "s/,/ /g")
 			do
-			    echo "	- $i"
+			    echo " - $i"
 			done
 		fi
 	else
@@ -281,7 +290,7 @@ function Mods {
 			echo "Mods currently available on local system:"
 			for i in $(echo $(ls $modsDIR) | sed "s/,/ /g")
 			do
-			    echo "	- $i"
+			    echo " - $i"
 			done
 		fi
 	else
@@ -289,27 +298,33 @@ function Mods {
 	fi
 	echo ""
 }
+function getLatestVersion {
+	echo ""
+	echo "Checking for latest version..."
+	echo ""
+}
 function getVersion {
 	#add number check here
 	VER="$1"
 
 	if [ -z "$VER" ]; then
-		echo "Checking for latest version"
 		getLatestVersion
 	else
+		echo ""
 		if [ -d "$versionsDIR/$VER" ]; then
 			echo "Version $VER appears to already exist on the local system"
 			echo -n "Do you want to re-download this version? (y/n)"
 			read select
 		else
 			if [ $(wget --spider -v "") ]; then
-				wget $URL --output-document "$versionsDIR/tmp.tar.gz" &&
+				wget $URL/$VER/$urlTail --output-document "$versionsDIR/tmp.tar.gz" &&
 				tar -xzf "$versionsDIR/$VER" &&
 				rm "$versionsDIR/tmp.tar.gz"
 			else
 					echo "tmp"
 			fi
 		fi
+		echo ""
 	fi
 }
 function Run {
@@ -334,7 +349,7 @@ function Run {
 		if [ -z "$3" ]; then
 			MOD=""
 		else
-			MODPATH="$modDIR/$3"
+			MODPATH="$modsDIR/$3"
 			echo "$MODPATH"
 			if [ -d "$MODPATH" ]; then
 				if [ "$(ls -A /path/to/dir)" ]; then
@@ -395,6 +410,9 @@ else
 			;;
 		-v)
 			Versions $2
+			;;
+		-k)
+			getVersion $2
 			;;
 		-r)
 			Run $2 $3 $4 $5
