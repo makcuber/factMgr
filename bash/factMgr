@@ -317,7 +317,9 @@ function getVersion {
 			read select
 		else
 			if [ $(wget --spider -v "") ]; then
-				wget $URL/$VER/$urlTail --output-document "$versionsDIR/tmp.tar.gz" &&
+				URL=$URL/$VER/$urlTail
+				verbose $URL
+				wget $URL --output-document "$versionsDIR/tmp.tar.gz" &&
 				tar -xzf "$versionsDIR/$VER" &&
 				rm "$versionsDIR/tmp.tar.gz"
 			else
