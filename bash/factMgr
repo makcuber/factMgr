@@ -261,7 +261,7 @@ function Versions {
 			echo "Use \"sudo $progName -u\" to download the latest version"
 		else
 			echo "Versions currently available on local system:"
-			for i in $(echo $currentVersions | sed "s/,/ /g")
+			for i in $(echo $(ls $versionsDIR) | sed "s/,/ /g")
 			do
 			    echo "	- $i"
 			done
