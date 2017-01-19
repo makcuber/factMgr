@@ -130,7 +130,6 @@ function Uninstall {
 	fi
 }
 function installScript {
-	#script
 	echo "Installing script..."
 	cat "$execPath" > "$BinPath/$progName"
 	echo "Creating executable..."
@@ -205,6 +204,7 @@ function Install {
 		RunPath="$3"
 	fi
 
+	#script
 	echo ""
 	echo "Will install script to:			$BinPath"
 	echo "Creating configuration file in: 	$ConfigPath"
@@ -318,7 +318,8 @@ function getVersion {
 		else
 			URL=$URL/$VER/$urlTail
 			#verbose $URL
-			if [ $(wget --spider -v $URL) ]; then
+			$(wget --spider -v $URL)
+			if [ $true ]; then
 				echo "Downloading factorio headless server version $VER to local system..."
 				wget $URL --output-document "$versionsDIR/tmp.tar.gz" &&
 				echo "Unpacking headless server..."
@@ -328,7 +329,7 @@ function getVersion {
 				echo ""
 				echo "DONE"
 			else
-					echo "tmp"
+					echo "Version $VER of the factorio headless server is not available on the remote system"
 			fi
 		fi
 		echo ""
