@@ -254,14 +254,20 @@ function MakeMap {
 }
 function Versions {
 	if [ -d $versionsDIR ]; then
+		echo ""
+		echo "Versions currently available on local system:"
 		ls $versionsDIR
+		echo ""
 	else
 		echo "Versions directory not found, $progName may not be installed"
 	fi
 }
 function Mods {
 	if [ -d $modsDIR ]; then
+		echo ""
+		echo "Mods currently available on local system:"
 		ls $modsDIR
+		echo ""
 	else
 		echo "Mods directory not found, $progName may not be installed"
 	fi
