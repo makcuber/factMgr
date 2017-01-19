@@ -316,9 +316,9 @@ function getVersion {
 			echo -n "Do you want to re-download this version? (y/n)"
 			read select
 		else
-			if [ $(wget --spider -v "") ]; then
-				URL=$URL/$VER/$urlTail
-				verbose $URL
+			URL=$URL/$VER/$urlTail
+			verbose $URL
+			if [ $(wget --spider -v $URL) ]; then
 				wget $URL --output-document "$versionsDIR/tmp.tar.gz" &&
 				tar -xzf "$versionsDIR/$VER" &&
 				rm "$versionsDIR/tmp.tar.gz"
