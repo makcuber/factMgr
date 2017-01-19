@@ -256,7 +256,10 @@ function Versions {
 	if [ -d $versionsDIR ]; then
 		echo ""
 		echo "Versions currently available on local system:"
-		ls $versionsDIR
+		for i in $(echo $(ls $versionsDIR) | sed "s/,/ /g")
+		do
+		    echo "$i"
+		done
 		echo ""
 	else
 		echo "Versions directory not found, $progName may not be installed"
@@ -266,13 +269,17 @@ function Mods {
 	if [ -d $modsDIR ]; then
 		echo ""
 		echo "Mods currently available on local system:"
-		ls $modsDIR
+		for i in $(echo $(ls $modsDIR) | sed "s/,/ /g")
+		do
+		    echo "$i"
+		done
 		echo ""
 	else
 		echo "Mods directory not found, $progName may not be installed"
 	fi
 }
 function getVersion {
+	#add number check here
 	VER="$1"
 
 	if [ -z "$VER" ]; then
