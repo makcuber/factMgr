@@ -253,30 +253,41 @@ function MakeMap {
 	$versionsDIR/$VER/$runFile $createSaveCMD $savesDIR/$NAME
 }
 function Versions {
+	echo ""
 	if [ -d $versionsDIR ]; then
-		echo ""
-		echo "Versions currently available on local system:"
-		for i in $(echo $(ls $versionsDIR) | sed "s/,/ /g")
-		do
-		    echo "$i"
-		done
-		echo ""
+		currentVerisons=$(ls $versionsDIR)
+		if [ $currentVerisons == "" ]; then
+			echo "No versions are currently installed on the local system"
+			echo "Use \"sudo $progName -u\" to download the latest version"
+		else
+			echo "Versions currently available on local system:"
+			for i in $(echo $currentVersions | sed "s/,/ /g")
+			do
+			    echo "	- $i"
+			done
+		fi
 	else
 		echo "Versions directory not found, $progName may not be installed"
 	fi
+	echo ""
 }
 function Mods {
+	echo ""
 	if [ -d $modsDIR ]; then
-		echo ""
-		echo "Mods currently available on local system:"
-		for i in $(echo $(ls $modsDIR) | sed "s/,/ /g")
-		do
-		    echo "$i"
-		done
-		echo ""
+		currentVerisons=$(ls $versionsDIR)
+		if [ $currentVerisons == "" ]; then
+			echo "No mods are currently installed on the local system"
+		else
+			echo "Mods currently available on local system:"
+			for i in $(echo $(ls $modsDIR) | sed "s/,/ /g")
+			do
+			    echo "	- $i"
+			done
+		fi
 	else
 		echo "Mods directory not found, $progName may not be installed"
 	fi
+	echo ""
 }
 function getVersion {
 	#add number check here
