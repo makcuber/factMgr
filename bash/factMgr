@@ -84,11 +84,15 @@ function Syntax {
 	echo "	-u 							Update to latest version"
 	echo "	-d		[#.#.#]					Download a version"
 	echo "	-c		[name]					Create new save"
-	echo "	-mp		[name]					Create a mod pack"
+	echo "	-p		[name]					Create a server profile pack"
 	echo ""
 	echo "	-v 		[#.#.#]					List downloaded versions"
 	echo "	-s 		[MapName]				List saves"
-	echo "	-m 		[ModName]				List mods & mod packs"
+	echo ""
+	echo "	-m 							Mods commands"
+	echo "	 -l 							List mods & mod packs"
+	echo "	 -g 		[ModName]				Download a mod from the offical portal"
+	echo "	 -i 		[FilePath]			Import a mod"
 	echo ""
 	echo "	-h		[command]				Show this help page"
 	echo ""
@@ -249,7 +253,7 @@ function Install {
 }
 
 #Saves
-function Saves {
+function ListsSaves {
 	echo ""
 	if [ -d $savesDIR ]; then
 		currentSaves=$(ls $savesDIR)
@@ -276,13 +280,27 @@ function MakeMap {
 }
 
 #Mods
-function Mods {
+function parseModsCMDS {
+	case $1 in
+		-g)
+			GetMod $2
+			;;
+		-i)
+			ImportMod $2
+			;;
+		*)
+			ListMods $2
+			;;
+	esac
+}
+function ListMods {
 	echo ""
 	if [ -d $modsDIR ]; then
 		currentMods=$(ls $modsDIR)
 		if [ "$currentMods" == "" ]; then
 			echo "No mods are currently installed on the local system"
 			echo "Use \"sudo $progName -m -g\" to download mods from the offical portal"
+			echo "Or use \"sudo $progName -m -i\" to import mods on the local system into $progName"
 		else
 			echo "Mods currently available on local system:"
 			for i in $(echo $(ls $modsDIR) | sed "s/,/ /g")
@@ -295,9 +313,21 @@ function Mods {
 	fi
 	echo ""
 }
+function ImportMod {
+	echo ""
+	if [ "$1" == "" ]; then
+
+	fi
+	echo ""
+}
+function GetMod {
+	echo ""
+	echo "Function not yet implemented, sorry :/"
+	echo ""
+}
 
 #Versions
-function Versions {
+function ListVersions {
 	echo ""
 	if [ -d $versionsDIR ]; then
 		currentVerisons=$(ls $versionsDIR)
@@ -435,10 +465,10 @@ else
 			Uninstall
 			;;
 		-m)
-			Mods $2
+			parseModsCMDS $2 $3 $4
 			;;
 		-v)
-			Versions $2
+			ListVersions $2
 			;;
 		-k)
 			getVersion $2
