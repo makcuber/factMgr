@@ -6,6 +6,7 @@
 #UD: 2/17/1/2017
 #UD: 3/18/1/2017
 #UD: 4/19/1/2017
+#UD: 5/28/1/2017
 
 #VARIABLES
 execPath="$0"
@@ -92,6 +93,8 @@ function Syntax {
 	echo "	-h		[command]				Show this help page"
 	echo ""
 }
+
+#Uninstall
 function Uninstall {
 	if [ -e "$BinPath/$progName" ]; then
 		echo "$progName does not appear to be installed on this system"
@@ -129,6 +132,8 @@ function Uninstall {
 		fi
 	fi
 }
+
+#Install
 function installScript {
 	echo "Installing script..."
 	cat "$execPath" > "$BinPath/$progName"
@@ -230,7 +235,6 @@ function Install {
 		fi
 
 		#generate configuration files
-		echo ""
 		installConfig
 
 		#build file structure
@@ -238,22 +242,31 @@ function Install {
 
 		echo ""
 		echo "DONE"
+		echo ""
 	else
 		echo "Installation cancelled"
 	fi
 }
+
+#Saves
 function Saves {
-	if [ -z $1 ]; then
-		ls $versionsDIR
-	else
-		check=$(ls $versionsDIR | grep $1)
-		if [ -z $check ]; then
-			echo $1 "is not available on the local system"
-			echo "Do you want to download this version? (y/n)"
+	echo ""
+	if [ -d $savesDIR ]; then
+		currentSaves=$(ls $savesDIR)
+		if [ "$currentVerisons" == "" ]; then
+			echo "No saves are currently installed on the local system"
+			echo "Use \"sudo $progName -m\" to generate a new save game"
 		else
-			echo $1 "is available on the local system"
+			echo "Saves currently available on local system:"
+			for i in $(echo $(ls $savesDIR) | sed "s/,/ /g")
+			do
+			    echo " - $i"
+			done
 		fi
+	else
+		echo "Saves directory not found, $progName may not be installed"
 	fi
+	echo ""
 }
 function MakeMap {
 	VER=$(checkVer($1))
@@ -261,6 +274,28 @@ function MakeMap {
 
 	$versionsDIR/$VER/$runFile $createSaveCMD $savesDIR/$NAME
 }
+
+#Mods
+function Mods {
+	echo ""
+	if [ -d $modsDIR ]; then
+		currentVerisons=$(ls $versionsDIR)
+		if [ "$currentVerisons" == "" ]; then
+			echo "No mods are currently installed on the local system"
+		else
+			echo "Mods currently available on local system:"
+			for i in $(echo $(ls $modsDIR) | sed "s/,/ /g")
+			do
+			    echo " - $i"
+			done
+		fi
+	else
+		echo "Mods directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+
+#Versions
 function Versions {
 	echo ""
 	if [ -d $versionsDIR ]; then
@@ -277,24 +312,6 @@ function Versions {
 		fi
 	else
 		echo "Versions directory not found, $progName may not be installed"
-	fi
-	echo ""
-}
-function Mods {
-	echo ""
-	if [ -d $modsDIR ]; then
-		currentVerisons=$(ls $versionsDIR)
-		if [ "$currentVerisons" == "" ]; then
-			echo "No mods are currently installed on the local system"
-		else
-			echo "Mods currently available on local system:"
-			for i in $(echo $(ls $modsDIR) | sed "s/,/ /g")
-			do
-			    echo " - $i"
-			done
-		fi
-	else
-		echo "Mods directory not found, $progName may not be installed"
 	fi
 	echo ""
 }
@@ -335,6 +352,8 @@ function getVersion {
 		echo ""
 	fi
 }
+
+#run
 function Run {
 	logPath="$baseDir/factMgr.log"
 	if ! [ -z "$4" ];then
@@ -384,6 +403,7 @@ function Run {
 		fi
 	fi
 }
+
 function secret {
 	echo ""
 	echo "This is a Bunny, and he is unimpressed that you found his secret command"
