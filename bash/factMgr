@@ -316,7 +316,7 @@ function ListMods {
 function ImportMod {
 	echo ""
 	if [ "$1" == "" ]; then
-
+		echo "Function not yet implemented, sorry :/"
 	fi
 	echo ""
 }
