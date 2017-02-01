@@ -253,7 +253,7 @@ function Saves {
 	echo ""
 	if [ -d $savesDIR ]; then
 		currentSaves=$(ls $savesDIR)
-		if [ "$currentVerisons" == "" ]; then
+		if [ "$currentSaves" == "" ]; then
 			echo "No saves are currently installed on the local system"
 			echo "Use \"sudo $progName -m\" to generate a new save game"
 		else
