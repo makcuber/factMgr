@@ -279,9 +279,10 @@ function MakeMap {
 function Mods {
 	echo ""
 	if [ -d $modsDIR ]; then
-		currentVerisons=$(ls $versionsDIR)
-		if [ "$currentVerisons" == "" ]; then
+		currentMods=$(ls $modsDIR)
+		if [ "$currentMods" == "" ]; then
 			echo "No mods are currently installed on the local system"
+			echo "Use \"sudo $progName -m -g\" to download mods from the offical portal"
 		else
 			echo "Mods currently available on local system:"
 			for i in $(echo $(ls $modsDIR) | sed "s/,/ /g")
