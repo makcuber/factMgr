@@ -516,12 +516,12 @@ function getVersion {
 					(echo "")>>"$baseDir/wget.log"
 					(date +%Y%m%d%H%M%S)>>"$baseDir/wget.log"
 					(echo "")>>"$baseDir/wget.log"
-					(wget $URL --output-document "$versionsDIR/$VER.tar.gz")>>"$baseDir/wget.log"
+					wget $URL --output-document "$versionsDIR/$VER.tar.gz" -a "$baseDir/wget.log"
 					if [ -e "$versionsDIR/$VER.tar.gz" ]; then
 						echo "SUCCESS"
 
 						echo -n "Unpacking headless server..."
-						tar -xzf "$versionsDIR/$VER.tar.gz"
+						tar -xzf "$versionsDIR/$VER.tar.gz" -C $versionsDIR/$VER --strip-components=1
 						if [ -d "$versionsDIR/$VER" ]; then
 							echo "SUCCESS"
 
