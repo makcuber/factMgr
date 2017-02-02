@@ -85,7 +85,7 @@ function Syntax {
 	echo "	---Server Control---"
 	echo "	-r		[MapName] [#.#.#] [ModPackName]		Start server"
 	echo "	-k 							Stop server"
-	echo "	-p		[name]					Create a server profile pack"
+	echo "	-p		[ProfileName]				Create a server profile pack"
 	echo ""
 	echo "	---Versions---"
 	echo "	-v 							Version commands"
@@ -94,8 +94,9 @@ function Syntax {
 	echo "	   -d 		[#.#.#]			   	   Download a version"
 	echo ""
 	echo "	---Saves---"
-	echo "	-s 		[MapName]				List saves"
-	echo "	   -c		[name]					Create new save"
+	echo "	-s 							Saves commands"
+	echo "	   -l 						   	   List available saves"
+	echo "	   -n		[name]					Create new save"
 	echo ""
 	echo "	---Mods---"
 	echo "	-m 							Mods commands"
@@ -263,6 +264,16 @@ function Install {
 }
 
 #Saves
+function parseSaveCMDS {
+	case $1 in
+		-n)
+			MakeMap $2 $3
+			;;
+		*)
+			ListSaves $2
+			;;
+	esac
+}
 function ListsSaves {
 	echo ""
 	if [ -d $savesDIR ]; then
@@ -337,6 +348,19 @@ function GetMod {
 }
 
 #Versions
+function parseVersionsCMDS {
+	case $1 in
+		-u)
+			getLatestVersion
+			;;
+		-d)
+			getVersion $2
+			;;
+		*)
+			ListVersions $2
+			;;
+	esac
+}
 function ListVersions {
 	echo ""
 	if [ -d $versionsDIR ]; then
@@ -463,10 +487,7 @@ if [[ $EUID -ne 0 ]]; then
 else
 	case $1 in
 		-s)
-			Saves $2
-			;;
-		-u)
-			getVersion $2
+			parseSaveCMDS $2 $3 $4
 			;;
 		-install)
 			Install
@@ -478,10 +499,7 @@ else
 			parseModsCMDS $2 $3 $4
 			;;
 		-v)
-			ListVersions $2
-			;;
-		-k)
-			getVersion $2
+			parseVersionsCMDS $2 $3 $4
 			;;
 		-r)
 			Run $2 $3 $4 $5
