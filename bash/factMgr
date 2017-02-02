@@ -65,7 +65,7 @@ function Syntax {
 	echo ""
 	echo "===Configuration==="
 	echo "	-install	[BinPath] [ConfigPath] [RunPath]	Install $progName"
-	echo "	-uninstall							Uninstall $progName"
+	echo "	-uninstall						Uninstall $progName"
 	echo "	-config							Edit configuration file"
 	echo ""
 	echo "===Server Control==="
@@ -160,7 +160,7 @@ function writeConf {
 	touch "$configFile"
 	(echo "$conf")>>"$configFile"
 }
-function config {
+function Config {
 	if [ -e "$configFile" ]; then
 		$editor $configFile
 	else
@@ -511,8 +511,8 @@ function getVersion {
 		else
 			URL=$URL/$VER/$urlTail
 			#verbose $URL
-			$(wget --spider -v $URL)
-			if [ $true ]; then
+			#(wget --spider -v $URL)>
+			if [[ $(wget $URL -O-) ]] 2>/dev/null; then
 				echo "Downloading factorio headless server version $VER to local system..."
 				wget $URL --output-document "$versionsDIR/tmp.tar.gz" &&
 				echo "Unpacking headless server..."
