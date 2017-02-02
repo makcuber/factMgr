@@ -516,12 +516,12 @@ function getVersion {
 					(echo "")>>"$baseDir/wget.log"
 					(date +%Y%m%d%H%M%S)>>"$baseDir/wget.log"
 					(echo "")>>"$baseDir/wget.log"
-					(wget $URL --output-document "$versionsDIR/$VER.tar.gz") >> "$baseDir/wget.log"
+					(wget $URL --output-document "$versionsDIR/$VER.tar.gz")>>"$baseDir/wget.log"
 					if [ -e "$versionsDIR/$VER.tar.gz" ]; then
 						echo "SUCCESS"
 
 						echo -n "Unpacking headless server..."
-						tar -xzf "$versionsDIR/$VER"
+						tar -xzf "$versionsDIR/$VER.tar.gz"
 						if [ -d "$versionsDIR/$VER" ]; then
 							echo "SUCCESS"
 
@@ -545,10 +545,10 @@ function getVersion {
 						echo "FAILED"
 					fi
 				else
-					echo "Versions directory not found, $progName may not be installed"
+					echo "Version $VER of the factorio headless server is not available on the remote system"
 				fi
 			else
-					echo "Version $VER of the factorio headless server is not available on the remote system"
+					echo "Versions directory not found, $progName may not be installed"
 			fi
 		fi
 		echo ""
