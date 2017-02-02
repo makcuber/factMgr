@@ -25,6 +25,7 @@ RunPathDEF="/var/factorio"
 binFileDEF="/bin/$progName"
 configFileDEF="$ConfigPathDEF/$progName.$configSuffix"
 saveExtDEF="zip"
+editorDEF="nano"
 
 runFileDEF=/bin/x64/factorio
 downloadFileDEF=linux64
@@ -58,32 +59,14 @@ function verbose {
 		fi
 	fi
 }
-function init {
-	#add config file load and parse here
-	BinPath="$BinPathDEF"
-	ConfigPath="$ConfigPathDEF"
-	RunPath="$RunPathDEF"
-
-	baseDir=$RunPath
-	versionsDIR=$baseDir/versions
-	mapsDIR=$baseDir/maps
-	modsDIR=$baseDir/mods
-	savesDIR=$baseDir/saves
-
-	runFile=/bin/x64/factorio
-	downloadFILE=linux64
-	configFile=$configFileDEF
-	URL=$urlDEF
-	urlTail=$urlTailDEF
-	saveExt=$saveExtDEF
-}
 function Syntax {
 	echo ""
 	echo "Syntax: $progName [Cmd] [subCmd] [args]"
 	echo ""
 	echo "===Configuration==="
 	echo "	-install	[BinPath] [ConfigPath] [RunPath]	Install $progName"
-	echo "	-remove							Uninstall $progName"
+	echo "	-uninstall							Uninstall $progName"
+	echo "	-config							Edit configuration file"
 	echo ""
 	echo "===Server Control==="
 	echo "	-r		[MapName] [#.#.#] [ModPackName]		Start server"
@@ -152,6 +135,52 @@ function Uninstall {
 	fi
 }
 
+#configuration
+function init {
+	#add config file load and parse here
+	BinPath="$BinPathDEF"
+	ConfigPath="$ConfigPathDEF"
+	RunPath="$RunPathDEF"
+
+	baseDir=$RunPath
+	versionsDIR=$baseDir/versions
+	mapsDIR=$baseDir/maps
+	modsDIR=$baseDir/mods
+	savesDIR=$baseDir/saves
+
+	runFile=/bin/x64/factorio
+	downloadFILE=linux64
+	configFile=$configFileDEF
+	URL=$urlDEF
+	urlTail=$urlTailDEF
+	saveExt=$saveExtDEF
+	editor=$editorDEF
+}
+function writeConf {
+	touch "$configFile"
+	(echo "$conf")>>"$configFile"
+}
+function config {
+	if [ -e "$configFile" ]; then
+		$editor $configFile
+	else
+		echo ""
+		echo "No configuration file was found"
+		echo -n "Do you want to generate a new configuration file? (y/n):"
+		read select
+		if [ "$select" == "y" ]; then
+			writeConf
+			if [ -e "$configFile" ]; then
+				$editor $configFile
+			else
+				echo ""
+				echo "Something went wrong, configuration file could not be created :("
+			fi
+		fi
+		echo ""
+	fi
+}
+
 #Install
 function installScript {
 	echo "Installing script..."
@@ -181,10 +210,6 @@ function installConfig {
 		echo "Creating configuration file..."
 		writeConf
 	fi
-}
-function writeConf {
-	touch "$configFile"
-	(echo "$conf")>>"$configFile"
 }
 function installFileStructure {
 	#file structure
@@ -369,9 +394,9 @@ function delMap {
 				echo -n "Deleting save file \"$NAME\"..."
 				rm -r "$savesDIR/$NAME.$saveExt"
 				if [ -e $savesDIR/$NAME.$saveExt ]; then
-					echo "SUCCESS"
-				else
 					echo "FAILED"
+				else
+					echo "SUCCESS"
 				fi
 			else
 				echo ""
@@ -578,8 +603,11 @@ else
 		-install)
 			Install
 			;;
-		-remove)
+		-uninstall)
 			Uninstall
+			;;
+		-config)
+			Config
 			;;
 		-m)
 			parseModsCMDS $2 $3 $4
