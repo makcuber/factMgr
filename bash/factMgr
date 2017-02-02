@@ -8,6 +8,7 @@
 #UD: 4/19/1/2017
 #UD: 5/28/1/2017
 #UD: 2/31/1/2017
+#UD: 4/2/2/2017
 
 #VARIABLES
 execPath="$0"
@@ -23,6 +24,7 @@ ConfigPathDEF="/etc/$progName"
 RunPathDEF="/var/factorio"
 binFileDEF="/bin/$progName"
 configFileDEF="$ConfigPathDEF/$progName.$configSuffix"
+saveExtDEF="zip"
 
 runFileDEF=/bin/x64/factorio
 downloadFileDEF=linux64
@@ -73,38 +75,39 @@ function init {
 	configFile=$configFileDEF
 	URL=$urlDEF
 	urlTail=$urlTailDEF
+	saveExt=$saveExtDEF
 }
 function Syntax {
 	echo ""
 	echo "Syntax: $progName [-{install:remove:s:k:u:d:c:v:s:m:h}] [args]"
 	echo ""
-	echo "	---Configuration---"
+	echo "===Configuration==="
 	echo "	-install	[BinPath] [ConfigPath] [RunPath]	Install $progName"
 	echo "	-remove							Uninstall $progName"
 	echo ""
-	echo "	---Server Control---"
+	echo "===Server Control==="
 	echo "	-r		[MapName] [#.#.#] [ModPackName]		Start server"
 	echo "	-k 							Stop server"
-	echo "	-p		[ProfileName]				Create a server profile pack"
+	echo "	-p		[ProfileName]				Create a server profile"
 	echo ""
-	echo "	---Versions---"
+	echo "===Versions==="
 	echo "	-v 							Version commands"
-	echo "	   -l 						   	   List downloaded versions"
-	echo "	   -u 						   	   Update to latest version"
+	echo "	   -l 						   	   List local versions"
+	echo "	   -u 						   	   Get latest version"
 	echo "	   -d 		[#.#.#]			   	   Download a version"
 	echo ""
-	echo "	---Saves---"
+	echo "===Saves==="
 	echo "	-s 							Saves commands"
 	echo "	   -l 						   	   List available saves"
 	echo "	   -n		[name]					Create new save"
 	echo ""
-	echo "	---Mods---"
+	echo "===Mods==="
 	echo "	-m 							Mods commands"
 	echo "	   -l 						   	   List mods & mod packs"
-	echo "	   -g 		[ModName]			   	   Download a mod from the offical portal"
+	echo "	   -g 		[ModName]			   	   Download a mod"
 	echo "	   -i 		[FilePath]			   	   Import a mod"
 	echo ""
-	echo "	---Help---"
+	echo "===Help==="
 	echo "	-h		[command]				Show this help page"
 	echo ""
 }
@@ -274,7 +277,7 @@ function parseSaveCMDS {
 			;;
 	esac
 }
-function ListsSaves {
+function ListSaves {
 	echo ""
 	if [ -d $savesDIR ]; then
 		currentSaves=$(ls $savesDIR)
@@ -293,11 +296,59 @@ function ListsSaves {
 	fi
 	echo ""
 }
-function MakeMap {
-	VER=$(checkVer($1))
-	NAME=$(checkSave($2))
+function genMap {
+	VER=$1
+	NAME=$2
 
-	$versionsDIR/$VER/$runFile $createSaveCMD $savesDIR/$NAME
+	echo "Version: $VER"
+	echo "Name: $NAME"
+	echo ""
+	echo -n "Generate new map with these parameters? (y/n): "
+	read select
+	if [ "$select" = "y" ]; then
+		echo ""
+		echo -n "Generating new map \"$NAME\" using version $VER..."
+		$versionsDIR/$VER/$runFile $createSaveCMD $savesDIR/$NAME
+		if [ -e $savesDIR/$NAME.$saveExt ]; then
+			echo "SUCCESS"
+		else
+			echo "FAILED"
+			echo ""
+			echo "It appears that something went wrong :("
+		fi
+	fi
+}
+function MakeMap {
+	VER=$1
+	NAME=$2
+
+	echo ""
+	if [ -d $versionsDIR ]; then
+		if [ -d $savesDIR ]; then
+			if [ -d $versionsDIR/$VER ]; then
+				if [ -e $versionsDIR/$VER/$runFile ]; then
+					if [ -e "$savesDIR/$NAME.$saveExt" ]; then
+						i=1;
+						while [ -e "$savesDIR/$NAME_$i.$saveExt" ]; do
+							let i=i+1
+						done
+						genMap $VER "$NAME_$i"
+					else
+						genMap $VER $NAME
+					fi
+				else
+					echo "Version $VER appears to be corupted, executable is missing"
+				fi
+			else
+				echo "Version $VER is not available on the local system"
+			fi
+		else
+			echo "Saves directory not found, $progName may not be installed"
+		fi
+	else
+		echo "Versions directory not found, $progName may not be installed"
+	fi
+	echo ""
 }
 
 #Mods
@@ -431,7 +482,7 @@ function Run {
 	if [ -z $1 ] || [ -z $2 ]; then
 		Syntax
 	else
-		mapName="$1.zip"
+		mapName="$1.$saveExt"
 		VER=$2
 		if [ -e "$savesDIR/$mapName" ]; then
 			SAVE="$savesDIR/$mapName"
