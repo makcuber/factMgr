@@ -26,6 +26,8 @@ binFileDEF="/bin/$progName"
 configFileDEF="$ConfigPathDEF/$progName.$configSuffix"
 saveExtDEF="zip"
 editorDEF="nano"
+tarNameDEF="factorio"
+downloadLogFileDEF="$baseDIR/download.log"
 
 runFileDEF=/bin/x64/factorio
 downloadFileDEF=linux64
@@ -155,6 +157,8 @@ function init {
 	urlTail=$urlTailDEF
 	saveExt=$saveExtDEF
 	editor=$editorDEF
+	tarName=$tarNameDEF
+	downloadLogFile=$downloadLogFileDEF
 }
 function writeConf {
 	touch "$configFile"
@@ -496,6 +500,17 @@ function getLatestVersion {
 	echo "Checking for latest version..."
 	echo ""
 }
+function logfileCheck {
+	if [ -e $downloadLogFile ]; then
+		echo ""
+		echo "Do you want to read the log file? (y/n): "
+		read select
+		if [ "$select" == "y" ]; then
+			$editor $downloadLogFile
+		fi
+		echo ""
+	fi
+}
 function getVersion {
 	VER="$1"
 
@@ -512,37 +527,50 @@ function getVersion {
 				URL=$URL/$VER/$urlTail
 				if [[ $(wget $URL -O-) ]] 2>/dev/null; then
 					echo -n "Downloading factorio headless server version $VER to local system..."
-					(echo "")>>"$baseDir/wget.log"
-					(echo "")>>"$baseDir/wget.log"
-					(date +%Y%m%d%H%M%S)>>"$baseDir/wget.log"
-					(echo "")>>"$baseDir/wget.log"
-					wget $URL --output-document "$versionsDIR/$VER.tar.gz" -a "$baseDir/wget.log"
-					if [ -e "$versionsDIR/$VER.tar.gz" ]; then
+					(echo "")>>$downloadLogFile
+					(echo "")>>$downloadLogFile
+					(date +%Y%m%d%H%M%S)>>$downloadLogFile
+					(echo "")>>$downloadLogFile
+					wget $URL --output-document "$baseDIR/$VER.tar.gz" -a $downloadLogFile
+					if [ -e "$baseDIR/$VER.tar.gz" ]; then
 						echo "SUCCESS"
 
 						echo -n "Unpacking headless server..."
-						tar -xzf "$versionsDIR/$VER.tar.gz" -C $versionsDIR/$VER --strip-components=1
-						if [ -d "$versionsDIR/$VER" ]; then
+						(echo "")>>$downloadLogFile
+						(tar -xzf "$baseDIR/$VER.tar.gz" -C $versionsDIR)>>$downloadLogFile
+						if [ -d "$versionsDIR/$tarName" ]; then
 							echo "SUCCESS"
 
-							echo -n "Cleaning up..."
-							if [ -e "$versionsDIR/$VER.tar.gz" ]; then
-								rm "$versionsDIR/$VER.tar.gz"
+							echo "Configuring headless server..."
+							mv "$versionsDIR/$tarName" "$versionsDIR/$VER"
+							if [ -d "$versionsDIR/$VER" ]; then
+								echo "SUCCESS"
+
+								echo -n "Cleaning up..."
 								if [ -e "$versionsDIR/$VER.tar.gz" ]; then
-									echo "FAILED"
+									rm "$versionsDIR/$VER.tar.gz"
+									if [ -e "$versionsDIR/$VER.tar.gz" ]; then
+										echo "FAILED"
+										logfileCheck
+									else
+										echo "SUCCESS"
+									fi
 								else
 									echo "SUCCESS"
 								fi
+								echo ""
+								echo "DONE"
 							else
-								echo "SUCCESS"
+								echo "FAILED"
+								logfileCheck
 							fi
-							echo ""
-							echo "DONE"
 						else
 							echo "FAILED"
+							logfileCheck
 						fi
 					else
 						echo "FAILED"
+						logfileCheck
 					fi
 				else
 					echo "Version $VER of the factorio headless server is not available on the remote system"
