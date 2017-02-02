@@ -99,7 +99,7 @@ function Syntax {
 	echo "===Saves==="
 	echo "	-s 							Saves commands"
 	echo "	   -l 						   	   List available saves"
-	echo "	   -n			[#.#.#] [name]			   Create new save"
+	echo "	   -n		[#.#.#] [name]				   Create new save"
 	echo "	   -d 		[#.#.#]			   	   	   Delete a save"
 	echo ""
 	echo "===Mods==="
@@ -365,7 +365,14 @@ function delMap {
 			echo -n "Are you sure you want to the delete the save file \"$NAME\"? (y/n): "
 			read select
 			if [ "$select" = "y" ]; then
+				echo ""
+				echo -n "Deleting save file \"$NAME\"..."
 				rm -r "$savesDIR/$NAME.$saveExt"
+				if [ -e $savesDIR/$NAME.$saveExt ]; then
+					echo "SUCCESS"
+				else
+					echo "FAILED"
+				fi
 			else
 				echo ""
 				echo "Deletion cancelled"
