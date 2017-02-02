@@ -497,10 +497,9 @@ function getLatestVersion {
 	echo ""
 }
 function getVersion {
-	#add number check here
 	VER="$1"
 
-	if [ -z "$VER" ]; then
+	if [ "$VER" == "" ]; then
 		getLatestVersion
 	else
 		echo ""
@@ -509,18 +508,45 @@ function getVersion {
 			echo -n "Do you want to re-download this version? (y/n)"
 			read select
 		else
-			URL=$URL/$VER/$urlTail
-			#verbose $URL
-			#(wget --spider -v $URL)>
-			if [[ $(wget $URL -O-) ]] 2>/dev/null; then
-				echo "Downloading factorio headless server version $VER to local system..."
-				wget $URL --output-document "$versionsDIR/tmp.tar.gz" &&
-				echo "Unpacking headless server..."
-				tar -xzf "$versionsDIR/$VER" &&
-				echo "Cleaning up..."
-				rm "$versionsDIR/tmp.tar.gz"
-				echo ""
-				echo "DONE"
+			if [ -d $versionsDIR ]; then
+				URL=$URL/$VER/$urlTail
+				if [[ $(wget $URL -O-) ]] 2>/dev/null; then
+					echo -n "Downloading factorio headless server version $VER to local system..."
+					(echo "")>>"$baseDir/wget.log"
+					(echo "")>>"$baseDir/wget.log"
+					(date +%Y%m%d%H%M%S)>>"$baseDir/wget.log"
+					(echo "")>>"$baseDir/wget.log"
+					(wget $URL --output-document "$versionsDIR/$VER.tar.gz") >> "$baseDir/wget.log"
+					if [ -e "$versionsDIR/$VER.tar.gz" ]; then
+						echo "SUCCESS"
+
+						echo -n "Unpacking headless server..."
+						tar -xzf "$versionsDIR/$VER"
+						if [ -d "$versionsDIR/$VER" ]; then
+							echo "SUCCESS"
+
+							echo -n "Cleaning up..."
+							if [ -e "$versionsDIR/$VER.tar.gz" ]; then
+								rm "$versionsDIR/$VER.tar.gz"
+								if [ -e "$versionsDIR/$VER.tar.gz" ]; then
+									echo "FAILED"
+								else
+									echo "SUCCESS"
+								fi
+							else
+								echo "SUCCESS"
+							fi
+							echo ""
+							echo "DONE"
+						else
+							echo "FAILED"
+						fi
+					else
+						echo "FAILED"
+					fi
+				else
+					echo "Versions directory not found, $progName may not be installed"
+				fi
 			else
 					echo "Version $VER of the factorio headless server is not available on the remote system"
 			fi
@@ -532,7 +558,7 @@ function getVersion {
 #run
 function Run {
 	logPath="$baseDir/factMgr.log"
-	if ! [ -z "$4" ];then
+	if ! [ -z "$4" ]; then
 		SAVEINT="$4"
 		AUTO="$AutoSaveIntCMD $SAVEINT"
 	else
