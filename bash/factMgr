@@ -28,6 +28,7 @@ saveExtDEF="zip"
 editorDEF="nano"
 tarNameDEF="factorio"
 downloadLogFileDEF="$baseDIR/download.log"
+VER_LATEST_DEF=0.14.10
 
 runFileDEF=/bin/x64/factorio
 downloadFileDEF=linux64
@@ -149,6 +150,7 @@ function init {
 	mapsDIR=$baseDir/maps
 	modsDIR=$baseDir/mods
 	savesDIR=$baseDir/saves
+	VER_LATEST=$VER_LATEST_DEF
 
 	runFile=/bin/x64/factorio
 	downloadFILE=linux64
@@ -353,6 +355,29 @@ function genMap {
 		fi
 	fi
 }
+function mapGenNameCheck {
+	VER=$1
+	NAME=$2
+
+	if [ -d $versionsDIR/$VER ]; then
+		if [ -e $versionsDIR/$VER/$runFile ]; then
+			if [ -e "$savesDIR/$NAME.$saveExt" ]; then
+				i=1;
+				while [ -e "$savesDIR/$NAME_$i.$saveExt" ]; do
+					let i=i+1
+				done
+				NAME+="_$i"
+				genMap $VER $NAME
+			else
+				genMap $VER $NAME
+			fi
+		else
+			echo "Version $VER appears to be corupted, executable is missing"
+		fi
+	else
+		echo "Version $VER is not available on the local system"
+	fi
+}
 function MakeMap {
 	VER=$1
 	NAME=$2
@@ -360,22 +385,17 @@ function MakeMap {
 	echo ""
 	if [ -d $versionsDIR ]; then
 		if [ -d $savesDIR ]; then
-			if [ -d $versionsDIR/$VER ]; then
-				if [ -e $versionsDIR/$VER/$runFile ]; then
-					if [ -e "$savesDIR/$NAME.$saveExt" ]; then
-						i=1;
-						while [ -e "$savesDIR/$NAME_$i.$saveExt" ]; do
-							let i=i+1
-						done
-						genMap $VER "$NAME_$i"
-					else
-						genMap $VER $NAME
-					fi
-				else
-					echo "Version $VER appears to be corupted, executable is missing"
-				fi
+			if [ "$VER" == "" ]; then
+				mapGenNameCheck $VER $NAME
 			else
-				echo "Version $VER is not available on the local system"
+				echo "No Version specified"
+				echo ""
+				echo -n "Use latest version? (y/n): "
+				read select
+				if [ "$select" == "y" ]; then
+					determineLatestVersion
+					mapGenNameCheck $VER_LATEST $NAME
+				fi
 			fi
 		else
 			echo "Saves directory not found, $progName may not be installed"
@@ -463,6 +483,9 @@ function GetMod {
 }
 
 #Versions
+function determineLatestVersion {
+	VER_LATEST=0.14.10
+}
 function parseVersionsCMDS {
 	case $1 in
 		-u)
@@ -541,7 +564,7 @@ function getVersion {
 						if [ -d "$versionsDIR/$tarName" ]; then
 							echo "SUCCESS"
 
-							echo "Configuring headless server..."
+							echo -n "Configuring headless server..."
 							mv "$versionsDIR/$tarName" "$versionsDIR/$VER"
 							if [ -d "$versionsDIR/$VER" ]; then
 								echo "SUCCESS"
