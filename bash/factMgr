@@ -24,6 +24,7 @@ ConfigPathDEF="/etc/$progName"
 RunPathDEF="/var/factorio"
 binFileDEF="/bin/$progName"
 configFileDEF="$ConfigPathDEF/$progName.$configSuffix"
+modlistPathDEF=$ConfigPathDEF/modlist
 saveExtDEF="zip"
 editorDEF="nano"
 tarNameDEF="factorio"
@@ -35,6 +36,9 @@ downloadFileDEF=linux64
 
 urlDEF=https://www.factorio.com/get-download
 urlTailDEF=headless/$downloadFileDEF
+modlistEXTDEF=json
+modlistNameDEF=modlist
+modlistURLDEF=https://mods.factorio.com/api/mods
 
 #Directories
 baseDir=$RunPathDEF
@@ -161,6 +165,10 @@ function init {
 	editor=$editorDEF
 	tarName=$tarNameDEF
 	downloadLogFile=$downloadLogFileDEF
+	modlistURL=$modlistURLDEF
+	modlistPath=$modlistPathDEF
+	modlistEXT=$modlistEXTDEF
+	modlistName=$modlistNameDEF
 }
 function writeConf {
 	touch "$configFile"
@@ -201,6 +209,10 @@ function installConfig {
 	if ! [ -d "$ConfigPath" ]; then
 		echo "Creating configuration directory..."
 		mkdir "$ConfigPath"
+		if ! [ -d "$modlistPath" ]; then
+			echo "Creating modlist directory..."
+			mkdir "$modlistPath"
+		fi
 	fi
 	echo "Checking for existing configuration files..."
 	if [ -e "$configFile" ]; then
@@ -449,6 +461,34 @@ function parseModsCMDS {
 			;;
 	esac
 }
+function updateModList {
+	echo ""
+	if [ -d $modlistPath ]; then
+		echo -n "Connecting to remote mods database..."
+		if [[ $(wget $modlistURL -O-) ]] 2>/dev/null; then
+			echo "SUCCESS"
+
+			if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+				echo "Creating backup of old modlist data..."
+				NOW=date +%Y%m%d%H%M%S
+				mv $modlistPath/$modlistName.$modlistEXT $modlistPath/$modlistName-$NOW.$modlistEXT
+			fi
+
+			echo -n "Downloading modlist data..."
+			wget $modlistURL -output-document $modlistPath/$modlistName.$modlistEXT -a $downloadLogFile
+			if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+				echo "SUCCESS"
+			else
+				echo "FAILED"
+			fi
+		else
+			echo "FAILED"
+		fi
+	else
+		echo "Modlist configuration directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
 function ListMods {
 	echo ""
 	if [ -d $modsDIR ]; then
@@ -484,7 +524,7 @@ function GetMod {
 
 #Versions
 function determineLatestVersion {
-	VER_LATEST=0.14.10
+	VER_LATEST=0.14.22
 }
 function parseVersionsCMDS {
 	case $1 in
@@ -657,6 +697,17 @@ function Run {
 	fi
 }
 
+#Developer
+function devCMDs {
+	case $1 in
+		-1)
+			updateModList
+			;;
+		*)
+			secret
+			;;
+	esac
+}
 function secret {
 	echo ""
 	echo "This is a Bunny, and he is unimpressed that you found his secret command"
@@ -685,6 +736,9 @@ else
 			;;
 		-config)
 			Config
+			;;
+		-dev)
+			devCMDs $2 $3 $4
 			;;
 		-m)
 			parseModsCMDS $2 $3 $4
