@@ -14,6 +14,7 @@
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
+ProgVer="0.0.1"
 
 #defaults
 progName=factMgr
@@ -700,6 +701,11 @@ function Run {
 #Developer
 function devCMDs {
 	case $1 in
+		-v)
+			echo ""
+			echo $ProgVer
+			echo ""
+			;;
 		-1)
 			updateModList
 			;;
