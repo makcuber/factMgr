@@ -469,14 +469,14 @@ function updateModList {
 		if [[ $(wget $modlistURL -O-) ]] 2>/dev/null; then
 			echo "SUCCESS"
 
-			if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			if [ -e "$modlistPath/$modlistName.$modlistEXT" ]; then
 				echo "Creating backup of old modlist data..."
 				NOW=date +%Y%m%d%H%M%S
-				mv $modlistPath/$modlistName.$modlistEXT $modlistPath/$modlistName-$NOW.$modlistEXT
+				mv "$modlistPath/$modlistName.$modlistEXT" "$modlistPath/$modlistName-$NOW.$modlistEXT"
 			fi
 
 			echo -n "Downloading modlist data..."
-			wget $modlistURL -output-document $modlistPath/$modlistName.$modlistEXT -a $downloadLogFile
+			wget $modlistURL --output-document "$modlistPath/$modlistName.$modlistEXT" -a $downloadLogFile
 			if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
 				echo "SUCCESS"
 			else
