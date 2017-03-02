@@ -40,7 +40,8 @@ urlDEF=https://www.factorio.com/get-download
 urlTailDEF=headless/$downloadFileDEF
 modlistEXTDEF=json
 modlistNameDEF=modlist
-modlistURLDEF=https://mods.factorio.com/api/mods
+modlistSizeDEF=2000
+modlistURLDEF=https://mods.factorio.com/api/mods?page_size=$modlistSizeDEF
 
 #Directories
 baseDir=$RunPathDEF
