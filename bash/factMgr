@@ -558,9 +558,26 @@ function ImportMod {
 	fi
 	echo ""
 }
-function GetMod {
+function GetModInfo {
 	echo ""
-	echo "Function not yet implemented, sorry :/"
+	if [ -d $modlistPath ]; then
+		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			i=0
+			while [ $i -lt $(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT") ]
+			do
+				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
+				if [ "$result" == "$2" ]; then
+					jq -r ".results[$i]" "$modlistPath/$modlistName.$modlistEXT"
+				else
+					let i=i+1
+				fi
+			done
+		else
+			echo "Modlist does not appear to exist, attempting to download..."
+		fi
+	else
+		echo "Modlist configuration directory not found, $progName may not be installed"
+	fi
 	echo ""
 }
 
@@ -750,8 +767,8 @@ function devCMDs {
 		-ms)
 			ModPortalStats $2
 			;;
-		-mg)
-			ModPortalGetMod $2 $3
+		-mi)
+			GetModInfo $2 $3
 			;;
 		-mc)
 			ModPortalCount
