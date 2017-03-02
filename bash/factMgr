@@ -491,6 +491,19 @@ function updateModList {
 	fi
 	echo ""
 }
+function ModPortalGetMod {
+	echo ""
+	if [ -d $modlistPath ]; then
+		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			jq -r ".results[$1].$2" "$modlistPath/$modlistName.$modlistEXT"
+		else
+			echo "Modlist does not appear to exist, attempting to download..."
+		fi
+	else
+		echo "Modlist configuration directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
 function ModPortalStats {
 	echo ""
 	if [ -d $modlistPath ]; then
@@ -731,7 +744,7 @@ function devCMDs {
 	case $1 in
 		-v)
 			echo ""
-			echo $ProgVer
+			echo "$progName version: $ProgVer"
 			echo ""
 			;;
 		-ms)
