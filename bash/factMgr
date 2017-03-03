@@ -582,12 +582,12 @@ function GetModInfo {
 					shift="$shift\b"
 					let j=$j+1
 				done
-				echo -en "\b"
+				echo -en "shift"
 
 				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
 				if [ "$result" == "$2" ]; then
 					echo ""
-					echo ${#i}
+					echo $shift
 					#show only key info
 					echo ""
 					echo "===================================="
