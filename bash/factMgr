@@ -570,7 +570,17 @@ function GetModInfo {
 			ModPortalCount
 			while [ $i -lt $i_max ]
 			do
-				echo -n "Mods searched: $i"
+				echo -n "Mods searched: "
+				echo $i
+				shift="\""
+				j=0
+				while [ $j -lt ${#i} ]
+				do
+					let shift="$shift\b"
+				done
+				let shift=$shift"\""
+				echo -en $shift
+
 				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
 				if [ "$result" == "$2" ]; then
 					#show only key info
