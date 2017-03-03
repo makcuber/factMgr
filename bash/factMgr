@@ -577,7 +577,8 @@ function GetModInfo {
 			do
 				echo -n $i
 				j=0
-				while [ $j -lt ${#i} ]
+				j_max=${#i}
+				while [ $j -lt $j_max ]
 				do
 					shift="$shift\b"
 					let j=$j+1
@@ -588,6 +589,7 @@ function GetModInfo {
 				if [ "$result" == "$2" ]; then
 					echo ""
 					echo $shift
+					echo $j_max
 					#show only key info
 					echo ""
 					echo "===================================="
