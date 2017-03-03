@@ -564,12 +564,45 @@ function GetModInfo {
 	if [ -d $modlistPath ]; then
 		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
 			i=0
+			#sort by first letter to speed up search
+			#use $query:0:1 to get first letter
 			i_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
+			ModPortalCount
 			while [ $i -lt $i_max ]
 			do
+				echo -n "Mods searched: $i"
 				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
 				if [ "$result" == "$2" ]; then
-					jq -r ".results[$i]" "$modlistPath/$modlistName.$modlistEXT"
+					#show only key info
+					echo ""
+					echo -n "Name: "
+					jq -r ".results[$i].latest_release.info_json.name" "$modlistPath/$modlistName.$modlistEXT"
+					echo -n "Author: "
+					jq -r ".results[$i].latest_release.info_json.author" "$modlistPath/$modlistName.$modlistEXT"
+					echo -n "Description: "
+					jq -r ".results[$i].latest_release.info_json.description" "$modlistPath/$modlistName.$modlistEXT"
+
+					echo ""
+					echo -n "Target Factorio Version: "
+					jq -r ".results[$i].latest_release.info_json.factorio_version" "$modlistPath/$modlistName.$modlistEXT"
+					echo -n "Current Mod Version: "
+					jq -r ".results[$i].latest_release.info_json.version" "$modlistPath/$modlistName.$modlistEXT"
+					echo -n "Current Mod Version Downloads: "
+					jq -r ".results[$i].latest_release.downloads_count" "$modlistPath/$modlistName.$modlistEXT"
+					echo -n "Lifetime Mod Downloads: "
+					jq -r ".results[$i].downloads_count" "$modlistPath/$modlistName.$modlistEXT"
+
+					echo ""
+					echo "Dependencies: "
+					k=0
+					k_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
+					while [ $k -lt $k_max ]
+					do
+						echo -n " - "
+						jq -r ".results[$i].latest_release.info_json.dependencies[$k]" "$modlistPath/$modlistName.$modlistEXT"
+					done
+
+					#jq -r ".results[$i]" "$modlistPath/$modlistName.$modlistEXT"
 					let i=$i_max
 				else
 					let i=i+1
