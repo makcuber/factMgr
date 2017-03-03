@@ -589,6 +589,7 @@ function GetModInfo {
 					j_max=1
 				fi
 				#backshift
+				let j_max=$j_max+1
 				while [ $j -lt $j_max ]
 				do
 					shift="$shift\b"
