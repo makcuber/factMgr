@@ -576,7 +576,7 @@ function GetModInfo {
 				j=0
 				while [ $j -lt ${#i} ]
 				do
-					let shift="$shift\b"
+					shift="$shift\b"
 				done
 				echo -en "\"$shift\""
 
