@@ -519,8 +519,7 @@ function ModPortalStats {
 	fi
 	echo ""
 }
-function ModPortalCount {
-	echo ""
+function ModPortalCountI {
 	if [ -d $modlistPath ]; then
 		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
 			echo -n "Number of mods availble on remote server: "
@@ -531,6 +530,10 @@ function ModPortalCount {
 	else
 		echo "Modlist configuration directory not found, $progName may not be installed"
 	fi
+}
+function ModPortalCount {
+	echo ""
+	ModPortalCountI
 	echo ""
 }
 function ListMods {
@@ -568,13 +571,12 @@ function GetModInfo {
 			#sort by first letter to speed up search
 			#use $query:0:1 to get first letter
 			i_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
-			ModPortalCount
+			ModPortalCountI
 			echo -n "Mods searched: "
 			while [ $i -lt $i_max ]
 			do
 				echo -n $i
 				j=0
-
 				while [ $j -lt ${#i} ]
 				do
 					shift="$shift\b"
@@ -584,8 +586,11 @@ function GetModInfo {
 
 				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
 				if [ "$result" == "$2" ]; then
-									echo ${#i}
+					echo ""
+					echo ${#i}
 					#show only key info
+					echo ""
+					echo "===================================="
 					echo ""
 					echo -n "Name: "
 					jq -r ".results[$i].latest_release.info_json.name" "$modlistPath/$modlistName.$modlistEXT"
@@ -615,6 +620,8 @@ function GetModInfo {
 						let k=$k+1
 					done
 
+					echo ""
+					echo "===================================="
 					#jq -r ".results[$i]" "$modlistPath/$modlistName.$modlistEXT"
 					let i=$i_max
 				else
