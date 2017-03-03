@@ -593,9 +593,10 @@ function GetModInfo {
 				while [ $j -lt $j_max ]
 				do
 					shift="$shift\b"
+					echo $shift
 					let j=$j+1
 				done
-				echo -en "$shift"
+				echo -en "\b"
 
 				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
 				if [ "$result" == "$2" ]; then
