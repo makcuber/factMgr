@@ -569,9 +569,9 @@ function GetModInfo {
 			#use $query:0:1 to get first letter
 			i_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
 			ModPortalCount
+			echo -n "Mods searched: "
 			while [ $i -lt $i_max ]
 			do
-				echo -n "Mods searched: "
 				echo $i
 				j=0
 				while [ $j -lt ${#i} ]
@@ -579,7 +579,7 @@ function GetModInfo {
 					shift="$shift\b"
 					let j=$j+1
 				done
-				echo -en "\b"
+				echo -en "$shift"
 
 				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
 				if [ "$result" == "$2" ]; then
@@ -610,6 +610,7 @@ function GetModInfo {
 					do
 						echo -n " - "
 						jq -r ".results[$i].latest_release.info_json.dependencies[$k]" "$modlistPath/$modlistName.$modlistEXT"
+						let k=$k+1
 					done
 
 					#jq -r ".results[$i]" "$modlistPath/$modlistName.$modlistEXT"
