@@ -576,17 +576,19 @@ function GetModInfo {
 			while [ $i -lt $i_max ]
 			do
 				echo -n $i
+
+				#determine size of number
 				j=0
 				if [ $i -gt 9 ]; then
 					j_max=2
-				else if [ $i -gt 99 ]; then
+				elif [ $i -gt 99 ]; then
 					j_max=3
-				else if [ $i -gt 999 ]; then
+				elif [ $i -gt 999 ]; then
 					j_max=4
 				else
 					j_max=1
 				fi
-
+				#backshift
 				while [ $j -lt $j_max ]
 				do
 					shift="$shift\b"
