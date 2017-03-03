@@ -577,7 +577,16 @@ function GetModInfo {
 			do
 				echo -n $i
 				j=0
-				j_max=${#i}
+				if [ $i -gt 9 ]; then
+					j_max=2
+				else if [ $i -gt 99 ]; then
+					j_max=3
+				else if [ $i -gt 999 ]; then
+					j_max=4
+				else
+					j_max=1
+				fi
+
 				while [ $j -lt $j_max ]
 				do
 					shift="$shift\b"
