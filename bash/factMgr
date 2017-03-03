@@ -572,7 +572,7 @@ function GetModInfo {
 			echo -n "Mods searched: "
 			while [ $i -lt $i_max ]
 			do
-				echo $i
+				echo -n $i
 				j=0
 				while [ $j -lt ${#i} ]
 				do
@@ -605,7 +605,7 @@ function GetModInfo {
 					echo ""
 					echo "Dependencies: "
 					k=0
-					k_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
+					k_max=$(jq -r ".results[$i].latest_release.info_json.dependencies | length" "$modlistPath/$modlistName.$modlistEXT")
 					while [ $k -lt $k_max ]
 					do
 						echo -n " - "
