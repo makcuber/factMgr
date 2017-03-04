@@ -572,37 +572,13 @@ function GetModInfo {
 			#use $query:0:1 to get first letter
 			i_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
 			ModPortalCountI
-			echo -n "Mods searched: "
+			echo -en "Mods searched: \033[s"
 			while [ $i -lt $i_max ]
 			do
-				echo -n $i
-
-				#determine size of number
-				j=0
-				if [ $i -gt 9 ]; then
-					j_max=2
-				elif [ $i -gt 99 ]; then
-					j_max=3
-				elif [ $i -gt 999 ]; then
-					j_max=4
-				else
-					j_max=1
-				fi
-				#backshift
-				let j_max=$j_max+1
-				while [ $j -lt $j_max ]
-				do
-					shift="$shift\b"
-					echo $shift
-					let j=$j+1
-				done
-				echo -en "\b"
+				echo -en "\033[u$i"
 
 				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
 				if [ "$result" == "$2" ]; then
-					echo ""
-					echo $shift
-					echo $j_max
 					#show only key info
 					echo ""
 					echo "===================================="
