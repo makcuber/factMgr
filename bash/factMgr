@@ -580,6 +580,7 @@ function ModPortalGetMod {
 				else
 					let i=i+1
 				fi
+			done
 		else
 			echo "Modlist does not appear to exist, attempting to download..."
 		fi
