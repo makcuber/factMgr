@@ -11,6 +11,7 @@
 #UD: 4/2/2/2017
 #UD: 4/2/3/2017
 #UD: 5/3/3/2017
+#UD: 6/11/3/2017
 
 #VARIABLES
 execPath="$0"
@@ -572,7 +573,7 @@ function ModPortalGetMod {
 				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
 				if [ "$result" == "$2" ]; then
 					#show only key info
-					modDownload_url=$(jq -r ".results[$i].download_url" "$modlistPath/$modlistName.$modlistEXT")
+					modDownload_url=$(jq -r ".results[$i].latest_release.download_url" "$modlistPath/$modlistName.$modlistEXT")
 					echo ""
 					echo ""
 					echo $modDownload_url
