@@ -531,8 +531,9 @@ function downloadMod {
 		fi
 	else
 		echo "FAILED"
+		echo ""
 		echo "The mod \"$4\"does not appear to exist at the given URL:"
-		echo "modAPIDomain$1"
+		echo "$modAPIDomain$1"
 	fi
 }
 function downloadModWrapper {
@@ -589,7 +590,7 @@ function getModURL {
 					echo "Download URL = $modAPIDomain$modDownload_url"
 					echo "File Name = $fileName"
 					echo ""
-					echo "Proceed with download? (y/n): "
+					echo -n "Proceed with download? (y/n): "
 					read select
 					if [ "$select" == "y" ]; then
 						downloadModWrapper $modDownload_url $modName $fileName "$modTitle"
