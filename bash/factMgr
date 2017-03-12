@@ -520,7 +520,7 @@ function getModList {
 function downloadMod {
 	#download the target mod from the remote server if the URL checks out
 	echo -n "Connecting to remote mods database..."
-	if [[ $(wget modAPIDomain$1 -O-) ]] 2>/dev/null; then
+	if [[ $(wget $modAPIDomain$1 -O-) ]] 2>/dev/null; then
 		echo "SUCCESS"
 		echo -n "Downloading mod..."
 		wget modAPIDomain$1 --output-document "$modsDIR/$2/$3" -a $downloadLogFile
@@ -532,7 +532,7 @@ function downloadMod {
 	else
 		echo "FAILED"
 		echo ""
-		echo "The mod \"$4\"does not appear to exist at the given URL:"
+		echo "The mod \"$4\" does not appear to exist at the given URL:"
 		echo "$modAPIDomain$1"
 	fi
 }
@@ -556,7 +556,6 @@ function downloadModWrapper {
 			fi
 		fi
 	fi
-	echo ""
 }
 function getModURL {
 	#search modlist for given mod, retrive info and download if found and prompted
