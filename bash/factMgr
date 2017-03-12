@@ -555,6 +555,8 @@ function downloadModWrapper {
 				echo "FAILED"
 			fi
 		fi
+	else
+		echo "Mods directory not found, $progName may not be installed"
 	fi
 }
 function getModURL {
@@ -712,23 +714,46 @@ function ListMods {
 	echo ""
 }
 function ImportMod {
+	#extract mod name from path
+	xbase=${1##*/}
+	modName=${xbase%.*}
+	echo -n "Importing mod \"$modName\"..."
+	(cp $1 $modDIR/$modName)>NULL
+	if [ -e $modDIR/$modName/$xbase]; then
+		echo "SUCCESS"
+	else
+		echo "FAILED"
+	fi
+}
+function ImportModWrapper {
 	echo ""
 	if [ "$1" == "" ]; then
 		echo "No path provided"
-	elif [ "$2" == "" ]; then
-		echo "No mod name provided"
 	else
 		if [ -e "$1" ]; then
-			if [ -d $modDIR ]; then
-				if [ -d $modDIR/$2 ]; then
-					echo -n "Importing mod..."
-					(cp $1 $modDIR/$2)>NULL
-
+			if [ -d "$1" ]; then
+				if [ -d $modDIR ]; then
+					#extract mod name from path
+					xbase=${1##*/}
+					modName=${xbase%.*}
+					if [ -d $modDIR/$modName ]; then
+						ImportMod "$1"
+					else
+						echo "No mod folder found for mod \"$modName\""
+						echo -n "Creating mod folder..."
+						(mkdir "$modsDIR/$modName")>NULL
+						if [ -d "$modsDIR/$modName" ]; then
+							echo "SUCCESS"
+							ImportMod "$1"
+						else
+							echo "FAILED"
+						fi
+					fi
 				else
-
+					echo "Mods directory not found, $progName may not be installed"
 				fi
 			else
-				echo
+				echo "Invalid file format, provided file is a directory"
 			fi
 		fi
 	fi
