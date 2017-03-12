@@ -531,7 +531,7 @@ function downloadMod {
 		fi
 	else
 		echo "FAILED"
-		echo "The mod \"$2\"does not appear to exist at the given URL:"
+		echo "The mod \"$4\"does not appear to exist at the given URL:"
 		echo "modAPIDomain$1"
 	fi
 }
@@ -541,15 +541,15 @@ function downloadModWrapper {
 	echo ""
 	if [ -d $modsDIR ]; then
 		if [ -d $modsDIR/$2 ]; then
-			echo "Existing mod folder found for mod \"$2\""
-			downloadMod $1 $2 $3
+			echo "Existing mod folder found for mod \"$4\""
+			downloadMod $1 $2 $3 "$4"
 		else
-			echo "No mod folder found for mod \"$2\""
+			echo "No mod folder found for mod \"$4\""
 			echo -n "Creating mod folder..."
 			mkdir $modsDIR/$2
 			if [ -d $modsDIR/$2 ]; then
 				echo "SUCCESS"
-				downloadMod $1 $2 $3
+				downloadMod $1 $2 $3 "$4"
 			else
 				echo "FAILED"
 			fi
@@ -578,11 +578,13 @@ function getModURL {
 					#show only key info
 					modDownload_url=$(jq -r ".results[$i].latest_release.download_url" "$modlistPath/$modlistName.$modlistEXT")
 					fileName=$(jq -r ".results[$i].latest_release.file_name" "$modlistPath/$modlistName.$modlistEXT")
-					modName=$(jq -r ".results[$i].latest_release.name" "$modlistPath/$modlistName.$modlistEXT")
+					modName=$(jq -r ".results[$i].name" "$modlistPath/$modlistName.$modlistEXT")
+					modTitle=$(jq -r ".results[$i].title" "$modlistPath/$modlistName.$modlistEXT")
 					echo ""
 					echo ""
 					echo "Mod matching condition \"$1\" = \"$2\" found:"
 					echo "---------------------------------------------"
+					echo "Mod Title = $modTitle"
 					echo "Mod Name = $modName"
 					echo "Download URL = $modAPIDomain$modDownload_url"
 					echo "File Name = $fileName"
@@ -590,7 +592,7 @@ function getModURL {
 					echo "Proceed with download? (y/n): "
 					read select
 					if [ "$select" == "y" ]; then
-						downloadModWrapper $modDownload_url $modName $fileName
+						downloadModWrapper $modDownload_url $modName $fileName "$modTitle"
 					fi
 					let i=$i_max
 				else
@@ -610,7 +612,7 @@ function ModPortalDownloadMod {
 	echo ""
 	if [ -d $modlistPath ]; then
 		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
-			getModURL
+			getModURL $1 $2
 		else
 			echo "Modlist does not appear to exist, attempting to download..."
 			updateModList
