@@ -547,7 +547,7 @@ function downloadModWrapper {
 		else
 			echo "No mod folder found for mod \"$4\""
 			echo -n "Creating mod folder..."
-			mkdir $modsDIR/$2
+			(mkdir $modsDIR/$2)>NULL
 			if [ -d $modsDIR/$2 ]; then
 				echo "SUCCESS"
 				downloadMod $1 $2 $3 "$4"
@@ -574,27 +574,29 @@ function getModURL {
 				echo -en "\033[u$i"
 
 				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
-				if [ "$result" == "$2" ]; then
-					#show only key info
-					modDownload_url=$(jq -r ".results[$i].latest_release.download_url" "$modlistPath/$modlistName.$modlistEXT")
-					fileName=$(jq -r ".results[$i].latest_release.file_name" "$modlistPath/$modlistName.$modlistEXT")
-					modName=$(jq -r ".results[$i].name" "$modlistPath/$modlistName.$modlistEXT")
-					modTitle=$(jq -r ".results[$i].title" "$modlistPath/$modlistName.$modlistEXT")
-					echo ""
-					echo ""
-					echo "Mod matching condition \"$1\" = \"$2\" found:"
-					echo "---------------------------------------------"
-					echo "Mod Title = $modTitle"
-					echo "Mod Name = $modName"
-					echo "Download URL = $modAPIDomain$modDownload_url"
-					echo "File Name = $fileName"
-					echo ""
-					echo -n "Proceed with download? (y/n): "
-					read select
-					if [ "$select" == "y" ]; then
-						downloadModWrapper $modDownload_url $modName $fileName "$modTitle"
+				if [ "$result:0:1" == "$2:0:1" ]; then
+					if [ "$result" == "$2" ]; then
+						#show only key info
+						modDownload_url=$(jq -r ".results[$i].latest_release.download_url" "$modlistPath/$modlistName.$modlistEXT")
+						fileName=$(jq -r ".results[$i].latest_release.file_name" "$modlistPath/$modlistName.$modlistEXT")
+						modName=$(jq -r ".results[$i].name" "$modlistPath/$modlistName.$modlistEXT")
+						modTitle=$(jq -r ".results[$i].title" "$modlistPath/$modlistName.$modlistEXT")
+						echo ""
+						echo ""
+						echo "Mod matching condition \"$1\" = \"$2\" found:"
+						echo "---------------------------------------------"
+						echo "Mod Title = $modTitle"
+						echo "Mod Name = $modName"
+						echo "Download URL = $modAPIDomain$modDownload_url"
+						echo "File Name = $fileName"
+						echo ""
+						echo -n "Proceed with download? (y/n): "
+						read select
+						if [ "$select" == "y" ]; then
+							downloadModWrapper $modDownload_url $modName $fileName "$modTitle"
+						fi
+						let i=$i_max
 					fi
-					let i=$i_max
 				else
 					let i=i+1
 				fi
@@ -612,12 +614,12 @@ function ModPortalDownloadMod {
 	echo ""
 	if [ -d $modlistPath ]; then
 		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
-			getModURL $1 $2
+			getModURL $1 "$2"
 		else
 			echo "Modlist does not appear to exist, attempting to download..."
 			updateModList
 			if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
-				getModURL $1 $2
+				getModURL $1 "$2"
 			else
 				echo "Failed to update Modlist"
 			fi
@@ -713,9 +715,21 @@ function ImportMod {
 	echo ""
 	if [ "$1" == "" ]; then
 		echo "No path provided"
+	elif [ "$2" == "" ]; then
+		echo "No mod name provided"
 	else
 		if [ -e "$1" ]; then
-			cp $1
+			if [ -d $modDIR ]; then
+				if [ -d $modDIR/$2 ]; then
+					echo -n "Importing mod..."
+					(cp $1 $modDIR/$2)>NULL
+
+				else
+
+				fi
+			else
+				echo
+			fi
 		fi
 	fi
 	echo ""
@@ -736,44 +750,46 @@ function GetModInfo {
 				echo -en "\033[u$i"
 
 				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
-				if [ "$result" == "$2" ]; then
-					#show only key info
-					echo ""
-					echo ""
-					echo "===================================="
-					echo ""
-					echo -n "Name: "
-					jq -r ".results[$i].latest_release.info_json.name" "$modlistPath/$modlistName.$modlistEXT"
-					echo -n "Author: "
-					jq -r ".results[$i].latest_release.info_json.author" "$modlistPath/$modlistName.$modlistEXT"
-					echo -n "Description: "
-					jq -r ".results[$i].latest_release.info_json.description" "$modlistPath/$modlistName.$modlistEXT"
+				if [ "$result:0:1" == "$2:0:1" ]; then
+					if [ "$result" == "$2" ]; then
+						#show only key info
+						echo ""
+						echo ""
+						echo "===================================="
+						echo ""
+						echo -n "Name: "
+						jq -r ".results[$i].latest_release.info_json.name" "$modlistPath/$modlistName.$modlistEXT"
+						echo -n "Author: "
+						jq -r ".results[$i].latest_release.info_json.author" "$modlistPath/$modlistName.$modlistEXT"
+						echo -n "Description: "
+						jq -r ".results[$i].latest_release.info_json.description" "$modlistPath/$modlistName.$modlistEXT"
 
-					echo ""
-					echo -n "Target Factorio Version: "
-					jq -r ".results[$i].latest_release.info_json.factorio_version" "$modlistPath/$modlistName.$modlistEXT"
-					echo -n "Current Mod Version: "
-					jq -r ".results[$i].latest_release.info_json.version" "$modlistPath/$modlistName.$modlistEXT"
-					echo -n "Current Mod Version Downloads: "
-					jq -r ".results[$i].latest_release.downloads_count" "$modlistPath/$modlistName.$modlistEXT"
-					echo -n "Lifetime Mod Downloads: "
-					jq -r ".results[$i].downloads_count" "$modlistPath/$modlistName.$modlistEXT"
+						echo ""
+						echo -n "Target Factorio Version: "
+						jq -r ".results[$i].latest_release.info_json.factorio_version" "$modlistPath/$modlistName.$modlistEXT"
+						echo -n "Current Mod Version: "
+						jq -r ".results[$i].latest_release.info_json.version" "$modlistPath/$modlistName.$modlistEXT"
+						echo -n "Current Mod Version Downloads: "
+						jq -r ".results[$i].latest_release.downloads_count" "$modlistPath/$modlistName.$modlistEXT"
+						echo -n "Lifetime Mod Downloads: "
+						jq -r ".results[$i].downloads_count" "$modlistPath/$modlistName.$modlistEXT"
 
-					echo ""
-					echo "Dependencies: "
-					k=0
-					k_max=$(jq -r ".results[$i].latest_release.info_json.dependencies | length" "$modlistPath/$modlistName.$modlistEXT")
-					while [ $k -lt $k_max ]
-					do
-						echo -n " - "
-						jq -r ".results[$i].latest_release.info_json.dependencies[$k]" "$modlistPath/$modlistName.$modlistEXT"
-						let k=$k+1
-					done
+						echo ""
+						echo "Dependencies: "
+						k=0
+						k_max=$(jq -r ".results[$i].latest_release.info_json.dependencies | length" "$modlistPath/$modlistName.$modlistEXT")
+						while [ $k -lt $k_max ]
+						do
+							echo -n " - "
+							jq -r ".results[$i].latest_release.info_json.dependencies[$k]" "$modlistPath/$modlistName.$modlistEXT"
+							let k=$k+1
+						done
 
-					echo ""
-					echo "===================================="
-					#jq -r ".results[$i]" "$modlistPath/$modlistName.$modlistEXT"
-					let i=$i_max
+						echo ""
+						echo "===================================="
+						#jq -r ".results[$i]" "$modlistPath/$modlistName.$modlistEXT"
+						let i=$i_max
+					fi
 				else
 					let i=i+1
 				fi
