@@ -12,12 +12,13 @@
 #UD: 4/2/3/2017
 #UD: 5/3/3/2017
 #UD: 6/11/3/2017
+#UD: 6/22/4/2017
 
 #VARIABLES
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.5"
+ProgVer="0.0.6"
 
 #defaults
 progName=factMgr
@@ -33,7 +34,7 @@ saveExtDEF="zip"
 editorDEF="nano"
 tarNameDEF="factorio"
 downloadLogFileDEF="$baseDIR/download.log"
-VER_LATEST_DEF=0.14.10
+VER_LATEST_DEF=0.14.22
 
 runFileDEF=/bin/x64/factorio
 downloadFileDEF=linux64
@@ -46,11 +47,14 @@ modlistSizeDEF=2000
 modAPIDomainDEF=https://mods.factorio.com
 modlistURLDEF=$modAPIDomainDEF/api/mods?page_size=$modlistSizeDEF
 
+verMaxDEF=35
+
 #Directories
 baseDir=$RunPathDEF
 versionsDIR=$baseDir/versions
 mapsDIR=$baseDir/maps
 modsDIR=$baseDir/mods
+modPackDIR=$baseDir/modpacks
 savesDIR=$baseDir/saves
 
 #commands
@@ -159,6 +163,7 @@ function init {
 	versionsDIR=$baseDir/versions
 	mapsDIR=$baseDir/maps
 	modsDIR=$baseDir/mods
+	modPackDIR=$baseDir/modpacks
 	savesDIR=$baseDir/saves
 	VER_LATEST=$VER_LATEST_DEF
 
@@ -177,6 +182,8 @@ function init {
 	modlistPath=$modlistPathDEF
 	modlistEXT=$modlistEXTDEF
 	modlistName=$modlistNameDEF
+
+	verMax=$verMaxDEF
 }
 function writeConf {
 	touch "$configFile"
@@ -463,6 +470,9 @@ function parseModsCMDS {
 			;;
 		-i)
 			ImportMod $2
+			;;
+		-p)
+			parseModPackCMDS $2 $3
 			;;
 		*)
 			ListMods $2
@@ -828,10 +838,174 @@ function GetModInfo {
 	echo ""
 }
 
-#Versions
-function determineLatestVersion {
-	VER_LATEST=0.14.22
+#modPacks
+function parseModPackCMDS {
+	case $1 in
+		-c)
+			createModPack $2
+			;;
+		-d)
+			deleteModPack $2
+			;;
+		-a)
+			addModToModPack $2
+			;;
+		-r)
+			removeModFromModPack $2
+			;;
+		-i)
+			infoModPack $2
+			;;
+		*)
+			ListModPacks $2
+			;;
+	esac
 }
+function createModPack {
+	echo ""
+	if [ -d $modPackDIR ] then
+		if [ -d "$modPackDIR/$1" ] then
+			echo "A Mod Pack by the name \"$1\" already exists"
+		else
+			echo -n "Creating Mod Pack \"$1\"..."
+			mkdir "$modPackDIR/$1"
+			if [ -d "$modPackDIR/$1" ] then
+				echo "SUCCESS"
+			else
+				echo "FAILED"
+			fi
+		fi
+	else
+		echo "Mod Pack directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function deleteModPack {
+	echo ""
+	if [ -d $modPackDIR ] then
+		if [ -d "$modPackDIR/$1" ] then
+			echo -n "Are you sure you want to delete the Mod Pack \"$1\"? (Y/n): "
+			read select
+
+			if [ select == "Y" ] then
+				echo -n "Deleting Mod Pack \"$1\"..."
+				rm -r "$modPackDIR/$1"
+				if [ -d "$modPackDIR/$1" ] then
+					echo "SUCCESS"
+				else
+					echo "FAILED"
+				fi
+			fi
+		else
+			echo "No Mod Pack by the name \"$1\" exists"
+		fi
+	else
+		echo "Mod Pack directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function addModToModPack {
+	echo ""
+	if [ -d $modPackDIR ] then
+		if [ -d "$modPackDIR/$1" ] then
+			echo "A Mod Pack by the name \"$1\" already exists"
+		else
+			if [ -e "$modPackDIR/$1/$2.zip" ] then
+				echo "A Mod by the name \"$2\" already exists in the Mod Pack \"$1\""
+			else
+				if [ -e "$modsDIR/$2.zip" ] then
+					echo "Are you sure you want to add the Mod $2"
+					echo -n "to the Mod Pack \"$1\"? (y/n): "
+					read select
+
+					if [ select == "y" ] then
+						echo -n "Adding Mod \"$2\" to Mod Pack \"$1\"..."
+						cp "$modsDIR/$2.zip" "$modPackDIR/$1/"
+						if [ -e "$modPackDIR/$1/$2" ] then
+							echo "SUCCESS"
+						else
+							echo "FAILED"
+						fi
+					fi
+				else
+					echo "No Mod by the name \"$2\" exists on the local system"
+				fi
+			fi
+		fi
+	else
+		echo "Mod Pack directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function removeModFromModPack {
+	echo ""
+	if [ -d $modPackDIR ] then
+		if [ -d "$modPackDIR/$1" ] then
+			if [ -e "$modPackDIR/$1/$2" ] then
+				echo "Are you sure you want to remove the Mod $2"
+				echo -n "from the Mod Pack \"$1\"? (Y/n): "
+				read select
+
+				if [ select == "Y" ] then
+					echo -n "Removing Mod \"$2\" from Mod Pack \"$1\"..."
+					rm -r "$modPackDIR/$1/$2"
+					if [ -e "$modPackDIR/$1/$2" ] then
+						echo "SUCCESS"
+					else
+						echo "FAILED"
+					fi
+				fi
+			else
+				echo "No Mod by the name \"$2\" exists in the Mod Pack \"$1\""
+			fi
+		else
+			echo "No Mod Pack by the name \"$1\" exists"
+		fi
+	else
+		echo "Mod Pack directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function infoModPack {
+	echo ""
+	if [ -d $modPackDIR ] then
+		if [ -d "$modPackDIR/$1" ] then
+			echo "Name: $1"
+			k=0
+			for i in $(echo $(ls "$modPackDIR/$1") | sed "s/,/ /g")
+			do
+					let k=k+1
+			done
+			echo "# of Mods: $k"
+			echo ""
+			echo "List of included Mods:"
+			for i in $(echo $(ls "$modPackDIR/$1") | sed "s/,/ /g")
+			do
+					echo " - $i"
+			done
+		else
+			echo "No Mod Pack by the name \"$1\" exists"
+		fi
+	else
+		echo "Mod Pack directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function ListModPacks {
+	echo ""
+	if [ -d $modPackDIR ] then
+		echo "Existing Mod Packs:"
+		for i in $(echo $(ls $modPackDIR) | sed "s/,/ /g")
+		do
+				echo " - $i"
+		done
+	else
+		echo "Mod Pack directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+
+#Versions
 function parseVersionsCMDS {
 	case $1 in
 		-u)
@@ -839,6 +1013,9 @@ function parseVersionsCMDS {
 			;;
 		-d)
 			getVersion $2
+			;;
+		-r)
+			listRemoteVersionWrapper $2
 			;;
 		*)
 			ListVersions $2
@@ -864,10 +1041,42 @@ function ListVersions {
 	fi
 	echo ""
 }
+function determineLatestVersion {
+	VER_LATEST=0.14.22
+}
 function getLatestVersion {
 	echo ""
 	echo "Checking for latest version..."
 	echo ""
+}
+function listRemoteVersionWrapper {
+	echo ""
+	echo "Versions available on remote server: "
+
+	if [ -z $1 ] then
+		listRemoteVersion $1
+	else
+		k=11
+		while [ $k -lt $verMax ]
+		do
+			let k=k+1
+			listRemoteVersion $k
+		done
+	fi
+
+	echo ""
+}
+function listRemoteVersion {
+	i=0
+	while [ $i -lt $verMax ]
+	do
+		let i=i+1
+		VER=0.$1.$i
+		URL=$URL/$VER/$urlTail
+		if [[ $(wget $URL -O-) ]] 2>/dev/null; then
+			echo " - $VER"
+		fi
+	done
 }
 function logfileCheck {
 	if [ -e $downloadLogFile ]; then
@@ -1068,6 +1277,9 @@ else
 			;;
 		-m)
 			parseModsCMDS $2 $3 $4
+			;;
+		-mp)
+			parseModPackCMDS $2 $3
 			;;
 		-v)
 			parseVersionsCMDS $2 $3 $4
