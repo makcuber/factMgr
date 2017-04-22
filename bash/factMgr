@@ -258,7 +258,7 @@ function installFileStructure {
 	buildVerifyFolder $RunPath versions
 	buildVerifyFolder $RunPath saves
 	buildVerifyFolder $RunPath mods
-	buildVerifyFolder $RunPath modPacks
+	buildVerifyFolder $RunPath modpacks
 }
 function buildVerifyFolder {
 	echo -n "	$2 folder..."
@@ -887,7 +887,7 @@ function deleteModPack {
 			echo -n "Are you sure you want to delete the Mod Pack \"$1\"? (Y/n): "
 			read select
 
-			if [ select == "Y" ]; then
+			if [ $select == "Y" ]; then
 				echo -n "Deleting Mod Pack \"$1\"..."
 				rm -r "$modPackDIR/$1"
 				if [ -d "$modPackDIR/$1" ]; then
@@ -908,8 +908,6 @@ function addModToModPack {
 	echo ""
 	if [ -d $modPackDIR ]; then
 		if [ -d "$modPackDIR/$1" ]; then
-			echo "A Mod Pack by the name \"$1\" already exists"
-		else
 			if [ -e "$modPackDIR/$1/$2.zip" ]; then
 				echo "A Mod by the name \"$2\" already exists in the Mod Pack \"$1\""
 			else
@@ -918,7 +916,7 @@ function addModToModPack {
 					echo -n "to the Mod Pack \"$1\"? (y/n): "
 					read select
 
-					if [ select == "y" ]; then
+					if [ $select == "y" ]; then
 						echo -n "Adding Mod \"$2\" to Mod Pack \"$1\"..."
 						cp "$modsDIR/$2.zip" "$modPackDIR/$1/"
 						if [ -e "$modPackDIR/$1/$2" ]; then
@@ -946,7 +944,7 @@ function removeModFromModPack {
 				echo -n "from the Mod Pack \"$1\"? (Y/n): "
 				read select
 
-				if [ select == "Y" ]; then
+				if [ $select == "Y" ]; then
 					echo -n "Removing Mod \"$2\" from Mod Pack \"$1\"..."
 					rm -r "$modPackDIR/$1/$2"
 					if [ -e "$modPackDIR/$1/$2" ]; then
@@ -977,12 +975,14 @@ function infoModPack {
 					let k=k+1
 			done
 			echo "# of Mods: $k"
-			echo ""
-			echo "List of included Mods:"
-			for i in $(echo $(ls "$modPackDIR/$1") | sed "s/,/ /g")
-			do
-					echo " - $i"
-			done
+			if [ $k -gt 1 ]; then
+				echo ""
+				echo "List of included Mods:"
+				for i in $(echo $(ls "$modPackDIR/$1") | sed "s/,/ /g")
+				do
+						echo " - $i"
+				done
+			fi
 		else
 			echo "No Mod Pack by the name \"$1\" exists"
 		fi
