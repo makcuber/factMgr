@@ -472,7 +472,7 @@ function parseModsCMDS {
 			ImportMod $2
 			;;
 		-p)
-			parseModPackCMDS $2 $3
+			parseModPackCMDS $2 $3 $4
 			;;
 		*)
 			ListMods $2
@@ -848,10 +848,10 @@ function parseModPackCMDS {
 			deleteModPack $2
 			;;
 		-a)
-			addModToModPack $2
+			addModToModPack $2 $3
 			;;
 		-r)
-			removeModFromModPack $2
+			removeModFromModPack $2 $3
 			;;
 		-i)
 			infoModPack $2
@@ -1276,10 +1276,10 @@ else
 			devCMDs $2 $3 $4
 			;;
 		-m)
-			parseModsCMDS $2 $3 $4
+			parseModsCMDS $2 $3 $4 $5
 			;;
 		-mp)
-			parseModPackCMDS $2 $3
+			parseModPackCMDS $2 $3 $4
 			;;
 		-v)
 			parseVersionsCMDS $2 $3 $4
