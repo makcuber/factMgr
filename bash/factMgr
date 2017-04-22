@@ -863,13 +863,13 @@ function parseModPackCMDS {
 }
 function createModPack {
 	echo ""
-	if [ -d $modPackDIR ] then
-		if [ -d "$modPackDIR/$1" ] then
+	if [ -d $modPackDIR ]; then
+		if [ -d "$modPackDIR/$1" ]; then
 			echo "A Mod Pack by the name \"$1\" already exists"
 		else
 			echo -n "Creating Mod Pack \"$1\"..."
 			mkdir "$modPackDIR/$1"
-			if [ -d "$modPackDIR/$1" ] then
+			if [ -d "$modPackDIR/$1" ]; then
 				echo "SUCCESS"
 			else
 				echo "FAILED"
@@ -882,15 +882,15 @@ function createModPack {
 }
 function deleteModPack {
 	echo ""
-	if [ -d $modPackDIR ] then
-		if [ -d "$modPackDIR/$1" ] then
+	if [ -d $modPackDIR ]; then
+		if [ -d "$modPackDIR/$1" ]; then
 			echo -n "Are you sure you want to delete the Mod Pack \"$1\"? (Y/n): "
 			read select
 
-			if [ select == "Y" ] then
+			if [ select == "Y" ]; then
 				echo -n "Deleting Mod Pack \"$1\"..."
 				rm -r "$modPackDIR/$1"
-				if [ -d "$modPackDIR/$1" ] then
+				if [ -d "$modPackDIR/$1" ]; then
 					echo "SUCCESS"
 				else
 					echo "FAILED"
@@ -906,22 +906,22 @@ function deleteModPack {
 }
 function addModToModPack {
 	echo ""
-	if [ -d $modPackDIR ] then
-		if [ -d "$modPackDIR/$1" ] then
+	if [ -d $modPackDIR ]; then
+		if [ -d "$modPackDIR/$1" ]; then
 			echo "A Mod Pack by the name \"$1\" already exists"
 		else
-			if [ -e "$modPackDIR/$1/$2.zip" ] then
+			if [ -e "$modPackDIR/$1/$2.zip" ]; then
 				echo "A Mod by the name \"$2\" already exists in the Mod Pack \"$1\""
 			else
-				if [ -e "$modsDIR/$2.zip" ] then
+				if [ -e "$modsDIR/$2.zip" ]; then
 					echo "Are you sure you want to add the Mod $2"
 					echo -n "to the Mod Pack \"$1\"? (y/n): "
 					read select
 
-					if [ select == "y" ] then
+					if [ select == "y" ]; then
 						echo -n "Adding Mod \"$2\" to Mod Pack \"$1\"..."
 						cp "$modsDIR/$2.zip" "$modPackDIR/$1/"
-						if [ -e "$modPackDIR/$1/$2" ] then
+						if [ -e "$modPackDIR/$1/$2" ]; then
 							echo "SUCCESS"
 						else
 							echo "FAILED"
@@ -939,17 +939,17 @@ function addModToModPack {
 }
 function removeModFromModPack {
 	echo ""
-	if [ -d $modPackDIR ] then
-		if [ -d "$modPackDIR/$1" ] then
-			if [ -e "$modPackDIR/$1/$2" ] then
+	if [ -d $modPackDIR ]; then
+		if [ -d "$modPackDIR/$1" ]; then
+			if [ -e "$modPackDIR/$1/$2" ]; then
 				echo "Are you sure you want to remove the Mod $2"
 				echo -n "from the Mod Pack \"$1\"? (Y/n): "
 				read select
 
-				if [ select == "Y" ] then
+				if [ select == "Y" ]; then
 					echo -n "Removing Mod \"$2\" from Mod Pack \"$1\"..."
 					rm -r "$modPackDIR/$1/$2"
-					if [ -e "$modPackDIR/$1/$2" ] then
+					if [ -e "$modPackDIR/$1/$2" ]; then
 						echo "SUCCESS"
 					else
 						echo "FAILED"
@@ -968,8 +968,8 @@ function removeModFromModPack {
 }
 function infoModPack {
 	echo ""
-	if [ -d $modPackDIR ] then
-		if [ -d "$modPackDIR/$1" ] then
+	if [ -d $modPackDIR ]; then
+		if [ -d "$modPackDIR/$1" ]; then
 			echo "Name: $1"
 			k=0
 			for i in $(echo $(ls "$modPackDIR/$1") | sed "s/,/ /g")
@@ -993,7 +993,7 @@ function infoModPack {
 }
 function ListModPacks {
 	echo ""
-	if [ -d $modPackDIR ] then
+	if [ -d $modPackDIR ]; then
 		echo "Existing Mod Packs:"
 		for i in $(echo $(ls $modPackDIR) | sed "s/,/ /g")
 		do
@@ -1053,7 +1053,7 @@ function listRemoteVersionWrapper {
 	echo ""
 	echo "Versions available on remote server: "
 
-	if [ -z $1 ] then
+	if [ -z $1 ]; then
 		listRemoteVersion $1
 	else
 		k=11
