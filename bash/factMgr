@@ -172,7 +172,7 @@ function init {
 	runFile=/bin/x64/factorio
 	downloadFILE=linux64
 	configFile=$configFileDEF
-	URL=$urlPrefixDEF
+	urlPrefix=$urlPrefixDEF
 	urlTail=$urlTailDEF
 	saveExt=$saveExtDEF
 	editor=$editorDEF
