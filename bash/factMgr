@@ -1193,10 +1193,11 @@ function Run {
 		if [ -z "$3" ]; then
 			MOD=""
 		else
-			MODPATH="$modsDIR/$3"
+			MODPATH="$modPackDIR/$3"
+			echo $modPackDIR
 			echo "$MODPATH"
 			if [ -d "$MODPATH" ]; then
-				if [ "$(ls -A /path/to/dir)" ]; then
+				if [ "$(ls -A $MODPATH)" ]; then
 				   MOD="$MODPATH"
 				else
 				   ERRORMSG="Specified Mod pack is empty"
@@ -1206,9 +1207,12 @@ function Run {
 			fi
 		fi
 		if [ -z "$ERRORMSG" ]; then
-			($versionsDIR/$VER/$runFile $startCMD $SAVE $setModCMD $MOD $AUTO &)>"$logPath"
+
 			echo "Factorio" $VER " started using map:" $SAVE
-			if ! [ "$MOD" = "" ]; then
+			if [ "$MOD" = "" ]; then
+				($versionsDIR/$VER/$runFile $startCMD $SAVE $AUTO &)>"$logPath"
+			else
+				($versionsDIR/$VER/$runFile $startCMD $SAVE $setModCMD $MOD $AUTO &)>"$logPath"
 				echo "Using Mod pack: $MOD"
 			fi
 			if ! [ "$AUTO" = "" ]; then
