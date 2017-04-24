@@ -410,6 +410,7 @@ function mapGenNameCheck {
 function MakeMap {
 	VER=$1
 	NAME=$2
+	echo $VER
 
 	echo ""
 	if [ -d $versionsDIR ]; then
@@ -1047,7 +1048,7 @@ function ListVersions {
 	echo ""
 }
 function determineLatestVersion {
-	VER_LATEST=0.14.22
+	VER_LATEST=0.15.0
 }
 function getLatestVersion {
 	echo ""
