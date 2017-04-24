@@ -13,6 +13,7 @@
 #UD: 5/3/3/2017
 #UD: 6/11/3/2017
 #UD: 6/22/4/2017
+#UD: 1/24/4/2017
 
 #VARIABLES
 execPath="$0"
@@ -39,7 +40,7 @@ VER_LATEST_DEF=0.14.22
 runFileDEF=/bin/x64/factorio
 downloadFileDEF=linux64
 
-urlDEF=https://www.factorio.com/get-download
+urlPrefixDEF=https://www.factorio.com/get-download
 urlTailDEF=headless/$downloadFileDEF
 modlistEXTDEF=json
 modlistNameDEF=modlist
@@ -104,7 +105,8 @@ function Syntax {
 	echo ""
 	echo "===Mods==="
 	echo "	-m 							Mods commands"
-	echo "	   -l 						   	   List mods & mod packs"
+	echo "	   -l 						   	   List local mods"
+	echo "	   -r 						   	   List remote mods"
 	echo "	   -g 		[ModName]			   	   Download a mod"
 	echo "	   -i 		[FilePath]			   	   Import a mod"
 	echo ""
@@ -170,7 +172,7 @@ function init {
 	runFile=/bin/x64/factorio
 	downloadFILE=linux64
 	configFile=$configFileDEF
-	URL=$urlDEF
+	URL=$urlPrefixDEF
 	urlTail=$urlTailDEF
 	saveExt=$saveExtDEF
 	editor=$editorDEF
@@ -473,6 +475,9 @@ function parseModsCMDS {
 			;;
 		-p)
 			parseModPackCMDS $2 $3 $4
+			;;
+		-info)
+			GetModInfo "name" "$3"
 			;;
 		*)
 			ListMods $2
@@ -1072,7 +1077,7 @@ function listRemoteVersion {
 	do
 		let i=i+1
 		VER=0.$1.$i
-		URL=$URL/$VER/$urlTail
+		URL=$urlPrefix/$VER/$urlTail
 		if [[ $(wget $URL -O-) ]] 2>/dev/null; then
 			echo " - $VER"
 		fi
@@ -1102,8 +1107,10 @@ function getVersion {
 			read select
 		else
 			if [ -d $versionsDIR ]; then
-				URL=$URL/$VER/$urlTail
+				URL=$urlPrefix/$VER/$urlTail
+				echo -n "Searching for verison $VER on remote system..."
 				if [[ $(wget $URL -O-) ]] 2>/dev/null; then
+					echo "SUCCESS"
 					echo -n "Downloading factorio headless server version $VER to local system..."
 					(echo "")>>$downloadLogFile
 					(echo "")>>$downloadLogFile
@@ -1115,7 +1122,7 @@ function getVersion {
 
 						echo -n "Unpacking headless server..."
 						(echo "")>>$downloadLogFile
-						(tar -xzf "$baseDIR/$VER.tar.gz" -C $versionsDIR)>>$downloadLogFile
+						(tar -xf "$baseDIR/$VER.tar.gz" -C $versionsDIR)>>$downloadLogFile
 						if [ -d "$versionsDIR/$tarName" ]; then
 							echo "SUCCESS"
 
@@ -1151,6 +1158,7 @@ function getVersion {
 						logfileCheck
 					fi
 				else
+					echo "FAILED"
 					echo "Version $VER of the factorio headless server is not available on the remote system"
 				fi
 			else
