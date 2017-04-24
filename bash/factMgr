@@ -1171,6 +1171,22 @@ function getVersion {
 }
 
 #run
+function parseVersionsCMDS {
+	case $1 in
+		-s)
+			Run $2 $3 $4 $5
+			;;
+		-k)
+			Kill $2
+			;;
+		*)
+			ListProfiles
+			;;
+	esac
+}
+function Kill {
+	screen -S $progName-$2 -X quit
+}
 function Run {
 	logPath="$baseDir/factMgr.log"
 	if ! [ -z "$4" ]; then
@@ -1194,8 +1210,8 @@ function Run {
 			MOD=""
 		else
 			MODPATH="$modPackDIR/$3"
-			echo $modPackDIR
-			echo "$MODPATH"
+			#echo $modPackDIR
+			#echo "$MODPATH"
 			if [ -d "$MODPATH" ]; then
 				if [ "$(ls -A $MODPATH)" ]; then
 				   MOD="$MODPATH"
@@ -1210,9 +1226,10 @@ function Run {
 
 			echo "Factorio" $VER " started using map:" $SAVE
 			if [ "$MOD" = "" ]; then
-				($versionsDIR/$VER/$runFile $startCMD $SAVE $AUTO &)>"$logPath"
+				exec screen -dm -S $progName-$SAVE ($versionsDIR/$VER/$runFile $startCMD $SAVE $AUTO &)>"$logPath" "$execPath"
+
 			else
-				($versionsDIR/$VER/$runFile $startCMD $SAVE $setModCMD $MOD $AUTO &)>"$logPath"
+				exec screen -dm -S $progName-$SAVE ($versionsDIR/$VER/$runFile $startCMD $SAVE $setModCMD $MOD $AUTO &)>"$logPath" "$execPath"
 				echo "Using Mod pack: $MOD"
 			fi
 			if ! [ "$AUTO" = "" ]; then
@@ -1298,7 +1315,7 @@ else
 			parseVersionsCMDS $2 $3 $4
 			;;
 		-r)
-			Run $2 $3 $4 $5
+			parseProfileCMDS $2 $3 $4 $5 $6
 			;;
 		-secret)
 			secret
