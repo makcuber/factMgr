@@ -410,14 +410,12 @@ function mapGenNameCheck {
 function MakeMap {
 	VER=$1
 	NAME=$2
-	echo $VER
+	#echo $VER
 
 	echo ""
 	if [ -d $versionsDIR ]; then
 		if [ -d $savesDIR ]; then
 			if [ "$VER" == "" ]; then
-				mapGenNameCheck $VER $NAME
-			else
 				echo "No Version specified"
 				echo ""
 				echo -n "Use latest version? (y/n): "
@@ -426,6 +424,8 @@ function MakeMap {
 					determineLatestVersion
 					mapGenNameCheck $VER_LATEST $NAME
 				fi
+			else
+				mapGenNameCheck $VER $NAME
 			fi
 		else
 			echo "Saves directory not found, $progName may not be installed"
