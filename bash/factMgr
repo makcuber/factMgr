@@ -95,9 +95,9 @@ function Syntax {
 	echo ""
 	echo "===Server Control==="
 	echo "	-r 							Server commands"
-	echo "	   -s		[MapName] [#.#.#] [ModPackName]			Start server"
-	echo "	   -k 						   	  Stop server"
-	echo "	   -c		[ProfileName]					Create a server profile"
+	echo "	   -s		[MapName] [#.#.#] [ModPackName]		   Start server"
+	echo "	   -k 						   	   Stop server"
+	echo "	   -c		[ProfileName]				   Create a server profile"
 	echo ""
 	echo "===Versions==="
 	echo "	-v 							Version commands"
@@ -349,7 +349,7 @@ function verifyRespond {
 }
 function Update {
 	UpdatePath=""
-	
+
 	if [ "$1" == "" ]; then
 		UpdatePath="$UpdatePathDEF"
 	else
