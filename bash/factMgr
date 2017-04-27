@@ -348,11 +348,12 @@ function verifyRespond {
 	fi
 }
 function Update {
-
-	if [ -z $1 ]; then
-		UpdatePath="$1"
-	else
+	UpdatePath=""
+	
+	if [ "$1" == "" ]; then
 		UpdatePath="$UpdatePathDEF"
+	else
+		UpdatePath="$1"
 	fi
 
 	echo ""
