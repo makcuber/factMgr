@@ -358,7 +358,7 @@ function Update {
 
 	echo ""
 	echo -n "Searching for update at path \"$UpdatePath\"..."
-	if [ -e "$1" ]; then
+	if [ -e "$UpdatePath" ]; then
 		echo "SUCCESS"
 
 		echo -n "Verifying update..."
