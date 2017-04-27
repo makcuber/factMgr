@@ -1246,7 +1246,7 @@ function startServer {
 	if [ screen -S $progName-$1 -Q select . ]; then
 		echo "A server by the name \"$1\" is already running"
 	else
-		screen -dm -S $progName-$1 ($2 &)>"$logPath" "$execPath"
+		screen -dm -S $progName-$1 "$2" "$execPath"
 	fi
 }
 function killServer {
