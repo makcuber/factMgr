@@ -22,8 +22,8 @@ OpSys=$(uname -rv)
 verboseOn="1"
 ProgVer="0.0.9"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
-VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
-
+#VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
+VerifyKeyRecive=dfsa
 #defaults
 progName=factMgr
 configSuffix=conf
