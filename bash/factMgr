@@ -89,6 +89,7 @@ function Syntax {
 	echo ""
 	echo "===Configuration==="
 	echo "	-install	[BinPath] [ConfigPath] [RunPath]	Install $progName"
+	echo "	-update	[UpdatePath]						Update $progName"
 	echo "	-uninstall						Uninstall $progName"
 	echo "	-config							Edit configuration file"
 	echo ""
@@ -169,7 +170,6 @@ function init {
 	BinPath="$BinPathDEF"
 	ConfigPath="$ConfigPathDEF"
 	RunPath="$RunPathDEF"
-	UpdatePath="$UpdatePathDEF"
 
 	baseDir=$RunPath
 	versionsDIR=$baseDir/versions
@@ -348,8 +348,15 @@ function verifyRespond {
 	fi
 }
 function Update {
+
+	if [ -z $1 ]; then
+		UpdatePath="$1"
+	else
+		UpdatePath="$UpdatePathDEF"
+	fi
+
 	echo ""
-	echo -n "Searching for update at path \"$1\"..."
+	echo -n "Searching for update at path \"$UpdatePath\"..."
 	if [ -e "$1" ]; then
 		echo "SUCCESS"
 
