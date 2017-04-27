@@ -375,8 +375,7 @@ function Update {
 
 			if [ $select == "y" ]; then
 				echo ""
-				nohup "$UpdatePath" -install &
-				disown
+				exec "$UpdatePath" -install
 			else
 				echo ""
 				echo "Update aborted"
