@@ -362,11 +362,11 @@ function Update {
 		echo "SUCCESS"
 
 		echo -n "Verifying update..."
-		if [ $("$1" -verify $VerifyKeySend) == "$VerifyKeyRecive" ]; then
+		if [ $("$UpdatePath" -verify $VerifyKeySend) == "$VerifyKeyRecive" ]; then
 			echo "SUCCESS"
 
 			#add version comparison here
-			updateVer=$("$1" -version)
+			updateVer=$("$UpdatePath" -version)
 
 			echo ""
 			echo "You currently have $progName version $ProgVer installed"
