@@ -1379,10 +1379,10 @@ else
 			progVersion
 			;;
 		-update)
-			Update $1
+			Update $2
 			;;
 		-verify)
-			verifyRespond $1
+			verifyRespond $2
 			;;
 		-uninstall)
 			Uninstall
