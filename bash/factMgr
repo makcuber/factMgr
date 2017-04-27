@@ -20,7 +20,7 @@
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.8"
+ProgVer="0.0.9"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 
@@ -375,8 +375,8 @@ function Update {
 
 			if [ $select == "y" ]; then
 				echo ""
-				nohup "$1" -install &
-				disown 
+				nohup "$UpdatePath" -install &
+				disown
 			else
 				echo ""
 				echo "Update aborted"
@@ -384,7 +384,7 @@ function Update {
 		else
 			echo "FAILED"
 			echo ""
-			echo "The specified file: $1"
+			echo "The specified file: $UpdatePath"
 			echo "does not appear to be a valid update for $progName"
 		fi
 	else
