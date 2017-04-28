@@ -1286,7 +1286,8 @@ function parseRunCMDS {
 function ListActiveServers {
 	echo ""
 	echo "Active Factorio Servers:"
-	for i in $(screen -list | grep $progName)
+
+	for i in $(echo $(ls -laR /var/run/screen/) | sed "s/,/ /g")
 	do
 			echo " - $i"
 	done
@@ -1328,6 +1329,7 @@ function killServer {
 			echo "FAILED"
 		fi
 	fi
+	echo ""
 }
 function Run {
 	logPath="$baseDir/factMgr.log"
