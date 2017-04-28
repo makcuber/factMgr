@@ -1291,7 +1291,7 @@ function startServer {
 	fi
 }
 function killServer {
-	if [ sscreen -S $progName-$1 -Q select . ; echo $? ]; then
+	if [ $(screen -S $progName-$1 -Q select . ; echo $?) ]; then
 		echo ""
 		echo "No server by the name $1 are currently running"
 		echo ""
@@ -1338,10 +1338,10 @@ function Run {
 
 			echo "Factorio" $VER " started using map:" $SAVE
 			if [ "$MOD" = "" ]; then
-				startServer $SAVE "$versionsDIR/$VER/$runFile $startCMD $SAVE $AUTO"
+				startServer $1 "$versionsDIR/$VER/$runFile $startCMD $SAVE $AUTO"
 
 			else
-				startServer $SAVE "$versionsDIR/$VER/$runFile $startCMD $SAVE $setModCMD $MOD $AUTO"
+				startServer $1 "$versionsDIR/$VER/$runFile $startCMD $SAVE $setModCMD $MOD $AUTO"
 				echo "Using Mod pack: $MOD"
 			fi
 			if ! [ "$AUTO" = "" ]; then
