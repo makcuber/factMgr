@@ -20,7 +20,7 @@
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.9"
+ProgVer="0.0.10"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 
@@ -1244,7 +1244,7 @@ function getVersion {
 }
 
 #run
-function parseVersionsCMDS {
+function parseRunCMDS {
 	case $1 in
 		-s)
 			Run $2 $3 $4 $5
@@ -1411,7 +1411,7 @@ else
 			parseVersionsCMDS $2 $3 $4
 			;;
 		-r)
-			parseProfileCMDS $2 $3 $4 $5 $6
+			parseRunCMDS $2 $3 $4 $5 $6
 			;;
 		-secret)
 			secret
