@@ -22,8 +22,8 @@ OpSys=$(uname -rv)
 verboseOn="1"
 ProgVer="0.0.9"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
-#VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
-VerifyKeyRecive=dfsa
+VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
+
 #defaults
 progName=factMgr
 configSuffix=conf
@@ -391,6 +391,7 @@ function Update {
 		echo ""
 		echo "The specified file does not exist"
 	fi
+	echo ""
 }
 
 #Saves
