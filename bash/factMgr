@@ -1284,19 +1284,19 @@ function parseRunCMDS {
 	esac
 }
 function startServer {
-	if [ screen -S $progName.$1 -Q select $execPath ]; then
+	if [ screen -S $progName-$1 -Q select . ; echo $? ]; then
 		echo "A server by the name \"$1\" is already running"
 	else
-		screen -dm -S $progName.$1 "$2" "$execPath"
+		screen -dm -S $progName-$1 "$2" "$execPath"
 	fi
 }
 function killServer {
-	if [ screen -S $progName.$1 -Q select . ]; then
+	if [ sscreen -S $progName-$1 -Q select . ; echo $? ]; then
 		echo ""
 		echo "No server by the name $1 are currently running"
 		echo ""
 	else
-		screen -S $progName.$1 -X quit
+		screen -S $progName-$1 -X quit
 	fi
 }
 function Run {
