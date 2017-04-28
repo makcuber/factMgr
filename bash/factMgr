@@ -1286,14 +1286,14 @@ function parseRunCMDS {
 function ListActiveServers {
 	echo ""
 	echo "Active Factorio Servers:"
-	for i in $(echo $(screen -list | grep $progName) | sed "s/,/ /g")
+	for i in $(screen -list | grep $progName)
 	do
 			echo " - $i"
 	done
 	echo ""
 }
 function startServer {
-	screen -S $progName-$1 -Q select .
+	(screen -S $progName-$1 -Q select . )>/dev/null
 	screenTest=$?
 
 	echo ""
@@ -1304,21 +1304,29 @@ function startServer {
 		echo "A server by the name \"$1\" is already running"
 	else
 		echo "SUCCESS"
-		echo ""
-		echo -n "Starting Factorio server $VER using map \"$1\""
-		screen -dm -S $progName-$1 "$2" "$execPath"
+		echo -n "Starting Factorio server $VER using map \"$1\"..."
+		screen -dm -S $progName-$1 "$2"
 	fi
 }
 function killServer {
-	screen -S $progName-$1 -Q select .
+	(screen -S $progName-$1 -Q select . )>/dev/null
 	screenTest=$?
 
+	echo ""
 	if [ $screenTest == "1" ]; then
-		echo ""
 		echo "No server by the name $1 are currently running"
-		echo ""
 	else
-		screen -S $progName-$1 -X quit
+		echo -n "Stopping server \"$1\"..."
+		(screen -S $progName-$1 -X quit )>/dev/null
+
+		(screen -S $progName-$1 -Q select . )>/dev/null
+		screenTest=$?
+
+		if [ $screenTest == "1" ]; then
+			echo "SUCCESS"
+		else
+			echo "FAILED"
+		fi
 	fi
 }
 function Run {
