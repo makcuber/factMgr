@@ -1286,7 +1286,7 @@ function parseRunCMDS {
 function startServer {
 	screen -S $progName-$1 -Q select .
 	screenTest=$?
-	
+	echo $screenTest
 	if [ $screenTest == "0" ]; then
 		echo "A server by the name \"$1\" is already running"
 	else
