@@ -351,6 +351,9 @@ function Update {
 	UpdatePath=""
 
 	if [ "$1" == "" ]; then
+		echo ""
+		echo "No update path provided"
+		echo "Will use default \"$UpdatePathDEF\""
 		UpdatePath="$UpdatePathDEF"
 	else
 		UpdatePath="$1"
@@ -402,6 +405,9 @@ function parseSaveCMDS {
 			;;
 		-d)
 			delMap $2
+			;;
+		-c)
+			copyMap $2 $3
 			;;
 		*)
 			ListSaves $2
