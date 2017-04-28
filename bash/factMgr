@@ -545,6 +545,8 @@ function copyMap {
 	if [ -d $savesDIR ]; then
 		if [ -e $savesDIR/$SOURCE.$saveExt ]; then
 			if [ -e $savesDIR/$TARGET.$saveExt ]; then
+				echo "A save file by the name of \"$TARGET\" already exists on the local system"
+			else
 				echo -n "Copying $SOURCE to $TARGET..."
 				cp $savesDIR/$SOURCE.$saveExt $savesDIR/$TARGET.$saveExt
 				if [ -e $savesDIR/$TARGET.$saveExt ]; then
@@ -552,8 +554,6 @@ function copyMap {
 				else
 					echo "FAILED"
 				fi
-			else
-				echo "A save file by the name of \"$TARGET\" already exists on the local system"
 			fi
 		else
 			echo "No save file by the name of \"$SOURCE\" exists on the local system"
