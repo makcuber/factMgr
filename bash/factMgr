@@ -20,7 +20,7 @@
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.12"
+ProgVer="0.0.13"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 
@@ -1279,17 +1279,33 @@ function parseRunCMDS {
 			killServer $2
 			;;
 		*)
-			ListProfiles
+			ListActiveServers
 			;;
 	esac
+}
+function ListActiveServers {
+	echo ""
+	echo "Active Factorio Servers:"
+	for i in $(echo $(screen -list | grep $progName) | sed "s/,/ /g")
+	do
+			echo " - $i"
+	done
+	echo ""
 }
 function startServer {
 	screen -S $progName-$1 -Q select .
 	screenTest=$?
-	echo $screenTest
+
+	echo ""
+	echo -n "Verifying server is in stop state..."
 	if [ $screenTest == "0" ]; then
+		echo "FAILED"
+		echo ""
 		echo "A server by the name \"$1\" is already running"
 	else
+		echo "SUCCESS"
+		echo ""
+		echo -n "Starting Factorio server $VER using map \"$1\""
 		screen -dm -S $progName-$1 "$2" "$execPath"
 	fi
 }
@@ -1341,19 +1357,30 @@ function Run {
 			fi
 		fi
 		if [ -z "$ERRORMSG" ]; then
-
-			echo "Factorio" $VER " started using map:" $SAVE
 			if [ "$MOD" = "" ]; then
 				startServer $1 "$versionsDIR/$VER/$runFile $startCMD $SAVE $AUTO"
-
 			else
 				startServer $1 "$versionsDIR/$VER/$runFile $startCMD $SAVE $setModCMD $MOD $AUTO"
-				echo "Using Mod pack: $MOD"
 			fi
-			if ! [ "$AUTO" = "" ]; then
-				echo "Set auto save interval to $AUTO"
+
+			screen -S $progName-$1 -Q select .
+			screenTest=$?
+
+			if [ $screenTest == "0" ]; then
+				echo "SUCCESS"
+
+				echo ""
+				echo "Settings:"
+				if [ "$MOD" = "" ]; then
+					echo "Mod pack: $MOD"
+				fi
+				if ! [ "$AUTO" = "" ]; then
+					echo "Autosave interval: $AUTO"
+				fi
+				echo "Port: 34197"
+			else
+				echo "FAILED"
 			fi
-			echo "Connect using UDP on port 34197"
 		else
 			echo "ERROR: "$ERRORMSG
 		fi
