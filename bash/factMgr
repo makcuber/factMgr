@@ -1287,7 +1287,7 @@ function ListActiveServers {
 	echo ""
 	echo "Active Factorio Servers:"
 
-	for i in $(echo $(ls -laR /var/run/screen/) | sed "s/,/ /g")
+	for i in $(echo $(ls -laR /var/run/screens/) | sed "s/,/ /g")
 	do
 			echo " - $i"
 	done
