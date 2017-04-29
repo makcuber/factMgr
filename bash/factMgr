@@ -1325,6 +1325,8 @@ function killServer {
 	fi
 
 	echo ""
+	echo $screenTest
+	echo ""
 	if [ "$screenTest" == "0" ]; then
 		echo -n "Stopping server \"$1\"..."
 		(screen -S $progName-$1 -X quit )>/dev/null
