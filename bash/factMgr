@@ -1327,6 +1327,9 @@ function killServer {
 		echo "2"
 	fi
 
+	(screen -S "$progName-$1" -Q select . )>/dev/null
+	screenTest=$?
+
 	echo ""
 	echo $screenTest
 	echo ""
