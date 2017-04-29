@@ -1319,9 +1319,11 @@ function killServer {
 	if [ "$2" == "" ]; then
 		(screen -S $progName-$1 -Q select . )>/dev/null
 		screenTest=$?
+		echo "1"
 	else
 		(screen -S $2.$progName-$1 -Q select . )>/dev/null
 		screenTest=$?
+		echo "2"
 	fi
 
 	echo ""
@@ -1334,11 +1336,14 @@ function killServer {
 		(screen -S $progName-$1 -Q select . )>/dev/null
 		screenTest=$?
 
-		if [ $screenTest == "0" ]; then
+		if [ "$screenTest" == "0" ]; then
 			echo "FAILED"
 		else
 			echo "SUCCESS"
 		fi
+		echo ""
+		echo $screenTest
+		echo ""
 	else
 		echo "No server by the name $1 are currently running"
 	fi
