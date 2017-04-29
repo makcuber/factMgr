@@ -1317,11 +1317,11 @@ function startServer {
 function killServer {
 	screenTest=""
 	if [ "$2" == "" ]; then
-		screen -S $progName-$1 -Q select .
+		(screen -S "$progName-$1" -Q select . )>/dev/null
 		screenTest=$?
 		echo "1"
 	else
-		(screen -S $2.$progName-$1 -Q select . )>/dev/null
+		(screen -S "$2.$progName-$1" -Q select . )>/dev/null
 		screenTest=$?
 		echo "2"
 	fi
