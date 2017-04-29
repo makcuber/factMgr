@@ -1286,6 +1286,8 @@ function parseRunCMDS {
 }
 function ListActiveServers {
 	echo ""
+	echo "Syntax: PID#.ProgramName-ServerName"
+	echo ""
 	echo "Active Factorio Servers:"
 	USER_ID=$(who -m | awk '{print $1;}')
 	for i in $(echo $(ls /var/run/screens/S-$USER_ID) | sed "s/,/ /g")
@@ -1313,7 +1315,8 @@ function startServer {
 	fi
 }
 function killServer {
-	if [ $2 == "" ]; then
+	screenTest=""
+	if [ "$2" == "" ]; then
 		(screen -S $progName-$1 -Q select . )>/dev/null
 		screenTest=$?
 	else
@@ -1322,20 +1325,20 @@ function killServer {
 	fi
 
 	echo ""
-	if [ $screenTest == "1" ]; then
-		echo "No server by the name $1 are currently running"
-	else
+	if [ "$screenTest" == "0" ]; then
 		echo -n "Stopping server \"$1\"..."
 		(screen -S $progName-$1 -X quit )>/dev/null
 
 		(screen -S $progName-$1 -Q select . )>/dev/null
 		screenTest=$?
 
-		if [ $screenTest == "1" ]; then
-			echo "SUCCESS"
-		else
+		if [ $screenTest == "0" ]; then
 			echo "FAILED"
+		else
+			echo "SUCCESS"
 		fi
+	else
+		echo "No server by the name $1 are currently running"
 	fi
 	echo ""
 }
