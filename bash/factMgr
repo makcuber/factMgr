@@ -15,12 +15,13 @@
 #UD: 6/22/4/2017
 #UD: 1/24/4/2017
 #UD: 4/27/4/2017
+#UD: 6/29/4/2017
 
 #VARIABLES
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.13"
+ProgVer="0.0.14"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 
@@ -96,7 +97,7 @@ function Syntax {
 	echo "===Server Control==="
 	echo "	-r 							Server commands"
 	echo "	   -s		[MapName] [#.#.#] [ModPackName]		   Start server"
-	echo "	   -k 						   	   Stop server"
+	echo "	   -k 	[MapName]	[PID#]				   Stop server"
 	echo "	   -c		[ProfileName]				   Create a server profile"
 	echo ""
 	echo "===Versions==="
@@ -1276,7 +1277,7 @@ function parseRunCMDS {
 			Run $2 $3 $4 $5
 			;;
 		-k)
-			killServer $2
+			killServer $2 $3
 			;;
 		*)
 			ListActiveServers
@@ -1286,10 +1287,12 @@ function parseRunCMDS {
 function ListActiveServers {
 	echo ""
 	echo "Active Factorio Servers:"
-
-	for i in $($(echo $(ls -laR /var/run/screens/) | sed "s/,/ /g") | grep "$progName")
+	USER_ID=$(who -m | awk '{print $1;}')
+	for i in $(echo $(ls /var/run/screens/S-$USER_ID) | sed "s/,/ /g")
 	do
-			echo " - $i"
+	        if test "${i#*$progName}" != "$i"; then
+	                echo " - $i"
+	        fi
 	done
 	echo ""
 }
@@ -1310,8 +1313,13 @@ function startServer {
 	fi
 }
 function killServer {
-	(screen -S $progName-$1 -Q select . )>/dev/null
-	screenTest=$?
+	if [ $2 == "" ]; then
+		(screen -S $progName-$1 -Q select . )>/dev/null
+		screenTest=$?
+	else
+		(screen -S $2.$progName-$1 -Q select . )>/dev/null
+		screenTest=$?
+	fi
 
 	echo ""
 	if [ $screenTest == "1" ]; then
