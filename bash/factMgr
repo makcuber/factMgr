@@ -1287,8 +1287,7 @@ function parseRunCMDS {
 }
 function ListActiveServers {
 	echo ""
-	echo "Syntax: PID#.ProgramName-ServerName"
-	echo ""
+	echo "Syntax: PID#.UserName-ProgramName-ServerName"
 	echo "Running Factorio Servers for user \"$USER\":"
 	for i in $(echo $(ls /var/run/screens/S-$USER) | sed "s/,/ /g")
 	do
@@ -1299,7 +1298,7 @@ function ListActiveServers {
 	echo ""
 }
 function startServer {
-	(screen -S $progName-$1 -Q select . )>/dev/null
+	(screen -S $USER-$progName-$1 -Q select . )>/dev/null
 	screenTest=$?
 
 	echo ""
@@ -1311,28 +1310,28 @@ function startServer {
 	else
 		echo "SUCCESS"
 		echo -n "Starting Factorio server $VER using map \"$1\"..."
-		screen -dm -S $progName-$1 "$2"
+		screen -dm -S $USER-$progName-$1 "$2"
 	fi
 }
 function killServer {
 	screenTest=""
 	if [ "$2" == "" ]; then
-		(screen -S "$progName-$1" -Q select . )>/dev/null
+		(screen -S "$USER-$progName-$1" -Q select . )>/dev/null
 		screenTest=$?
 	else
-		(screen -S "$2.$progName-$1" -Q select . )>/dev/null
+		(screen -S "$2.$USER-$progName-$1" -Q select . )>/dev/null
 		screenTest=$?
 	fi
 
-	(screen -S "$progName-$1" -Q select . )>/dev/null
+	(screen -S "$USER-$progName-$1" -Q select . )>/dev/null
 	screenTest=$?
 
 	echo ""
 	if [ "$screenTest" == "0" ]; then
 		echo -n "Stopping server \"$1\"..."
-		(screen -S $progName-$1 -X quit )>/dev/null
+		(screen -S $USER-$progName-$1 -X quit )>/dev/null
 
-		(screen -S $progName-$1 -Q select . )>/dev/null
+		(screen -S $USER-$progName-$1 -Q select . )>/dev/null
 		screenTest=$?
 
 		if [ "$screenTest" == "0" ]; then
@@ -1387,7 +1386,7 @@ function Run {
 				startServer $1 "$versionsDIR/$VER/$runFile $startCMD $SAVE $setModCMD $MOD $AUTO"
 			fi
 
-			screen -S $progName-$1 -Q select .
+			screen -S $USER-$progName-$1 -Q select .
 			screenTest=$?
 
 			if [ $screenTest == "0" ]; then
