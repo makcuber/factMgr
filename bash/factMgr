@@ -273,6 +273,9 @@ function installFileStructure {
 	buildVerifyFolder $RunPath saves
 	buildVerifyFolder $RunPath mods
 	buildVerifyFolder $RunPath modpacks
+
+	echo "Setting file structure permissions for user \"$USER_ID\""
+	chown -R $USER_ID $RunPath
 }
 function buildVerifyFolder {
 	echo -n "	$2 folder..."
