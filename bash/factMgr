@@ -30,7 +30,7 @@ USER_ID=$(who -m | awk '{print $1;}')
 progName=factMgr
 configSuffix=conf
 SAVEINT=20
-BinPathDEF="/bin/"
+BinPathDEF="/bin"
 ConfigPathDEF="/etc/$progName"
 RunPathDEF="/var/factorio"
 UpdatePathDEF="/home/git/git/factMgr.git/bash/factMgr"
@@ -1461,13 +1461,21 @@ function MainCMDs {
 			parseSaveCMDS $2 $3 $4
 			;;
 		-install)
-			Install
+			if [[ $EUID -ne 0 ]]; then
+				echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
+			else
+				Install
+			fi
 			;;
 		-version)
 			progVersion
 			;;
 		-update)
-			Update $2
+			if [[ $EUID -ne 0 ]]; then
+				echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
+			else
+				Update $2
+			fi
 			;;
 		-verify)
 			verifyRespond $2
