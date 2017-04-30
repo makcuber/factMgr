@@ -1481,7 +1481,11 @@ function MainCMDs {
 			verifyRespond $2
 			;;
 		-uninstall)
-			Uninstall
+			if [[ $EUID -ne 0 ]]; then
+				echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
+			else
+				Uninstall
+			fi
 			;;
 		-config)
 			Config
