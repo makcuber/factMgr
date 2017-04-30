@@ -1307,7 +1307,7 @@ function startServer {
 	if [ $screenTest == "0" ]; then
 		echo "FAILED"
 		echo ""
-		echo "A server by the name \"$1\" is already running"
+		echo "A server by the name \"$1\" is already running for the user $USER"
 	else
 		echo "SUCCESS"
 		echo -n "Starting Factorio server $VER using map \"$1\"..."
@@ -1315,7 +1315,16 @@ function startServer {
 	fi
 }
 function killServer {
-	
+	screenTest=""
+	if [ "$2" == "" ]; then
+		(screen -S "$progName-$1" -Q select . )>/dev/null
+		screenTest=$?
+		echo "1"
+	else
+		(screen -S "$2.$progName-$1" -Q select . )>/dev/null
+		screenTest=$?
+		echo "2"
+	fi
 
 	(screen -S "$progName-$1" -Q select . )>/dev/null
 	screenTest=$?
@@ -1339,7 +1348,7 @@ function killServer {
 		echo $screenTest
 		echo ""
 	else
-		echo "No server by the name $1 are currently running"
+		echo "No server by the name $1 are currently running for the user $USER"
 	fi
 	echo ""
 }
@@ -1450,13 +1459,10 @@ function secret {
 	echo "((‘)((‘)"
 	echo ""
 }
+
 #MAIN
 
-init
-
-if [[ $EUID -ne 0 ]]; then
-	echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
-else
+function MainCMDs {
 	case $1 in
 		-s)
 			parseSaveCMDS $2 $3 $4
@@ -1501,4 +1507,19 @@ else
 			Syntax
 			;;
 	esac
-fi
+}
+
+function rootRun {
+	if [[ $EUID -ne 0 ]]; then
+		echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
+	else
+		MainCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
+	fi
+}
+
+#Startup
+
+init
+
+#rootRun $1 $2 $3 $4 $5 $6 $7 $8 $9
+MainCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
