@@ -170,8 +170,6 @@ function init {
 
 	#add config file parsing here
 
-	downloadLogFile=$logFileDIR/$BOOTUP_DATETIME.log
-
 	BinPath="$BinPathDEF"
 	ConfigPath="$ConfigPathDEF"
 	RunPath="$RunPathDEF"
@@ -184,6 +182,8 @@ function init {
 	logFileDIR=$baseDir/logs
 	savesDIR=$baseDir/saves
 	VER_LATEST=$VER_LATEST_DEF
+
+	downloadLogFile=$logFileDIR/$BOOTUP_DATETIME.log
 
 	runFile=/bin/x64/factorio
 	downloadFILE=linux64
