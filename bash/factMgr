@@ -22,7 +22,7 @@
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.18"
+ProgVer="0.0.20"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_ID=$(who -m | awk '{print $1;}')
@@ -229,10 +229,34 @@ function Config {
 
 #Install
 function installScript {
-	echo "Installing script..."
-	cat "$execPath" > "$BinPath/$progName"
-	echo "Creating executable..."
-	chmod +x "$BinPath/$progName"
+	echo "Generating Checksums..."
+	HASH_OLD=$(md5sum "$BinPath/$progName" | awk '{ print $1 }')
+	HASH_NEW=$(md5sum "$execPath" | awk '{ print $1 }')
+	if [ "$HASH_OLD" == "$HASH_NEW" ]; then
+		echo "FAILED"
+		return 1
+	else
+		echo "SUCCESS"
+		echo -n "Installing script..."
+		cat "$execPath" > "$BinPath/$progName"
+		echo "DONE"
+		echo -n "Verifying script installation..."
+		HASH_CURRENT=$(md5sum "$BinPath/$progName" | awk '{ print $1 }')
+		if [ "$HASH_CURRENT" == "$HASH_NEW" ]; then
+			echo -n "Creating executable..."
+			(chmod +x "$BinPath/$progName")>/dev/null
+			if [ -x "$BinPath/$progName" ]; then
+				echo "SUCCESS"
+			else
+				echo "FAILED"
+				return 3
+			fi
+		else
+			echo "FAILED"
+			return 2
+		fi
+	fi
+	return 0
 }
 function installConfig {
 	#config
@@ -320,8 +344,9 @@ function Install {
 	if [ "$select" = "y" ]; then
 		#install scripts
 		echo ""
-		echo "Checking for existing installation..."
+		echo -n "Checking for existing installation..."
 		if [ -e "$BinPath/$progName" ]; then
+				echo "SUCCESS"
 				echo "$progName Script appears to already be installed on this system"
 				echo -n "Do you want to reinstall the script? (y/n): "
 				read select
@@ -331,6 +356,7 @@ function Install {
 					echo "Skipping script installation"
 				fi
 		else
+			echo "FAILED"
 			installScript
 		fi
 
@@ -1255,7 +1281,7 @@ function getVersion {
 			(echo "")>>$downloadLogFile
 			(date +%Y%m%d%H%M%S)>>$downloadLogFile
 			(echo "")>>$downloadLogFile
-			(wget $URL --output-document "$baseDIR/$VER.tar.gz" -a $downloadLogFile)>>$downloadLogFile
+			(wget $URL --output-document "$baseDIR/$VER.tar.gz")>>$downloadLogFile
 			if [ -e "$baseDIR/$VER.tar.gz" ]; then
 				echo "SUCCESS"
 
