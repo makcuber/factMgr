@@ -17,12 +17,13 @@
 #UD: 4/27/4/2017
 #UD: 6/29/4/2017
 #UD: 1/1/5/2017
+#UD: 2/2/5/2017
 
 #VARIABLES
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.20"
+ProgVer="0.0.21"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_ID=$(who -m | awk '{print $1;}')
@@ -618,9 +619,6 @@ function parseModsCMDS {
 		-info)
 			GetModInfo "name" "$3"
 			;;
-		-stats)
-			ModPortalStats "name"
-			;;
 		*)
 			ListMods $2
 			;;
@@ -836,7 +834,7 @@ function ModPortalStats {
 function ModPortalCount {
 	if [ -d $modlistPath ]; then
 		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
-			echo -n "Number of mods availble on remote server: "
+			echo -n "Number of mods availble in the ModPortal: "
 			jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT"
 		else
 			echo "Modlist does not appear to exist"
@@ -853,6 +851,7 @@ function ModPortalCountWrapper {
 function ListMods {
 	echo ""
 	if [ -d $modsDIR ]; then
+		ModPortalCount
 		currentMods=$(ls $modsDIR)
 		if [ "$currentMods" == "" ]; then
 			echo "No mods are currently installed on the local system"
@@ -920,62 +919,66 @@ function GetModInfo {
 	echo ""
 	if [ -d $modlistPath ]; then
 		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
-			i=0
-			#sort by first letter to speed up search
-			#use $query:0:1 to get first letter
-			i_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
-			ModPortalCount
-			echo "Searching for \"$1\" = \"$2\""
-			echo -en "Mods searched: \033[s"
-			while [ $i -lt $i_max ]
-			do
-				echo -en "\033[u$i"
+			if [ "$2" == "" ]; then
+				echo "No mod name provided"
+			else
+				i=0
+				#sort by first letter to speed up search
+				#use $query:0:1 to get first letter
+				i_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
+				ModPortalCount
+				echo "Searching for \"$1\" = \"$2\""
+				echo -en "Mods searched: \033[s"
+				while [ $i -lt $i_max ]
+				do
+					echo -en "\033[u$i"
 
-				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
-				if [ "$result:0:1" == "$2:0:1" ]; then
-					if [ "$result" == "$2" ]; then
-						#show only key info
-						echo ""
-						echo ""
-						echo "===================================="
-						echo ""
-						echo -n "Name: "
-						jq -r ".results[$i].latest_release.info_json.name" "$modlistPath/$modlistName.$modlistEXT"
-						echo -n "Author: "
-						jq -r ".results[$i].latest_release.info_json.author" "$modlistPath/$modlistName.$modlistEXT"
-						echo -n "Description: "
-						jq -r ".results[$i].latest_release.info_json.description" "$modlistPath/$modlistName.$modlistEXT"
+					result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
+					if [ "$result:0:1" == "$2:0:1" ]; then
+						if [ "$result" == "$2" ]; then
+							#show only key info
+							echo ""
+							echo ""
+							echo "===================================="
+							echo ""
+							echo -n "Name: "
+							jq -r ".results[$i].latest_release.info_json.name" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Author: "
+							jq -r ".results[$i].latest_release.info_json.author" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Description: "
+							jq -r ".results[$i].latest_release.info_json.description" "$modlistPath/$modlistName.$modlistEXT"
 
-						echo ""
-						echo -n "Target Factorio Version: "
-						jq -r ".results[$i].latest_release.info_json.factorio_version" "$modlistPath/$modlistName.$modlistEXT"
-						echo -n "Current Mod Version: "
-						jq -r ".results[$i].latest_release.info_json.version" "$modlistPath/$modlistName.$modlistEXT"
-						echo -n "Current Mod Version Downloads: "
-						jq -r ".results[$i].latest_release.downloads_count" "$modlistPath/$modlistName.$modlistEXT"
-						echo -n "Lifetime Mod Downloads: "
-						jq -r ".results[$i].downloads_count" "$modlistPath/$modlistName.$modlistEXT"
+							echo ""
+							echo -n "Target Factorio Version: "
+							jq -r ".results[$i].latest_release.info_json.factorio_version" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Current Mod Version: "
+							jq -r ".results[$i].latest_release.info_json.version" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Current Mod Version Downloads: "
+							jq -r ".results[$i].latest_release.downloads_count" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Lifetime Mod Downloads: "
+							jq -r ".results[$i].downloads_count" "$modlistPath/$modlistName.$modlistEXT"
 
-						echo ""
-						echo "Dependencies: "
-						k=0
-						k_max=$(jq -r ".results[$i].latest_release.info_json.dependencies | length" "$modlistPath/$modlistName.$modlistEXT")
-						while [ $k -lt $k_max ]
-						do
-							echo -n " - "
-							jq -r ".results[$i].latest_release.info_json.dependencies[$k]" "$modlistPath/$modlistName.$modlistEXT"
-							let k=$k+1
-						done
+							echo ""
+							echo "Dependencies: "
+							k=0
+							k_max=$(jq -r ".results[$i].latest_release.info_json.dependencies | length" "$modlistPath/$modlistName.$modlistEXT")
+							while [ $k -lt $k_max ]
+							do
+								echo -n " - "
+								jq -r ".results[$i].latest_release.info_json.dependencies[$k]" "$modlistPath/$modlistName.$modlistEXT"
+								let k=$k+1
+							done
 
-						echo ""
-						echo "===================================="
-						#jq -r ".results[$i]" "$modlistPath/$modlistName.$modlistEXT"
-						let i=$i_max
+							echo ""
+							echo "===================================="
+							#jq -r ".results[$i]" "$modlistPath/$modlistName.$modlistEXT"
+							let i=$i_max
+						fi
+					else
+						let i=i+1
 					fi
-				else
-					let i=i+1
-				fi
-			done
+				done
+			fi
 		else
 			echo "Modlist does not appear to exist, attempting to download..."
 		fi
@@ -1285,13 +1288,14 @@ function getVersion {
 			(echo "")>>$downloadLogFile
 			(date +%Y%m%d%H%M%S)>>$downloadLogFile
 			(echo "")>>$downloadLogFile
-			wget $URL --output-document "$versionsDIR/$VER.tar.gz" -a "$downloadLogFile"
-			if [ -e "$baseDIR/$VER.tar.gz" ]; then
+			OUTFILE="$versionsDIR/$VER.tar.gz"
+			wget "$URL" --output-document "$OUTFILE" -a "$downloadLogFile"
+			if [ -e "$OUTFILE" ]; then
 				echo "SUCCESS"
 
 				echo -n "Unpacking headless server..."
 				(echo "")>>$downloadLogFile
-				(tar -xf "$baseDIR/$VER.tar.gz" -C $versionsDIR)>>$downloadLogFile
+				(tar -xf "$OUTFILE" -C $versionsDIR)>>$downloadLogFile
 				if [ -d "$versionsDIR/$tarName" ]; then
 					echo "SUCCESS"
 
@@ -1480,13 +1484,17 @@ function devCMDs {
 		-v)
 			progVersion
 			;;
-		-ms)
+		-cd)
+			cd $baseDIR
+			ls
+			;;
+		-modstat)
 			ModPortalStats $2
 			;;
-		-mi)
+		-modinfo)
 			GetModInfo $2 $3
 			;;
-		-mc)
+		-modcount)
 			ModPortalCountWrapper
 			;;
 		-mg)
@@ -1495,7 +1503,7 @@ function devCMDs {
 		-md)
 			ModPortalDownloadMod $2 $3
 			;;
-		-1)
+		-modlist)
 			updateModList
 			;;
 		*)
