@@ -229,7 +229,7 @@ function Config {
 
 #Install
 function installScript {
-	echo "Generating Checksums..."
+	echo -n "Generating Checksums..."
 	HASH_OLD=$(md5sum "$BinPath/$progName" | awk '{ print $1 }')
 	HASH_NEW=$(md5sum "$execPath" | awk '{ print $1 }')
 	if [ "$HASH_OLD" == "$HASH_NEW" ]; then
@@ -311,7 +311,7 @@ function installFileStructure {
 }
 function buildVerifyFolder {
 	echo -n "	$2 folder..."
-	if ! [ -d "$1" ]; then
+	if ! [ -d "$1/$2" ]; then
 		echo "BUILT"
 		mkdir "$1"/"$2"
 	else
