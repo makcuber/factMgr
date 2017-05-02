@@ -16,15 +16,17 @@
 #UD: 1/24/4/2017
 #UD: 4/27/4/2017
 #UD: 6/29/4/2017
+#UD: 1/1/5/2017
 
 #VARIABLES
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.16"
+ProgVer="0.0.18"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_ID=$(who -m | awk '{print $1;}')
+BOOTUP_DATETIME=$(date +%Y%m%d%H%M%S)
 
 #defaults
 progName=factMgr
@@ -168,6 +170,8 @@ function init {
 
 	#add config file parsing here
 
+	downloadLogFile=$logFileDIR/$BOOTUP_DATETIME.log
+
 	BinPath="$BinPathDEF"
 	ConfigPath="$ConfigPathDEF"
 	RunPath="$RunPathDEF"
@@ -177,6 +181,7 @@ function init {
 	mapsDIR=$baseDir/maps
 	modsDIR=$baseDir/mods
 	modPackDIR=$baseDir/modpacks
+	logFileDIR=$baseDir/logs
 	savesDIR=$baseDir/saves
 	VER_LATEST=$VER_LATEST_DEF
 
@@ -188,7 +193,6 @@ function init {
 	saveExt=$saveExtDEF
 	editor=$editorDEF
 	tarName=$tarNameDEF
-	downloadLogFile="$baseDIR/download.log"
 
 	modAPIDomain=$modAPIDomainDEF
 	modlistURL=$modlistURLDEF
@@ -272,6 +276,7 @@ function installFileStructure {
 	buildVerifyFolder $RunPath saves
 	buildVerifyFolder $RunPath mods
 	buildVerifyFolder $RunPath modpacks
+	buildVerifyFolder $RunPath logs
 
 	echo "Setting file structure permissions for user \"$USER_ID\""
 	chown -R $USER_ID $RunPath
@@ -582,6 +587,9 @@ function parseModsCMDS {
 			;;
 		-info)
 			GetModInfo "name" "$3"
+			;;
+		-stats)
+			ModPortalStats "name"
 			;;
 		*)
 			ListMods $2
@@ -1121,7 +1129,7 @@ function parseVersionsCMDS {
 			getLatestVersion
 			;;
 		-d)
-			getVersion $2
+			getVersionWrapper $2
 			;;
 		-r)
 			listRemoteVersionWrapper $2
@@ -1198,7 +1206,7 @@ function logfileCheck {
 		echo ""
 	fi
 }
-function getVersion {
+function getVersionWrapper {
 	VER="$1"
 
 	if [ "$VER" == "" ]; then
@@ -1209,67 +1217,91 @@ function getVersion {
 			echo "Version $VER appears to already exist on the local system"
 			echo -n "Do you want to re-download this version? (y/n)"
 			read select
+
+			if [ $select == "y" ]; then
+				echo -n "This will delete the existing copy of this version, continue? (Y/n)"
+				read select
+
+				if [ $select == "Y" ]; then
+					echo ""
+					echo -n "Deleting old copy of version \"$VER\"..."
+					(rm -r "$versionsDIR/$VER")>>$downloadLogFile
+					if [ -d "$versionsDIR/$VER" ]; then
+						echo "FAILED"
+						logfileCheck
+					else
+						echo "SUCCESS"
+						getVersion $1
+					fi
+				fi
+			fi
 		else
-			if [ -d $versionsDIR ]; then
-				URL=$urlPrefix/$VER/$urlTail
-				echo -n "Searching for verison $VER on remote system..."
-				if [[ $(wget $URL -O-) ]] 2>/dev/null; then
+			getVersion $VER
+		fi
+		echo ""
+	fi
+}
+function getVersion {
+	VER="$1"
+
+	if [ -d $versionsDIR ]; then
+		URL=$urlPrefix/$VER/$urlTail
+
+		echo -n "Searching for verison $VER on remote system..."
+		if [[ $(wget $URL -O-) ]] 2>/dev/null; then
+			echo "SUCCESS"
+			echo -n "Downloading factorio headless server version $VER to local system..."
+			(echo "")>>$downloadLogFile
+			(echo "")>>$downloadLogFile
+			(date +%Y%m%d%H%M%S)>>$downloadLogFile
+			(echo "")>>$downloadLogFile
+			(wget $URL --output-document "$baseDIR/$VER.tar.gz" -a $downloadLogFile)>>$downloadLogFile
+			if [ -e "$baseDIR/$VER.tar.gz" ]; then
+				echo "SUCCESS"
+
+				echo -n "Unpacking headless server..."
+				(echo "")>>$downloadLogFile
+				(tar -xf "$baseDIR/$VER.tar.gz" -C $versionsDIR)>>$downloadLogFile
+				if [ -d "$versionsDIR/$tarName" ]; then
 					echo "SUCCESS"
-					echo -n "Downloading factorio headless server version $VER to local system..."
-					(echo "")>>$downloadLogFile
-					(echo "")>>$downloadLogFile
-					(date +%Y%m%d%H%M%S)>>$downloadLogFile
-					(echo "")>>$downloadLogFile
-					wget $URL --output-document "$baseDIR/$VER.tar.gz" -a $downloadLogFile
-					if [ -e "$baseDIR/$VER.tar.gz" ]; then
+
+					echo -n "Configuring headless server files..."
+					mv "$versionsDIR/$tarName" "$versionsDIR/$VER"
+					if [ -d "$versionsDIR/$VER" ]; then
 						echo "SUCCESS"
 
-						echo -n "Unpacking headless server..."
-						(echo "")>>$downloadLogFile
-						(tar -xf "$baseDIR/$VER.tar.gz" -C $versionsDIR)>>$downloadLogFile
-						if [ -d "$versionsDIR/$tarName" ]; then
-							echo "SUCCESS"
-
-							echo -n "Configuring headless server..."
-							mv "$versionsDIR/$tarName" "$versionsDIR/$VER"
-							if [ -d "$versionsDIR/$VER" ]; then
-								echo "SUCCESS"
-
-								echo -n "Cleaning up..."
-								if [ -e "$versionsDIR/$VER.tar.gz" ]; then
-									rm "$versionsDIR/$VER.tar.gz"
-									if [ -e "$versionsDIR/$VER.tar.gz" ]; then
-										echo "FAILED"
-										logfileCheck
-									else
-										echo "SUCCESS"
-									fi
-								else
-									echo "SUCCESS"
-								fi
-								echo ""
-								echo "DONE"
-							else
+						echo -n "Cleaning up..."
+						if [ -e "$versionsDIR/$VER.tar.gz" ]; then
+							rm "$versionsDIR/$VER.tar.gz"
+							if [ -e "$versionsDIR/$VER.tar.gz" ]; then
 								echo "FAILED"
 								logfileCheck
+							else
+								echo "SUCCESS"
 							fi
 						else
-							echo "FAILED"
-							logfileCheck
+							echo "SUCCESS"
 						fi
+						echo ""
+						echo "DONE"
 					else
 						echo "FAILED"
 						logfileCheck
 					fi
 				else
 					echo "FAILED"
-					echo "Version $VER of the factorio headless server is not available on the remote system"
+					logfileCheck
 				fi
 			else
-					echo "Versions directory not found, $progName may not be installed"
+				echo "FAILED"
+				logfileCheck
 			fi
+		else
+			echo "FAILED"
+			echo "Version $VER of the factorio headless server is not available on the remote system"
 		fi
-		echo ""
+	else
+			echo "Versions directory not found, $progName may not be installed"
 	fi
 }
 
