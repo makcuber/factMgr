@@ -243,6 +243,7 @@ function installScript {
 		echo -n "Verifying script installation..."
 		HASH_CURRENT=$(md5sum "$BinPath/$progName" | awk '{ print $1 }')
 		if [ "$HASH_CURRENT" == "$HASH_NEW" ]; then
+			echo "SUCCESS"
 			echo -n "Creating executable..."
 			(chmod +x "$BinPath/$progName")>/dev/null
 			if [ -x "$BinPath/$progName" ]; then
@@ -302,8 +303,11 @@ function installFileStructure {
 	buildVerifyFolder $RunPath modpacks
 	buildVerifyFolder $RunPath logs
 
-	echo "Setting file structure permissions for user \"$USER_ID\""
+	echo ""
+	echo "Setting file structure ownership to user \"$USER_ID\"..."
 	chown -R $USER_ID $RunPath
+	echo "Configuring file structure permissions..."
+	chmod -R 774 $RunPath
 }
 function buildVerifyFolder {
 	echo -n "	$2 folder..."
@@ -1281,7 +1285,7 @@ function getVersion {
 			(echo "")>>$downloadLogFile
 			(date +%Y%m%d%H%M%S)>>$downloadLogFile
 			(echo "")>>$downloadLogFile
-			(wget $URL --output-document "$baseDIR/$VER.tar.gz")>>$downloadLogFile
+			wget $URL --output-document "$baseDIR/$VER.tar.gz" -a "$downloadLogFile"
 			if [ -e "$baseDIR/$VER.tar.gz" ]; then
 				echo "SUCCESS"
 
