@@ -1228,7 +1228,7 @@ function listRemoteVersion {
 function logfileCheck {
 	if [ -e $downloadLogFile ]; then
 		echo ""
-		echo "Do you want to read the log file? (y/n): "
+		echo -n "Do you want to read the log file? (y/n): "
 		read select
 		if [ "$select" == "y" ]; then
 			$editor $downloadLogFile
@@ -1285,7 +1285,7 @@ function getVersion {
 			(echo "")>>$downloadLogFile
 			(date +%Y%m%d%H%M%S)>>$downloadLogFile
 			(echo "")>>$downloadLogFile
-			wget $URL --output-document "$baseDIR/$VER.tar.gz" -a "$downloadLogFile"
+			wget $URL --output-document "$versionsDIR/$VER.tar.gz" -a "$downloadLogFile"
 			if [ -e "$baseDIR/$VER.tar.gz" ]; then
 				echo "SUCCESS"
 
