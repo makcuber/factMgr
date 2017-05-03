@@ -101,7 +101,7 @@ function Syntax {
 	echo "===Server Control==="
 	echo "	-r 							Server commands"
 	echo "	   -s		[MapName] [#.#.#] [ModPackName]		   Start server"
-	echo "	   -k		[MapName] [PID#]				   Stop server"
+	echo "	   -k		[MapName] [PID#]				  Stop server"
 	echo "	   -c		[ProfileName]				   Create a server profile"
 	echo ""
 	echo "===Versions==="
