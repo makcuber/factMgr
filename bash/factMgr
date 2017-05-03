@@ -23,7 +23,7 @@
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.21"
+ProgVer="0.0.22"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_ID=$(who -m | awk '{print $1;}')
@@ -106,8 +106,10 @@ function Syntax {
 	echo "===Versions==="
 	echo "	-v 							Version commands"
 	echo "	   -l 						   	   List local versions"
+	echo "		 -r 						   	   List remote versions"
 	echo "	   -u 						   	   Get latest version"
 	echo "	   -d 		[#.#.#]			   	   	   Download a version"
+	echo "	   -p 		[#.#.#]	[#.#.#]				      Prune a range of versions"
 	echo ""
 	echo "===Saves==="
 	echo "	-s 							Saves commands"
@@ -1164,6 +1166,9 @@ function parseVersionsCMDS {
 		-d)
 			getVersionWrapper $2
 			;;
+		-p)
+			pruneVersion $2
+			;;
 		-r)
 			listRemoteVersionWrapper $2
 			;;
@@ -1171,6 +1176,36 @@ function parseVersionsCMDS {
 			ListVersions $2
 			;;
 	esac
+}
+function pruneVersion {
+	VER=$1
+	echo ""
+	if [ -d $versionsDIR ]; then
+		deleteVersion $VER
+	else
+		echo "Versions directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function deleteVersion {
+	VER=$1
+	if [ -e $versionsDIR/$VER ]; then
+		echo  "Are you sure you want to delete"
+		echo -n "the version \"$VER\" from the local system? (Y/n): "
+		read select
+
+		if [ "$select" == "Y" ]; then
+			echo -n "Deleting version \"$VER\"..."
+			(rm -r $versionsDIR/$VER)>/dev/null
+			if [ -e $versionsDIR/$VER ]; then
+				echo "FAILED"
+			else
+				echo "SUCCESS"
+			fi
+		fi
+	else
+		echo "Version \"$VER\" does not exist on the local system"
+	fi
 }
 function ListVersions {
 	echo ""
