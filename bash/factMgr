@@ -233,7 +233,7 @@ function init {
 
 	downloadLogFile=$logFileDIR/$BOOTUP_DATETIME.log
 
-	runFile=/bin/x64/factorio
+	runFile=$runFileDEF
 	downloadFILE=linux64
 	configFile=$configFileDEF
 	urlPrefix=$urlPrefixDEF
