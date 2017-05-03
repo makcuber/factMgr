@@ -24,7 +24,7 @@
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.22"
+ProgVer="0.0.23"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_ID=$(who -m | awk '{print $1;}')
@@ -86,24 +86,62 @@ function verbose {
 		fi
 	fi
 }
-function Syntax {
+
+#Help
+function help {
 	echo ""
 	echo "$progName version $ProgVer"
 	echo ""
 	echo "Syntax: $progName [Cmd] [subCmd] [args]"
 	echo ""
+	case $1 in
+		-r)
+			helpRun
+			;;
+		-v)
+			helpVersions
+			;;
+		-s)
+			helpSaves
+			;;
+		-m)
+			helpMods
+			;;
+		-mp)
+			helpModPacks
+			;;
+		*)
+			helpMain
+			;;
+	esac
+	echo ""
+	echo "===Help==="
+	echo "	-h		[command]				Show this help page"
+	echo ""
+}
+function helpMain {
 	echo "===Configuration==="
 	echo "	-install	[BinPath] [ConfigPath] [RunPath]	Install $progName"
 	echo "	-update		[UpdatePath]				Update $progName"
 	echo "	-uninstall						Uninstall $progName"
 	echo "	-config							Edit configuration file"
 	echo ""
+	echo "===Main Commands==="
+	echo "	-r 							Server commands"
+	echo "	-v 							Version commands"
+	echo "	-s 							Saves commands"
+	echo "	-m 							Mods commands"
+	echo ""
+	echo "	-h		[command]				Show help for a sub-command"
+}
+function helpRun {
 	echo "===Server Control==="
 	echo "	-r 							Server commands"
 	echo "	   -s		[MapName] [#.#.#] [ModPackName]		   Start server"
 	echo "	   -k		[MapName] [PID#]			   Stop server"
 	echo "	   -c		[ProfileName]				   Create a server profile"
-	echo ""
+}
+function helpVersions {
 	echo "===Versions==="
 	echo "	-v 							Version commands"
 	echo "	   -l 						   	   List local versions"
@@ -111,23 +149,29 @@ function Syntax {
 	echo "	   -u 						   	   Get latest version"
 	echo "	   -d 		[#.#.#]			   	   	   Download a version"
 	echo "	   -p 		[#.#.#]	[#.#.#]				   Prune a range of versions"
-	echo ""
+}
+function helpSaves {
 	echo "===Saves==="
 	echo "	-s 							Saves commands"
 	echo "	   -l 						   	   List available saves"
 	echo "	   -n		[#.#.#] [name]				   Create new save"
 	echo "	   -d 		[#.#.#]			   	   	   Delete a save"
-	echo ""
+}
+function helpMods {
 	echo "===Mods==="
 	echo "	-m 							Mods commands"
 	echo "	   -l 						   	   List local mods"
-	echo "	   -r 						   	   List remote mods"
+	echo "	   -s 		[ModName]			   	   Search for a mod"
 	echo "	   -g 		[ModName]			   	   Download a mod"
 	echo "	   -i 		[FilePath]			   	   Import a mod"
-	echo ""
-	echo "===Help==="
-	echo "	-h		[command]				Show this help page"
-	echo ""
+}
+function helpModPacks {
+	echo "===ModPacks==="
+	echo "	-mp 							ModPack commands"
+	echo "	   -c 		[ModName]			   	   Create a ModPack"
+	echo "	   -d 		[ModName]			   	   Delete a ModPack"
+	echo "	   -a 		[ModPackName] [ModName]	   	   Add a mod to a ModPack"
+	echo "	   -r 		[ModPackName] [ModName]	   	   Remove a mod from a ModPack"
 }
 
 #Uninstall
@@ -623,8 +667,14 @@ function parseModsCMDS {
 		-info)
 			GetModInfo "name" "$3"
 			;;
-		*)
+		-l)
 			ListMods $2
+			;;
+		-s)
+			FindMod $2 $3 $4
+			;;
+		*)
+			ModCountWrapper
 			;;
 	esac
 }
@@ -838,7 +888,7 @@ function ModPortalStats {
 function ModPortalCount {
 	if [ -d $modlistPath ]; then
 		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
-			echo -n "Number of mods availble in the ModPortal: "
+			echo -n "# of mods available in the ModPortal: "
 			jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT"
 		else
 			echo "Modlist does not appear to exist"
@@ -852,10 +902,27 @@ function ModPortalCountWrapper {
 	ModPortalCount
 	echo ""
 }
+function ModCount {
+	ModPortalCount
+
+	k=0
+	for i in $(echo $(ls "$modsDIR") | sed "s/,/ /g")
+	do
+			let k=k+1
+	done
+	echo "# of Mods available on the local system: $k"
+}
+function ModCountWrapper {
+	echo ""
+	ModCount
+	echo ""
+}
+
 function ListMods {
 	echo ""
 	if [ -d $modsDIR ]; then
-		ModPortalCount
+		ModCount
+		echo ""
 		currentMods=$(ls $modsDIR)
 		if [ "$currentMods" == "" ]; then
 			echo "No mods are currently installed on the local system"
@@ -1011,19 +1078,21 @@ function parseModPackCMDS {
 			infoModPack $2
 			;;
 		*)
-			ListModPacks $2
+			ListModPacks
 			;;
 	esac
 }
 function createModPack {
+	PACK=$1
+
 	echo ""
 	if [ -d $modPackDIR ]; then
-		if [ -d "$modPackDIR/$1" ]; then
-			echo "A Mod Pack by the name \"$1\" already exists"
+		if [ -d "$modPackDIR/$PACK" ]; then
+			echo "A Mod Pack by the name \"$PACK\" already exists"
 		else
-			echo -n "Creating Mod Pack \"$1\"..."
-			mkdir "$modPackDIR/$1"
-			if [ -d "$modPackDIR/$1" ]; then
+			echo -n "Creating Mod Pack \"$PACK\"..."
+			mkdir "$modPackDIR/$PACK"
+			if [ -d "$modPackDIR/$PACK" ]; then
 				echo "SUCCESS"
 			else
 				echo "FAILED"
@@ -1035,23 +1104,25 @@ function createModPack {
 	echo ""
 }
 function deleteModPack {
+	PACK=$1
+
 	echo ""
 	if [ -d $modPackDIR ]; then
-		if [ -d "$modPackDIR/$1" ]; then
-			echo -n "Are you sure you want to delete the Mod Pack \"$1\"? (Y/n): "
+		if [ -d "$modPackDIR/$PACK" ]; then
+			echo -n "Are you sure you want to delete the Mod Pack \"$PACK\"? (Y/n): "
 			read select
 
 			if [ $select == "Y" ]; then
-				echo -n "Deleting Mod Pack \"$1\"..."
-				rm -r "$modPackDIR/$1"
-				if [ -d "$modPackDIR/$1" ]; then
+				echo -n "Deleting Mod Pack \"$PACK\"..."
+				rm -r "$modPackDIR/$PACK"
+				if [ -d "$modPackDIR/$PACK" ]; then
 					echo "SUCCESS"
 				else
 					echo "FAILED"
 				fi
 			fi
 		else
-			echo "No Mod Pack by the name \"$1\" exists"
+			echo "No Mod Pack by the name \"$PACK\" exists"
 		fi
 	else
 		echo "Mod Pack directory not found, $progName may not be installed"
@@ -1059,28 +1130,31 @@ function deleteModPack {
 	echo ""
 }
 function addModToModPack {
+	PACK=$1
+	MOD=$2
+
 	echo ""
 	if [ -d $modPackDIR ]; then
-		if [ -d "$modPackDIR/$1" ]; then
-			if [ -e "$modPackDIR/$1/$2.zip" ]; then
-				echo "A Mod by the name \"$2\" already exists in the Mod Pack \"$1\""
+		if [ -d "$modPackDIR/$PACK" ]; then
+			if [ -e "$modPackDIR/$PACK/$MOD.zip" ]; then
+				echo "A Mod by the name \"$MOD\" already exists in the Mod Pack \"$PACK\""
 			else
-				if [ -e "$modsDIR/$2.zip" ]; then
-					echo "Are you sure you want to add the Mod $2"
-					echo -n "to the Mod Pack \"$1\"? (y/n): "
+				if [ -e "$modsDIR/$MOD.zip" ]; then
+					echo "Are you sure you want to add the Mod $MOD"
+					echo -n "to the Mod Pack \"$PACK\"? (y/n): "
 					read select
 
 					if [ $select == "y" ]; then
-						echo -n "Adding Mod \"$2\" to Mod Pack \"$1\"..."
-						cp "$modsDIR/$2.zip" "$modPackDIR/$1/"
-						if [ -e "$modPackDIR/$1/$2" ]; then
+						echo -n "Adding Mod \"$MOD\" to Mod Pack \"$PACK\"..."
+						cp "$modsDIR/$MOD.zip" "$modPackDIR/$PACK/"
+						if [ -e "$modPackDIR/$PACK/$MOD" ]; then
 							echo "SUCCESS"
 						else
 							echo "FAILED"
 						fi
 					fi
 				else
-					echo "No Mod by the name \"$2\" exists on the local system"
+					echo "No Mod by the name \"$MOD\" exists on the local system"
 				fi
 			fi
 		fi
@@ -1090,28 +1164,31 @@ function addModToModPack {
 	echo ""
 }
 function removeModFromModPack {
+	PACK=$1
+	MOD=$2
+
 	echo ""
 	if [ -d $modPackDIR ]; then
-		if [ -d "$modPackDIR/$1" ]; then
-			if [ -e "$modPackDIR/$1/$2" ]; then
-				echo "Are you sure you want to remove the Mod $2"
-				echo -n "from the Mod Pack \"$1\"? (Y/n): "
+		if [ -d "$modPackDIR/$PACK" ]; then
+			if [ -e "$modPackDIR/$PACK/$MOD" ]; then
+				echo "Are you sure you want to remove the Mod $MOD"
+				echo -n "from the Mod Pack \"$PACK\"? (Y/n): "
 				read select
 
 				if [ $select == "Y" ]; then
-					echo -n "Removing Mod \"$2\" from Mod Pack \"$1\"..."
-					rm -r "$modPackDIR/$1/$2"
-					if [ -e "$modPackDIR/$1/$2" ]; then
+					echo -n "Removing Mod \"$MOD\" from Mod Pack \"$PACK\"..."
+					(rm -r "$modPackDIR/$PACK/$MOD")>/dev/null
+					if [ -e "$modPackDIR/$PACK/$MOD" ]; then
 						echo "SUCCESS"
 					else
 						echo "FAILED"
 					fi
 				fi
 			else
-				echo "No Mod by the name \"$2\" exists in the Mod Pack \"$1\""
+				echo "No Mod by the name \"$MOD\" exists in the Mod Pack \"$PACK\""
 			fi
 		else
-			echo "No Mod Pack by the name \"$1\" exists"
+			echo "No Mod Pack by the name \"$PACK\" exists"
 		fi
 	else
 		echo "Mod Pack directory not found, $progName may not be installed"
@@ -1119,12 +1196,14 @@ function removeModFromModPack {
 	echo ""
 }
 function infoModPack {
+	PACK=$1
+
 	echo ""
 	if [ -d $modPackDIR ]; then
-		if [ -d "$modPackDIR/$1" ]; then
-			echo "Name: $1"
+		if [ -d "$modPackDIR/$PACK" ]; then
+			echo "Name: $PACK"
 			k=0
-			for i in $(echo $(ls "$modPackDIR/$1") | sed "s/,/ /g")
+			for i in $(echo $(ls "$modPackDIR/$PACK") | sed "s/,/ /g")
 			do
 					let k=k+1
 			done
@@ -1132,13 +1211,13 @@ function infoModPack {
 			if [ $k -gt 1 ]; then
 				echo ""
 				echo "List of included Mods:"
-				for i in $(echo $(ls "$modPackDIR/$1") | sed "s/,/ /g")
+				for i in $(echo $(ls "$modPackDIR/$PACK") | sed "s/,/ /g")
 				do
 						echo " - $i"
 				done
 			fi
 		else
-			echo "No Mod Pack by the name \"$1\" exists"
+			echo "No Mod Pack by the name \"$PACK\" exists"
 		fi
 	else
 		echo "Mod Pack directory not found, $progName may not be installed"
@@ -1301,7 +1380,7 @@ function getVersionWrapper {
 						logfileCheck
 					else
 						echo "SUCCESS"
-						getVersion $1
+						getVersion $VER
 					fi
 				fi
 			fi
@@ -1617,7 +1696,7 @@ function MainCMDs {
 			secret
 			;;
 		*)
-			Syntax
+			help $1
 			;;
 	esac
 }
