@@ -46,7 +46,7 @@ editorDEF="nano"
 tarNameDEF="factorio"
 VER_LATEST_DEF=0.14.22
 
-runFileDEF=/bin/x64/factorio
+runFileDEF=bin/x64/factorio
 downloadFileDEF=linux64
 
 urlPrefixDEF=https://www.factorio.com/get-download
