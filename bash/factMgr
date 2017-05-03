@@ -116,7 +116,7 @@ function help {
 	esac
 	echo ""
 	echo "===Help==="
-	echo "	-h		[command]				Show this help page"
+	echo "	-h		[command]				Show help for a sub-command"
 	echo ""
 }
 function helpMain {
@@ -131,8 +131,6 @@ function helpMain {
 	echo "	-v 							Version commands"
 	echo "	-s 							Saves commands"
 	echo "	-m 							Mods commands"
-	echo ""
-	echo "	-h		[command]				Show help for a sub-command"
 }
 function helpRun {
 	echo "===Server Control==="
@@ -1696,7 +1694,7 @@ function MainCMDs {
 			secret
 			;;
 		*)
-			help $1
+			help $2
 			;;
 	esac
 }
