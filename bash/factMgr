@@ -94,6 +94,12 @@ function help {
 	echo ""
 	echo "Syntax: $progName [Cmd] [subCmd] [args]"
 	echo ""
+	echo "===Main Commands==="
+	echo "	-r 							Server commands"
+	echo "	-v 							Version commands"
+	echo "	-s 							Saves commands"
+	echo "	-m 							Mods commands"
+	echo ""
 	case $1 in
 		-r)
 			helpRun
@@ -125,12 +131,6 @@ function helpMain {
 	echo "	-update		[UpdatePath]				Update $progName"
 	echo "	-uninstall						Uninstall $progName"
 	echo "	-config							Edit configuration file"
-	echo ""
-	echo "===Main Commands==="
-	echo "	-r 							Server commands"
-	echo "	-v 							Version commands"
-	echo "	-s 							Saves commands"
-	echo "	-m 							Mods commands"
 }
 function helpRun {
 	echo "===Server Control==="
