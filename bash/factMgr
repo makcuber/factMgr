@@ -18,6 +18,7 @@
 #UD: 6/29/4/2017
 #UD: 1/1/5/2017
 #UD: 2/2/5/2017
+#UD: 3/3/5/2017
 
 #VARIABLES
 execPath="$0"
@@ -100,7 +101,7 @@ function Syntax {
 	echo "===Server Control==="
 	echo "	-r 							Server commands"
 	echo "	   -s		[MapName] [#.#.#] [ModPackName]		   Start server"
-	echo "	   -k 	[MapName]	[PID#]				   Stop server"
+	echo "	   -k		[MapName] [PID#]				   Stop server"
 	echo "	   -c		[ProfileName]				   Create a server profile"
 	echo ""
 	echo "===Versions==="
@@ -407,7 +408,8 @@ function Update {
 		echo "SUCCESS"
 
 		echo -n "Verifying update..."
-		if [ $("$UpdatePath" -verify $VerifyKeySend) == "$VerifyKeyRecive" ]; then
+		KEY=$("$UpdatePath" -verify $VerifyKeySend)
+		if [ $KEY == "$VerifyKeyRecive" ]; then
 			echo "SUCCESS"
 
 			#add version comparison here
