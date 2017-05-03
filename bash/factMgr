@@ -1332,7 +1332,7 @@ function listRemoteVersionWrapper {
 	echo ""
 }
 function listRemoteVersion {
-	i=0
+	i=11
 	while [ $i -lt $verMaxB ]
 	do
 		let i=i+1
