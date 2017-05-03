@@ -409,7 +409,7 @@ function Update {
 
 		echo -n "Verifying update..."
 		KEY=$("$UpdatePath" -verify $VerifyKeySend)
-		if [ $KEY == "$VerifyKeyRecive" ]; then
+		if [ "$KEY" == "$VerifyKeyRecive" ]; then
 			echo "SUCCESS"
 
 			#add version comparison here
