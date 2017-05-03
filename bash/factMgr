@@ -1486,7 +1486,7 @@ function ListActiveServers {
 	echo "Running Factorio Servers for user \"$USER\":"
 	for i in $(echo $(ls /var/run/screens/S-$USER) | sed "s/,/ /g")
 	do
-	        if test "${i#*$progName}" != "$i"; then
+	        if [ test "${i#*$progName}" != "$i" ]; then
 	                echo " - $i"
 	        fi
 	done
@@ -1505,7 +1505,7 @@ function startServer {
 	else
 		echo "SUCCESS"
 		echo -n "Starting Factorio server $VER using map \"$1\"..."
-		screen -dm -S $USER-$progName-$1 "$2"
+		(screen -dm -S $USER-$progName-$1 "$2")>/dev/null
 	fi
 }
 function killServer {
@@ -1581,7 +1581,7 @@ function Run {
 				startServer $1 "$versionsDIR/$VER/$runFile $startCMD $SAVE $setModCMD $MOD $AUTO"
 			fi
 
-			screen -S $USER-$progName-$1 -Q select .
+			(screen -S $USER-$progName-$1 -Q select . )>/dev/null
 			screenTest=$?
 
 			if [ $screenTest == "0" ]; then
@@ -1589,7 +1589,7 @@ function Run {
 
 				echo ""
 				echo "Settings:"
-				if [ "$MOD" = "" ]; then
+				if ! [ "$MOD" = "" ]; then
 					echo "Mod pack: $MOD"
 				fi
 				if ! [ "$AUTO" = "" ]; then
@@ -1603,6 +1603,7 @@ function Run {
 			echo "ERROR: "$ERRORMSG
 		fi
 	fi
+	echo ""
 }
 
 #Developer
