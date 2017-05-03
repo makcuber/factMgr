@@ -57,7 +57,8 @@ modlistSizeDEF=2000
 modAPIDomainDEF=https://mods.factorio.com
 modlistURLDEF=$modAPIDomainDEF/api/mods?page_size=$modlistSizeDEF
 
-verMaxDEF=35
+verMaxBDEF=16
+verMaxCDEF=35
 
 #Directories
 baseDir=$RunPathDEF
@@ -246,7 +247,8 @@ function init {
 	modlistEXT=$modlistEXTDEF
 	modlistName=$modlistNameDEF
 
-	verMax=$verMaxDEF
+	verMaxB=$verMaxBDEF
+	verMaxC=$verMaxCDEF
 }
 function writeConf {
 	touch "$configFile"
@@ -1321,25 +1323,29 @@ function listRemoteVersionWrapper {
 		listRemoteVersion $1
 	else
 		k=11
-		while [ $k -lt $verMax ]
+		while [ $k -lt $verMaxC ]
 		do
 			let k=k+1
 			listRemoteVersion $k
 		done
 	fi
-
 	echo ""
 }
 function listRemoteVersion {
 	i=0
-	while [ $i -lt $verMax ]
+	while [ $i -lt $verMaxB ]
 	do
 		let i=i+1
-		VER=0.$1.$i
-		URL=$urlPrefix/$VER/$urlTail
-		if [[ $(wget $URL -O-) ]] 2>/dev/null; then
-			echo " - $VER"
-		fi
+		k=0
+		while [ $k -lt $verMaxC ]
+		do
+			let k=k+1
+			VER=0.$i.$k
+			URL=$urlPrefix/$VER/$urlTail
+			if [[ $(wget $URL -O-) ]] 2>/dev/null; then
+				echo " - $VER"
+			fi
+		done
 	done
 }
 function logfileCheck {
