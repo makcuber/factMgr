@@ -1500,7 +1500,7 @@ function ListActiveServers {
 	done
 	echo ""
 }
-function connectToServer{
+function connectToServer {
 	screenName=$USER-$progName-$1
 
 	(screen -S "$screenName" -Q select . )>/dev/null
@@ -1517,7 +1517,7 @@ function connectToServer{
 		echo "No server by the name \"$1\" is currently running for the user \"$USER\""
 	fi
 }
-function sendCmdToServer{
+function sendCmdToServer {
 	screenName=$USER-$progName-$1
 
 	(screen -S "$screenName" -Q select . )>/dev/null
