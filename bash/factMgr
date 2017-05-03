@@ -24,7 +24,7 @@
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.24"
+ProgVer="0.0.25"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_ID=$(who -m | awk '{print $1;}')
@@ -139,7 +139,7 @@ function helpRun {
 	echo "	-r 							Server commands"
 	echo "	   -s		[MapName] [#.#.#] [ModPackName]		   Start server"
 	echo "	   -k		[MapName] [PID#]			   Stop server"
-	echo "	   -c		[ProfileName]				   Create a server profile"
+	echo "	   -p		[ProfileName]				   Create a server profile"
 }
 function helpVersions {
 	echo "===Versions==="
@@ -1475,6 +1475,12 @@ function parseRunCMDS {
 		-k)
 			killServer $2 $3
 			;;
+		-c)
+			connectToServer $2
+			;;
+		-cmd)
+			sendCmdToServer $2 $3
+			;;
 		*)
 			ListActiveServers
 			;;
@@ -1492,9 +1498,39 @@ function ListActiveServers {
 	done
 	echo ""
 }
+function connectToServer{
+	screenName=$USER-$progName-$1
+
+	(screen -S "$screenName" -Q select . )>/dev/null
+	screenTest=$?
+
+	echo ""
+	if [ $screenTest == "0" ]; then
+		echo "REMINDER: Use Ctrl+a followed by Ctrl+d to exit the server console"
+		echo -n "Ready to connect? (y/n): "
+		read select
+		screen -r $screenName
+		clear
+	else
+		echo "No server by the name \"$1\" is currently running for the user \"$USER\""
+	fi
+}
+function sendCmdToServer{
+	screenName=$USER-$progName-$1
+
+	(screen -S "$screenName" -Q select . )>/dev/null
+	screenTest=$?
+
+	echo ""
+	if [ $screenTest == "0" ]; then
+		screen -S $screenName -p 0 -X stuff "$2$(printf \\r)"
+	else
+		echo "No server by the name \"$1\" is currently running for the user \"$USER\""
+	fi
+}
+
 function startServer {
 	screenName=$USER-$progName-$1
-	echo "cmd: $2"
 
 	(screen -S "$screenName" -Q select . )>/dev/null
 	screenTest=$?
@@ -1540,7 +1576,7 @@ function killServer {
 			echo "SUCCESS"
 		fi
 	else
-		echo "No server by the name $1 are currently running for the user \"$USER\""
+		echo "No server by the name \"$1\" is currently running for the user \"$USER\""
 	fi
 	echo ""
 }
