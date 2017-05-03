@@ -1347,16 +1347,12 @@ function listRemoteVersion {
 	testRemoteVersion 0.14.23
 
 	i=$verCurrentB
-	while [ $i -lt $verMaxB ]
+	k=0
+	while [ $k -lt $verMaxC ]
 	do
-		let i=i+1
-		k=0
-		while [ $k -lt $verMaxC ]
-		do
-			let k=k+1
-			VER=0.$i.$k
-			testRemoteVersion $VER
-		done
+		VER=0.$i.$k
+		testRemoteVersion $VER
+		let k=k+1
 	done
 }
 function logfileCheck {
