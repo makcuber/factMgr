@@ -1508,7 +1508,7 @@ function startServer {
 	else
 		echo "SUCCESS"
 		echo -n "Starting Factorio server $VER using map \"$1\"..."
-		(screen -dm -S "$screenName" "$2")>/dev/null
+		(screen -dm -S "$screenName" $2)>/dev/null
 	fi
 }
 function killServer {
