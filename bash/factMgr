@@ -140,7 +140,7 @@ function helpRun {
 	echo "	   -s		[MapName] [#.#.#] [ModPackName]		   Start server"
 	echo "	   -k		[MapName] [PID#]			   Stop server"
 	echo "	   -c 		[MapName]			     	   Connect to a server console"
-	echo "	   -cmd 	[MapName] [cmd]			   Send a command to a server"
+	echo "	   -cmd 	[MapName] [cmd]				   Send a command to a server"
 	echo "	   -p		[ProfileName]				   Create a server profile"
 }
 function helpVersions {
