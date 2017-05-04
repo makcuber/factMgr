@@ -24,7 +24,7 @@
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.25"
+ProgVer="0.0.26"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_ID=$(who -m | awk '{print $1;}')
@@ -1481,7 +1481,7 @@ function parseRunCMDS {
 			connectToServer $2
 			;;
 		-cmd)
-			sendCmdToServer $2 $3
+			sendCmdToServer $2 $3 $4 $5 $6 $7 $8 $9
 			;;
 		*)
 			ListActiveServers
@@ -1699,9 +1699,7 @@ function secret {
 
 function MainCMDs {
 	case $1 in
-		-s)
-			parseSaveCMDS $2 $3 $4
-			;;
+		#configuration
 		-install)
 			if [[ $EUID -ne 0 ]]; then
 				echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
@@ -1709,18 +1707,12 @@ function MainCMDs {
 				Install
 			fi
 			;;
-		-version)
-			progVersion
-			;;
 		-update)
 			if [[ $EUID -ne 0 ]]; then
 				echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
 			else
 				Update $2
 			fi
-			;;
-		-verify)
-			verifyRespond $2
 			;;
 		-uninstall)
 			if [[ $EUID -ne 0 ]]; then
@@ -1732,8 +1724,22 @@ function MainCMDs {
 		-config)
 			Config
 			;;
-		-dev)
-			devCMDs $2 $3 $4
+		-verify)
+			verifyRespond $2
+			;;
+		-version)
+			progVersion
+			;;
+
+		#Command Parsing
+		-r)
+			parseRunCMDS $2 $3 $4 $5 $6 $7 $8 $9
+			;;
+		-s)
+			parseSaveCMDS $2 $3 $4
+			;;
+		-v)
+			parseVersionsCMDS $2 $3 $4
 			;;
 		-m)
 			parseModsCMDS $2 $3 $4 $5
@@ -1741,11 +1747,10 @@ function MainCMDs {
 		-mp)
 			parseModPackCMDS $2 $3 $4
 			;;
-		-v)
-			parseVersionsCMDS $2 $3 $4
-			;;
-		-r)
-			parseRunCMDS $2 $3 $4 $5 $6
+
+		#Other
+		-dev)
+			devCMDs $2 $3 $4
 			;;
 		-secret)
 			secret
