@@ -1525,7 +1525,7 @@ function sendCmdToServer {
 
 	echo ""
 	if [ $screenTest == "0" ]; then
-		screen -S $screenName -p 0 -X stuff "$2$(printf \\r)"
+		screen -S $screenName -p 0 -X stuff "$2 $3 $4 $5 $6 $7 $8 $9$(printf \\r)"
 	else
 		echo "No server by the name \"$1\" is currently running for the user \"$USER\""
 	fi
