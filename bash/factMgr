@@ -1781,7 +1781,9 @@ function MainCMDs {
 
 function rootRun {
 	if [[ $EUID -ne 0 ]]; then
+		echo ""
 		echo "ERROR: $progName can only be run by user \"$USER_ID\" or as root"
+		echo ""
 	else
 		MainCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
 	fi
@@ -1789,7 +1791,9 @@ function rootRun {
 function userRun {
 	USER_TEST=$(cat /etc/passwd | grep $USER_ID)
 	if [ "$USER_TEST" == "0" ]; then
+		echo ""
 		echo "ERROR: Configured control user \"$USER_ID\" does not exist"
+		echo ""
 	else
 		if [[ "$USER_RUN" == "$USER_ID" ]]; then
 			MainCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
