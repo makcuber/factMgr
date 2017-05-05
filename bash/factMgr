@@ -1719,6 +1719,9 @@ function secret {
 
 #MAIN
 
+function switchToController {
+	sudo -u $USER_ID -H sh -c "$progName $1 $2 $3 $4 $5 $6 $7 $8 $9"
+}
 function controllerCMDs {
 	case $1 in
 		-config)
@@ -1755,7 +1758,6 @@ function controllerCMDs {
 			;;
 	esac
 }
-
 function adminCMDs {
 	case $1 in
 		#configuration
@@ -1778,14 +1780,7 @@ function adminCMDs {
 			;;
 	esac
 }
-function switchToController {
-	sudo -u $USER_ID -H sh -c "$progName $1 $2 $3 $4 $5 $6 $7 $8 $9"
-}
-function rootRun {
-
-}
-function userRun {
-
+function parseUser {
 	#verify that the Control user exists
 	USER_TEST=$(cat /etc/passwd | grep $USER_ID)
 	if [ "$USER_TEST" == "0" ]; then
@@ -1821,5 +1816,4 @@ function userRun {
 #Startup
 
 init
-
-userRun $1 $2 $3 $4 $5 $6 $7 $8 $9
+parseUser $1 $2 $3 $4 $5 $6 $7 $8 $9
