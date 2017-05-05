@@ -1744,7 +1744,7 @@ function secret {
 #MAIN
 
 function switchToController {
-	sudo -u $USER_ID -H sh -c "$progName $1 $2 $3 $4 $5 $6 $7 $8 $9"
+	su $USER_ID -c "bash -c $progName $1 $2 $3 $4 $5 $6 $7 $8 $9"
 }
 function controllerCMDs {
 	case $1 in
@@ -1825,17 +1825,18 @@ function parseUser {
 				controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
 			else
 				#add check for control group here
-
+				echo ""
+				echo "ERROR: $progName can only be run by the control user \"$USER_ID\" or as root"
+				echo ""
 				#reload as control user
 				echo ""
 				echo "Invoker: $USER_RUN"
 				echo "User: $USER"
 				echo ""
+
 				switchToController $1 $2 $3 $4 $5 $6 $7 $8 $9
 			fi
-			echo ""
-			echo "ERROR: $progName can only be run by the control user \"$USER_ID\" or as root"
-			echo ""
+
 		else
 			adminCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
 		fi
