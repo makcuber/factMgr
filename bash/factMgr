@@ -1582,7 +1582,7 @@ function killServer {
 		else
 			echo "SUCCESS"
 
-			fixPermissions $1
+			#fixPermissions $1
 		fi
 	else
 		echo "No server by the name \"$1\" is currently running for the user \"$USER_ID\""
