@@ -665,7 +665,7 @@ function copyMap {
 
 #Mods
 function parseModsCMDS {
-	updateModList
+	#updateModList
 	case $1 in
 		-g)
 			GetMod $2
