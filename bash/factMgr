@@ -1696,6 +1696,9 @@ function devCMDs {
 		-modlist)
 			updateModList
 			;;
+		-update)
+			devUpdate $2 $3 $4 $5 $6 $7 $8 $9
+			;;
 		-fixperm)
 			fixPermissions $2
 			;;
@@ -1703,6 +1706,27 @@ function devCMDs {
 			secret
 			;;
 	esac
+}
+function devUpdate {
+	UpdatePath=""
+
+	if [ "$1" == "" ]; then
+		echo ""
+		echo "No update path provided"
+		echo "Will use default \"$UpdatePathDEF\""
+		UpdatePath="$UpdatePathDEF"
+	else
+		UpdatePath="$1"
+	fi
+
+	echo ""
+	echo -n "Searching for update at path \"$UpdatePath\"..."
+	if [ -e "$UpdatePath" ]; then
+		echo "SUCCESS"
+		"$UpdatePath" $2 $3 $4 $5 $6 $7 $8 $9
+	else
+		echo "FAILED"
+	fi
 }
 function progVersion {
 	echo "$ProgVer"
@@ -1769,6 +1793,12 @@ function adminCMDs {
 			;;
 		-uninstall)
 			Uninstall
+			;;
+		-verify)
+			verifyRespond $2
+			;;
+		-version)
+			progVersion
 			;;
 
 		#Other
