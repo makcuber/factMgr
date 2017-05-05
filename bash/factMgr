@@ -1753,25 +1753,24 @@ function MainCMDs {
 
 		#Command Parsing
 		-r)
-			su $USER_ID -c "bash -c parseRunCMDS $2 $3 $4 $5 $6 $7 $8 $9"
+			parseRunCMDS $2 $3 $4 $5 $6 $7 $8 $9
 			;;
 		-s)
-			su $USER_ID -c "bash -c parseSaveCMDS $2 $3 $4"
+			parseSaveCMDS $2 $3 $4
 			;;
 		-v)
-			su $USER_ID -c "bash -c parseVersionsCMDS $2 $3 $4"
+			parseVersionsCMDS $2 $3 $4
 			;;
 		-m)
-			su $USER_ID -c "bash -c parseModsCMDS $2 $3 $4 $5"
+			parseModsCMDS $2 $3 $4 $5
 			;;
 		-mp)
-			su $USER_ID -c "bash -c parseModPackCMDS $2 $3 $4"
-			#sudo -u $USER_ID -H sh -c "
+			parseModPackCMDS $2 $3 $4
 			;;
 
 		#Other
 		-dev)
-			sudo -u $USER_ID -H sh -c "devCMDs $2 $3 $4"
+			devCMDs $2 $3 $4
 			;;
 		-secret)
 			secret
@@ -1799,7 +1798,7 @@ function userRun {
 		echo ""
 	else
 		if [[ "$USER_RUN" == "$USER_ID" ]]; then
-			MainCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
+			sudo -u $USER_ID -H sh -c "$progName $1 $2 $3 $4 $5 $6 $7 $8 $9"
 		else
 			rootRun $1 $2 $3 $4 $5 $6 $7 $8 $9
 		fi
