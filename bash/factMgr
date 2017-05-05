@@ -1512,8 +1512,10 @@ function connectToServer {
 		echo "REMINDER: Use Ctrl+a followed by Ctrl+d to exit the server console"
 		echo -n "Ready to connect? (y/n): "
 		read select
-		screen -r $screenName
-		clear
+		if [ "$select" == "y" ]; then
+			screen -r $screenName
+			clear
+		fi
 	else
 		echo "No server by the name \"$1\" is currently running for the user \"$USER\""
 	fi
