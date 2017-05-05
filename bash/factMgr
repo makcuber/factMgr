@@ -1787,7 +1787,7 @@ function rootRun {
 	fi
 }
 function userRun {
-	USER_TEST=$(grep -c '^$USER_ID:' /etc/passwd)
+	USER_TEST=$(cat /etc/passwd | grep $USER_ID)
 	if [ "$USER_TEST" == "0" ]; then
 		echo "ERROR: Configured control user \"$USER_ID\" does not exist"
 	else
