@@ -25,7 +25,7 @@
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.30"
+ProgVer="0.0.31"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_RUN=$(who -m | awk '{print $1;}')
@@ -1324,7 +1324,8 @@ function determineLatestVersion {
 }
 function getLatestVersion {
 	echo ""
-	echo "Checking for latest version..."
+	echo -n "Checking for latest version..."
+	echo "FAILED"
 	echo ""
 }
 function listRemoteVersionWrapper {
@@ -1718,30 +1719,8 @@ function secret {
 
 #MAIN
 
-function MainCMDs {
+function controllerCMDs {
 	case $1 in
-		#configuration
-		-install)
-			if [[ $EUID -ne 0 ]]; then
-				echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
-			else
-				Install
-			fi
-			;;
-		-update)
-			if [[ $EUID -ne 0 ]]; then
-				echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
-			else
-				Update $2
-			fi
-			;;
-		-uninstall)
-			if [[ $EUID -ne 0 ]]; then
-				echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
-			else
-				Uninstall
-			fi
-			;;
 		-config)
 			Config
 			;;
@@ -1768,11 +1747,6 @@ function MainCMDs {
 		-mp)
 			parseModPackCMDS $2 $3 $4
 			;;
-
-		#Other
-		-dev)
-			devCMDs $2 $3 $4
-			;;
 		-secret)
 			secret
 			;;
@@ -1782,27 +1756,65 @@ function MainCMDs {
 	esac
 }
 
+function adminCMDs {
+	case $1 in
+		#configuration
+		-install)
+			Install
+			;;
+		-update)
+			Update $2
+			;;
+		-uninstall)
+			Uninstall
+			;;
+
+		#Other
+		-dev)
+			devCMDs $2 $3 $4
+			;;
+		*)
+			switchToController $1 $2 $3 $4 $5 $6 $7 $8 $9
+			;;
+	esac
+}
+function switchToController {
+	sudo -u $USER_ID -H sh -c "$progName $1 $2 $3 $4 $5 $6 $7 $8 $9"
+}
 function rootRun {
-	if [[ $EUID -ne 0 ]]; then
-		echo ""
-		echo "ERROR: $progName can only be run by the control user \"$USER_ID\" or as root"
-		echo ""
-	else
-		MainCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
-	fi
+
 }
 function userRun {
+
+	#verify that the Control user exists
 	USER_TEST=$(cat /etc/passwd | grep $USER_ID)
 	if [ "$USER_TEST" == "0" ]; then
 		echo ""
 		echo "ERROR: Configured control user \"$USER_ID\" does not exist"
 		echo ""
 	else
-		if [[ "$USER_RUN" == "$USER_ID" ]]; then
-			sudo -u $USER_ID -H sh -c "$progName $1 $2 $3 $4 $5 $6 $7 $8 $9"
+		#check to see if sudo has been invoked
+		if [[ $EUID -ne 0 ]]; then
+			#check to see if the active user is the control user
+			if [[ "$USER_RUN" == "$USER_ID" ]]; then
+				controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
+			else
+				#add check for control group here
+
+				#reload as control user
+				echo ""
+				echo "Invoker: $USER_RUN"
+				echo "User: $USER"
+				echo ""
+				switchToController $1 $2 $3 $4 $5 $6 $7 $8 $9
+			fi
+			echo ""
+			echo "ERROR: $progName can only be run by the control user \"$USER_ID\" or as root"
+			echo ""
 		else
-			rootRun $1 $2 $3 $4 $5 $6 $7 $8 $9
+			adminCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
 		fi
+
 	fi
 }
 
@@ -1810,6 +1822,4 @@ function userRun {
 
 init
 
-#rootRun $1 $2 $3 $4 $5 $6 $7 $8 $9
 userRun $1 $2 $3 $4 $5 $6 $7 $8 $9
-#MainCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
