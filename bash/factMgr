@@ -390,6 +390,7 @@ function Install {
 		RunPath="$3"
 	fi
 
+
 	#script
 	echo ""
 	echo "Initiating installation of $progName version $ProgVer"
@@ -397,6 +398,7 @@ function Install {
 	echo "Will install script to:			$BinPath"
 	echo "Creating configuration file in: 	$ConfigPath"
 	echo "Creating file structure in:		$RunPath"
+	echo "Will set file structure ownership to user:		$USER_ID"
 	echo ""
 	echo -n "Install with this configuration? (y/n): "
 	read select
@@ -1749,24 +1751,24 @@ function MainCMDs {
 
 		#Command Parsing
 		-r)
-			parseRunCMDS $2 $3 $4 $5 $6 $7 $8 $9
+			sudo -u $USER_ID -H sh -c "parseRunCMDS $2 $3 $4 $5 $6 $7 $8 $9"
 			;;
 		-s)
-			parseSaveCMDS $2 $3 $4
+			sudo -u $USER_ID -H sh -c "parseSaveCMDS $2 $3 $4"
 			;;
 		-v)
-			parseVersionsCMDS $2 $3 $4
+			sudo -u $USER_ID -H sh -c "parseVersionsCMDS $2 $3 $4"
 			;;
 		-m)
-			parseModsCMDS $2 $3 $4 $5
+			sudo -u $USER_ID -H sh -c "parseModsCMDS $2 $3 $4 $5"
 			;;
 		-mp)
-			parseModPackCMDS $2 $3 $4
+			sudo -u $USER_ID -H sh -c "parseModPackCMDS $2 $3 $4"
 			;;
 
 		#Other
 		-dev)
-			devCMDs $2 $3 $4
+			sudo -u $USER_ID -H sh -c "devCMDs $2 $3 $4"
 			;;
 		-secret)
 			secret
@@ -1779,9 +1781,21 @@ function MainCMDs {
 
 function rootRun {
 	if [[ $EUID -ne 0 ]]; then
-		echo "ERROR: Either you do not have root privilages or you forgot to use Sudo (probably the latter :P)"
+		echo "ERROR: $progName can only be run by user \"$USER_ID\" or as root"
 	else
 		MainCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
+	fi
+}
+function userRun {
+	USER_TEST=$(grep -c '^username:' /etc/passwd)
+	if [ "$USER_TEST" == "0" ]; then
+		echo "ERROR: Configured control user \"$USER_ID\" does not exist"
+	else
+		if [[ "$USER_RUN" == "$USER_ID" ]]; then
+			MainCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
+		else
+			rootRun $1 $2 $3 $4 $5 $6 $7 $8 $9
+		fi
 	fi
 }
 
@@ -1790,4 +1804,5 @@ function rootRun {
 init
 
 #rootRun $1 $2 $3 $4 $5 $6 $7 $8 $9
-MainCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
+userRun $1 $2 $3 $4 $5 $6 $7 $8 $9
+#MainCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
