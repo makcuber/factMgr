@@ -1831,7 +1831,7 @@ function parseUser {
 			#check to see if sudo has been invoked
 			if [[ $EUID -ne 0 ]]; then
 				#check to see if the active user is the control user
-				if [[ "$USER_RUN" == "$USER_ID" ]]; then
+				if [[ "$USER" == "$USER_ID" ]]; then
 					controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
 				else
 					#add check for control group here
