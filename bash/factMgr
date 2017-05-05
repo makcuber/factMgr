@@ -1510,7 +1510,7 @@ function connectToServer {
 	echo ""
 	if [ $screenTest == "0" ]; then
 		echo "REMINDER: Use Ctrl+a followed by Ctrl+d to exit the server console"
-		echo -n "Ready to connect to server "$1"? (y/n): "
+		echo -n "Ready to connect to server \"$1\"? (y/n): "
 		read select
 		if [ "$select" == "y" ]; then
 			screen -r $screenName
