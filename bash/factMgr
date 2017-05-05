@@ -30,6 +30,7 @@ VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_RUN=$(who -m | awk '{print $1;}')
 BOOTUP_DATETIME=$(date +%Y%m%d%H%M%S)
+DEBUG_STATUS=1
 
 #defaults
 progName=factMgr
@@ -1778,15 +1779,18 @@ function controllerCMDs {
 			secret
 			;;
 		*)
+			if [ "$DEBUG_STATUS" == "1" ]; then
+				echo ""
+				showUsers
+				echo "$1"
+			fi
 			help $2
 			;;
 	esac
 }
 function showUsers {
-	echo ""
 	echo "Invoker: $USER_RUN"
 	echo "User: $USER"
-	echo ""
 }
 function adminCMDs {
 	case $1 in
@@ -1812,7 +1816,11 @@ function adminCMDs {
 			devCMDs $2 $3 $4
 			;;
 		*)
-			showUsers
+			if [ "$DEBUG_STATUS" == "1" ]; then
+				echo ""
+				showUsers
+				echo "$1"
+			fi
 			switchToController $1 $2 $3 $4 $5 $6 $7 $8 $9
 			;;
 	esac
@@ -1838,10 +1846,10 @@ function parseUser {
 					echo ""
 					echo "ERROR: $progName can only be run by the control user \"$USER_ID\" or as root"
 					echo ""
-					#reload as control user
-					showUsers
-
-					switchToController $1 $2 $3 $4 $5 $6 $7 $8 $9
+					if [ "$DEBUG_STATUS" == "1" ]; then
+						showUsers
+						echo ""
+					fi
 				fi
 
 			else
