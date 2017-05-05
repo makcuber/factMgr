@@ -28,7 +28,7 @@ verboseOn="1"
 ProgVer="0.0.28"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
-USER_ID=$(who -m | awk '{print $1;}')
+USER_RUN=$(who -m | awk '{print $1;}')
 BOOTUP_DATETIME=$(date +%Y%m%d%H%M%S)
 
 #defaults
@@ -254,6 +254,8 @@ function init {
 	verMaxB=$verMaxBDEF
 	verMaxC=$verMaxCDEF
 	verCurrentB=$verCurrentBDEF
+
+	USER_ID=factorio
 }
 function writeConf {
 	touch "$configFile"
@@ -1492,8 +1494,8 @@ function parseRunCMDS {
 function ListActiveServers {
 	echo ""
 	echo "Syntax: PID#.UserName-ProgramName-ServerName"
-	echo "Running Factorio Servers for user \"$USER\":"
-	for i in $(echo $(ls /var/run/screens/S-$USER) | sed "s/,/ /g")
+	echo "Running Factorio Servers for user \"$USER_ID\":"
+	for i in $(echo $(ls /var/run/screens/S-$USER_ID) | sed "s/,/ /g")
 	do
 	        if test "${i#*$progName}" != "$i"; then
 	                echo " - $i"
@@ -1502,7 +1504,7 @@ function ListActiveServers {
 	echo ""
 }
 function connectToServer {
-	screenName=$USER-$progName-$1
+	screenName=$USER_ID-$progName-$1
 
 	(screen -S "$screenName" -Q select . )>/dev/null
 	screenTest=$?
@@ -1517,11 +1519,11 @@ function connectToServer {
 			clear
 		fi
 	else
-		echo "No server by the name \"$1\" is currently running for the user \"$USER\""
+		echo "No server by the name \"$1\" is currently running for the user \"$USER_ID\""
 	fi
 }
 function sendCmdToServer {
-	screenName=$USER-$progName-$1
+	screenName=$USER_ID-$progName-$1
 
 	(screen -S "$screenName" -Q select . )>/dev/null
 	screenTest=$?
@@ -1530,12 +1532,12 @@ function sendCmdToServer {
 	if [ $screenTest == "0" ]; then
 		screen -S $screenName -p 0 -X stuff "$2 $3 $4 $5 $6 $7 $8 $9$(printf \\r)"
 	else
-		echo "No server by the name \"$1\" is currently running for the user \"$USER\""
+		echo "No server by the name \"$1\" is currently running for the user \"$USER_ID\""
 	fi
 }
 
 function startServer {
-	screenName=$USER-$progName-$1
+	screenName=$USER_ID-$progName-$1
 
 	(screen -S "$screenName" -Q select . )>/dev/null
 	screenTest=$?
@@ -1545,7 +1547,7 @@ function startServer {
 	if [ $screenTest == "0" ]; then
 		echo "FAILED"
 		echo ""
-		echo "A server by the name \"$1\" is already running for the user \"$USER\""
+		echo "A server by the name \"$1\" is already running for the user \"$USER_ID\""
 	else
 		echo "SUCCESS"
 		echo -n "Starting Factorio server $VER using map \"$1\"..."
@@ -1553,7 +1555,7 @@ function startServer {
 	fi
 }
 function killServer {
-	screenName=$USER-$progName-$1
+	screenName=$USER_ID-$progName-$1
 
 	screenTest=""
 	if [ "$2" == "" ]; then
@@ -1583,7 +1585,7 @@ function killServer {
 			fixPermissions $1
 		fi
 	else
-		echo "No server by the name \"$1\" is currently running for the user \"$USER\""
+		echo "No server by the name \"$1\" is currently running for the user \"$USER_ID\""
 	fi
 	echo ""
 }
@@ -1635,7 +1637,7 @@ function Run {
 				startServer $1 "$versionsDIR/$VER/$runFile $startCMD $SAVE $setModCMD $MOD $AUTO"
 			fi
 
-			(screen -S $USER-$progName-$1 -Q select . )>/dev/null
+			(screen -S $USER_ID-$progName-$1 -Q select . )>/dev/null
 			screenTest=$?
 
 			if [ $screenTest == "0" ]; then
