@@ -398,7 +398,7 @@ function Install {
 	echo "Will install script to:			$BinPath"
 	echo "Creating configuration file in: 	$ConfigPath"
 	echo "Creating file structure in:		$RunPath"
-	echo "Will set file structure ownership to user:		$USER_ID"
+	echo "Will set control user to:		$USER_ID"
 	echo ""
 	echo -n "Install with this configuration? (y/n): "
 	read select
@@ -431,7 +431,9 @@ function Install {
 		echo "DONE"
 		echo ""
 	else
+		echo ""
 		echo "Installation cancelled"
+		echo ""
 	fi
 }
 
