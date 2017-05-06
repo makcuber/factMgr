@@ -1745,6 +1745,10 @@ function secret {
 #MAIN
 
 function switchToController {
+	if [ "$DEBUG_STATUS" == "1" ]; then
+		echo ""
+		echo "1: $1"
+	fi
 	su $USER_ID -c "bash -c $progName $1 $2 $3 $4 $5 $6 $7 $8 $9"
 }
 function controllerCMDs {
@@ -1782,7 +1786,7 @@ function controllerCMDs {
 			if [ "$DEBUG_STATUS" == "1" ]; then
 				echo ""
 				showUsers
-				echo "$1"
+				echo "1: $1"
 			fi
 			help $2
 			;;
@@ -1819,7 +1823,7 @@ function adminCMDs {
 			if [ "$DEBUG_STATUS" == "1" ]; then
 				echo ""
 				showUsers
-				echo "$1"
+				echo "1: $1"
 			fi
 			switchToController $1 $2 $3 $4 $5 $6 $7 $8 $9
 			;;
@@ -1828,7 +1832,9 @@ function adminCMDs {
 function parseUser {
 	#verify that the Control user exists
 	if [ "$1" == "-u" ]; then
+		echo ""
 		showUsers
+		echo ""
 	else
 		USER_TEST=$(cat /etc/passwd | grep $USER_ID)
 		if [ "$USER_TEST" == "0" ]; then
