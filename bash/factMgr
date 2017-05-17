@@ -892,7 +892,7 @@ function FindMod {
 							echo ""
 							echo "Mod matching condition \"$category\" = \"$searchTerm\" found:"
 							echo "=============================================="
-							if [ "3" == "-d" ]; then
+							if [ "$3" == "-d" ]; then
 								modDownload_url=$(jq -r ".results[$i].latest_release.download_url" "$modlistPath/$modlistName.$modlistEXT")
 								fileName=$(jq -r ".results[$i].latest_release.file_name" "$modlistPath/$modlistName.$modlistEXT")
 								modName=$(jq -r ".results[$i].name" "$modlistPath/$modlistName.$modlistEXT")
