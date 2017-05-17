@@ -104,7 +104,7 @@ function help {
 	echo "	-v 							Version commands"
 	echo "	-s 							Saves commands"
 	echo "	-m 							Mods commands"
-	echo "	-mp 							Mods commands"
+	echo "	-mp 							Modpack commands"
 	echo ""
 	case $1 in
 		-r)
@@ -128,7 +128,7 @@ function help {
 	esac
 	echo ""
 	echo "===Help==="
-	echo "	-h		[command]				Show help for a sub-command"
+	echo "	-h		[command]				Show help for a command"
 	echo ""
 }
 function helpMain {
@@ -1299,7 +1299,7 @@ function removeModFromModPack {
 }
 function infoModPack {
 	echo ""
-	if [ "$1" == ""]; then
+	if [ "$1" == "" ]; then
 		echo "No modpack name provided"
 	else
 		PACK=$1
