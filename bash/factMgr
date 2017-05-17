@@ -820,7 +820,7 @@ function downloadMod {
 	if [[ $(wget $modAPIDomain$1 -O-) ]] 2>/dev/null; then
 		echo "SUCCESS"
 		echo -n "Downloading mod..."
-		wget modAPIDomain$1 --output-document "$modsDIR/$2/$3" -a $downloadLogFile
+		wget $modAPIDomain$1 --output-document "$modsDIR/$2/$3" -a $downloadLogFile
 		if [ -e $modsDIR/$2/$3 ]; then
 			echo "SUCCESS"
 		else
@@ -844,8 +844,8 @@ function downloadModWrapper {
 		else
 			echo "No mod folder found for mod \"$4\""
 			echo -n "Creating mod folder..."
-			(mkdir $modsDIR/$2)>NULL
-			if [ -d $modsDIR/$2 ]; then
+			mkdir "$modsDIR/$2"
+			if [ -d "$modsDIR/$2" ]; then
 				echo "SUCCESS"
 				downloadMod $1 $2 $3 "$4"
 			else
@@ -901,7 +901,7 @@ function FindMod {
 								echo "Mod Name = $modName"
 								echo "Download URL = $modAPIDomain$modDownload_url"
 								echo "File Name = $fileName"
-								"=============================================="
+								echo "=============================================="
 								echo -n "Proceed with download? (y/n): "
 								read select
 								if [ "$select" == "y" ]; then
@@ -1255,7 +1255,7 @@ function addModToModPack {
 					if [ $select == "y" ]; then
 						echo -n "Adding Mod \"$MOD\" to Mod Pack \"$PACK\"..."
 						cp "$modsDIR/$MOD.zip" "$modPackDIR/$PACK/"
-						if [ -e "$modPackDIR/$PACK/$MOD" ]; then
+						if [ -e "$modPackDIR/$PACK/$MOD.zip" ]; then
 							echo "SUCCESS"
 						else
 							echo "FAILED"
