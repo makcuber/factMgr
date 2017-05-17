@@ -20,12 +20,13 @@
 #UD: 2/2/5/2017
 #UD: 3/3/5/2017
 #UD: 5/5/5/2017
+#UD: 3/17/5/2017
 
 #VARIABLES
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.31"
+ProgVer="0.0.32"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_RUN=$(who -m | awk '{print $1;}')
@@ -668,8 +669,8 @@ function copyMap {
 function parseModsCMDS {
 	#updateModList
 	case $1 in
-		-g)
-			GetMod $2
+		-d)
+			FindMod $2 "name" "-d"
 			;;
 		-i)
 			ImportMod $2
@@ -677,19 +678,34 @@ function parseModsCMDS {
 		-p)
 			parseModPackCMDS $2 $3 $4
 			;;
-		-info)
-			GetModInfo "name" "$3"
-			;;
 		-l)
 			ListMods $2
 			;;
 		-s)
-			FindMod $2 $3 $4
+			FindMod $2 $3
 			;;
 		*)
 			ModCountWrapper
 			;;
 	esac
+}
+
+function getModList {
+	#download a new copy of the modlist from the remote server if the modlist URL
+	#checks out
+	echo -n "Connecting to remote mods database..."
+	if [[ $(wget $modlistURL -O-) ]] 2>/dev/null; then
+		echo "SUCCESS"
+		echo -n "Downloading modlist data..."
+		wget $modlistURL --output-document "$modlistPath/$modlistName.$modlistEXT" -a $downloadLogFile
+		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			echo "SUCCESS"
+		else
+			echo "FAILED"
+		fi
+	else
+		echo "FAILED"
+	fi
 }
 function updateModList {
 	#if modlist directory exists, download a new copy of the modlist from the
@@ -699,11 +715,37 @@ function updateModList {
 	if [ -d $modlistPath ]; then
 		if [ -e "$modlistPath/$modlistName.$modlistEXT" ]; then
 			echo -n "Creating backup of old modlist data..."
-			NOW=$(date +%Y-%m-%d-%-H-%M-%S)
-			mv "$modlistPath/$modlistName.$modlistEXT" "$modlistPath/$modlistName-$NOW.$modlistEXT"
-			if [ -e "$modlistPath/$modlistName-$NOW.$modlistEXT" ]; then
+			mv "$modlistPath/$modlistName.$modlistEXT" "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT"
+			if [ -e "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT" ]; then
 				echo "SUCCESS"
 				getModList
+				if [ -e "$modlistPath/$modlistName.$modlistEXT" ]; then
+					#remove backup file to prevent excessive backups of outdated information
+					echo -n "Removing modlist backup..."
+					rm "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT"
+					if [ -e "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT" ]; then
+						echo "FAILED"
+					else
+						echo "SUCCESS"
+					fi
+				else
+					#Restore modlist from backup
+					echo "Restoring modlist from backup..."
+					mv "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT" "$modlistPath/$modlistName.$modlistEXT"
+					if [ -e "$modlistPath/$modlistName.$modlistEXT" ]; then
+						echo "SUCCESS"
+						#remove backup file to prevent excessive backups of outdated information
+						echo -n "Removing modlist backup..."
+						rm "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT"
+						if [ -e "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT" ]; then
+							echo "FAILED"
+						else
+							echo "SUCCESS"
+						fi
+					else
+						echo "FAILED"
+					fi
+				fi
 			else
 				echo "FAILED"
 				echo ""
@@ -722,23 +764,57 @@ function updateModList {
 	fi
 	echo ""
 }
-function getModList {
-	#download a new copy of the modlist from the remote server if the modlist URL
-	#checks out
-	echo -n "Connecting to remote mods database..."
-	if [[ $(wget $modlistURL -O-) ]] 2>/dev/null; then
-		echo "SUCCESS"
-		echo -n "Downloading modlist data..."
-		wget $modlistURL --output-document "$modlistPath/$modlistName.$modlistEXT" -a $downloadLogFile
+function ModListVerify {
+	#verify the modlist exists, download if not, and retrive given mod URL
+	echo ""
+	if [ -d $modlistPath ]; then
+		echo -n "Verifying Modlist..."
 		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			#add datetime check
 			echo "SUCCESS"
 		else
 			echo "FAILED"
+			updateModList
 		fi
 	else
-		echo "FAILED"
+		echo "Modlist configuration directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+
+function ModPortalCount {
+	if [ -d $modlistPath ]; then
+		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			echo -n "# of mods available in the ModPortal: "
+			jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT"
+		else
+			echo "Modlist does not appear to exist"
+		fi
+	else
+		echo "Modlist configuration directory not found, $progName may not be installed"
 	fi
 }
+function ModPortalCountWrapper {
+	echo ""
+	ModPortalCount
+	echo ""
+}
+function ModCount {
+	ModPortalCount
+
+	k=0
+	for i in $(echo $(ls "$modsDIR") | sed "s/,/ /g")
+	do
+			let k=k+1
+	done
+	echo "# of Mods available on the local system: $k"
+}
+function ModCountWrapper {
+	echo ""
+	ModCount
+	echo ""
+}
+
 function downloadMod {
 	#download the target mod from the remote server if the URL checks out
 	echo -n "Connecting to remote mods database..."
@@ -781,8 +857,8 @@ function downloadModWrapper {
 		echo "Mods directory not found, $progName may not be installed"
 	fi
 }
-function getModURL {
-	#search modlist for given mod, retrive info and download if found and prompted
+
+function FindMod {
 	echo ""
 	if [ -d $modlistPath ]; then
 		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
@@ -791,35 +867,77 @@ function getModURL {
 			#use $query:0:1 to get first letter
 			i_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
 			ModPortalCount
-			echo "Searching for \"$1\" = \"$2\""
-			echo -en "Mods searched: \033[s"
+			if [ "$2" == ""]; then
+				category="name"
+			else
+				category=$2
+			fi
+			echo "Searching for \"$category\" = \"$searchTerm\""
+			echo -en "Mods searched: \033[1D"
 			while [ $i -lt $i_max ]
 			do
-				echo -en "\033[u$i"
+				echo -en "\033[1D$i"
 
-				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
-				if [ "$result:0:1" == "$2:0:1" ]; then
-					if [ "$result" == "$2" ]; then
-						#show only key info
-						modDownload_url=$(jq -r ".results[$i].latest_release.download_url" "$modlistPath/$modlistName.$modlistEXT")
-						fileName=$(jq -r ".results[$i].latest_release.file_name" "$modlistPath/$modlistName.$modlistEXT")
-						modName=$(jq -r ".results[$i].name" "$modlistPath/$modlistName.$modlistEXT")
-						modTitle=$(jq -r ".results[$i].title" "$modlistPath/$modlistName.$modlistEXT")
+				result=$(jq -r ".results[$i].$category" "$modlistPath/$modlistName.$modlistEXT")
+				searchResult=${result,,}
+				searchReference=${searchTerm,,}
+
+				if [ "$searchResult:0:1" == "$searchReference:0:1" ]; then
+					if [ "$searchResult" == "$searchReference" ]; then
 						echo ""
 						echo ""
-						echo "Mod matching condition \"$1\" = \"$2\" found:"
-						echo "---------------------------------------------"
-						echo "Mod Title = $modTitle"
-						echo "Mod Name = $modName"
-						echo "Download URL = $modAPIDomain$modDownload_url"
-						echo "File Name = $fileName"
-						echo ""
-						echo -n "Proceed with download? (y/n): "
-						read select
-						if [ "$select" == "y" ]; then
-							downloadModWrapper $modDownload_url $modName $fileName "$modTitle"
+						echo "Mod matching condition \"$category\" = \"$searchTerm\" found:"
+						echo "=============================================="
+						if [ "3" == "-d" ]; then
+							modDownload_url=$(jq -r ".results[$i].latest_release.download_url" "$modlistPath/$modlistName.$modlistEXT")
+							fileName=$(jq -r ".results[$i].latest_release.file_name" "$modlistPath/$modlistName.$modlistEXT")
+							modName=$(jq -r ".results[$i].name" "$modlistPath/$modlistName.$modlistEXT")
+							modTitle=$(jq -r ".results[$i].title" "$modlistPath/$modlistName.$modlistEXT")
+							echo "Mod Title = $modTitle"
+							echo "Mod Name = $modName"
+							echo "Download URL = $modAPIDomain$modDownload_url"
+							echo "File Name = $fileName"
+							"=============================================="
+							echo -n "Proceed with download? (y/n): "
+							read select
+							if [ "$select" == "y" ]; then
+								downloadModWrapper $modDownload_url $modName $fileName "$modTitle"
+							fi
+						else
+							echo -n "Name: "
+							jq -r ".results[$i].latest_release.info_json.name" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Author: "
+							jq -r ".results[$i].latest_release.info_json.author" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Description: "
+							jq -r ".results[$i].latest_release.info_json.description" "$modlistPath/$modlistName.$modlistEXT"
+
+							echo ""
+							echo -n "Target Factorio Version: "
+							jq -r ".results[$i].latest_release.info_json.factorio_version" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Current Mod Version: "
+							jq -r ".results[$i].latest_release.info_json.version" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Current Mod Version Downloads: "
+							jq -r ".results[$i].latest_release.downloads_count" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Lifetime Mod Downloads: "
+							jq -r ".results[$i].downloads_count" "$modlistPath/$modlistName.$modlistEXT"
+
+							echo ""
+							echo "Dependencies: "
+							k=0
+							k_max=$(jq -r ".results[$i].latest_release.info_json.dependencies | length" "$modlistPath/$modlistName.$modlistEXT")
+							while [ $k -lt $k_max ]
+							do
+								echo -n " - "
+								jq -r ".results[$i].latest_release.info_json.dependencies[$k]" "$modlistPath/$modlistName.$modlistEXT"
+								let k=$k+1
+							done
+
+							echo ""
+							echo "=============================================="
 						fi
 						let i=$i_max
+					else
+						let i=i+1
 					fi
 				else
 					let i=i+1
@@ -831,103 +949,6 @@ function getModURL {
 	else
 		echo "Modlist configuration directory not found, $progName may not be installed"
 	fi
-	echo ""
-}
-function ModPortalDownloadMod {
-	#verify the modlist exists, download if not, and retrive given mod URL
-	echo ""
-	if [ -d $modlistPath ]; then
-		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
-			getModURL $1 "$2"
-		else
-			echo "Modlist does not appear to exist, attempting to download..."
-			updateModList
-			if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
-				getModURL $1 "$2"
-			else
-				echo "Failed to update Modlist"
-			fi
-		fi
-	else
-		echo "Modlist configuration directory not found, $progName may not be installed"
-	fi
-	echo ""
-}
-function FindMod {
-	echo ""
-	if [ -d $modlistPath ]; then
-		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
-			i=0
-			#sort by first letter to speed up search
-			#use $query:0:1 to get first letter
-			i_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
-			ModPortalCount
-			echo "Searching for \"$1\" = \"$2\""
-			echo -en "Mods searched: \033[s"
-			while [ $i -lt $i_max ]
-			do
-				echo -en "\033[u$i"
-
-				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
-				if [ "$result" == "$2" ]; then
-					eval ${3}
-					#jq -r ".results[$i]" "$modlistPath/$modlistName.$modlistEXT"
-					let i=$i_max
-				else
-					let i=i+1
-				fi
-			done
-		else
-			echo "Modlist does not appear to exist"
-		fi
-	else
-		echo "Modlist configuration directory not found, $progName may not be installed"
-	fi
-	echo ""
-}
-function ModPortalStats {
-	echo ""
-	if [ -d $modlistPath ]; then
-		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
-			jq -r ".results[].$1" "$modlistPath/$modlistName.$modlistEXT"
-		else
-			echo "Modlist does not appear to exist, attempting to download..."
-		fi
-	else
-		echo "Modlist configuration directory not found, $progName may not be installed"
-	fi
-	echo ""
-}
-function ModPortalCount {
-	if [ -d $modlistPath ]; then
-		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
-			echo -n "# of mods available in the ModPortal: "
-			jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT"
-		else
-			echo "Modlist does not appear to exist"
-		fi
-	else
-		echo "Modlist configuration directory not found, $progName may not be installed"
-	fi
-}
-function ModPortalCountWrapper {
-	echo ""
-	ModPortalCount
-	echo ""
-}
-function ModCount {
-	ModPortalCount
-
-	k=0
-	for i in $(echo $(ls "$modsDIR") | sed "s/,/ /g")
-	do
-			let k=k+1
-	done
-	echo "# of Mods available on the local system: $k"
-}
-function ModCountWrapper {
-	echo ""
-	ModCount
 	echo ""
 }
 
@@ -953,6 +974,7 @@ function ListMods {
 	fi
 	echo ""
 }
+
 function ImportMod {
 	#extract mod name from path
 	xbase=${1##*/}
@@ -999,6 +1021,7 @@ function ImportModWrapper {
 	fi
 	echo ""
 }
+
 function GetModInfo {
 	echo ""
 	if [ -d $modlistPath ]; then
@@ -1057,6 +1080,8 @@ function GetModInfo {
 							echo "===================================="
 							#jq -r ".results[$i]" "$modlistPath/$modlistName.$modlistEXT"
 							let i=$i_max
+						else
+							let i=i+1
 						fi
 					else
 						let i=i+1
@@ -1065,6 +1090,71 @@ function GetModInfo {
 			fi
 		else
 			echo "Modlist does not appear to exist, attempting to download..."
+		fi
+	else
+		echo "Modlist configuration directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function ModPortalStats {
+	echo ""
+	if [ -d $modlistPath ]; then
+		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			jq -r ".results[].$1" "$modlistPath/$modlistName.$modlistEXT"
+		else
+			echo "Modlist does not appear to exist, attempting to download..."
+		fi
+	else
+		echo "Modlist configuration directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function getModURL {
+	#search modlist for given mod, retrive info and download if found and prompted
+	echo ""
+	if [ -d $modlistPath ]; then
+		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			i=0
+			#sort by first letter to speed up search
+			#use $query:0:1 to get first letter
+			i_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
+			ModPortalCount
+			echo "Searching for \"$1\" = \"$2\""
+			echo -en "Mods searched: \033[s"
+			while [ $i -lt $i_max ]
+			do
+				echo -en "\033[u$i"
+
+				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
+				if [ "$result:0:1" == "$2:0:1" ]; then
+					if [ "$result" == "$2" ]; then
+						#show only key info
+						modDownload_url=$(jq -r ".results[$i].latest_release.download_url" "$modlistPath/$modlistName.$modlistEXT")
+						fileName=$(jq -r ".results[$i].latest_release.file_name" "$modlistPath/$modlistName.$modlistEXT")
+						modName=$(jq -r ".results[$i].name" "$modlistPath/$modlistName.$modlistEXT")
+						modTitle=$(jq -r ".results[$i].title" "$modlistPath/$modlistName.$modlistEXT")
+						echo ""
+						echo ""
+						echo "Mod matching condition \"$1\" = \"$2\" found:"
+						echo "---------------------------------------------"
+						echo "Mod Title = $modTitle"
+						echo "Mod Name = $modName"
+						echo "Download URL = $modAPIDomain$modDownload_url"
+						echo "File Name = $fileName"
+						echo ""
+						echo -n "Proceed with download? (y/n): "
+						read select
+						if [ "$select" == "y" ]; then
+							downloadModWrapper $modDownload_url $modName $fileName "$modTitle"
+						fi
+						let i=$i_max
+					fi
+				else
+					let i=i+1
+				fi
+			done
+		else
+			echo "Modlist does not appear to exist"
 		fi
 	else
 		echo "Modlist configuration directory not found, $progName may not be installed"
