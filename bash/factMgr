@@ -104,6 +104,7 @@ function help {
 	echo "	-v 							Version commands"
 	echo "	-s 							Saves commands"
 	echo "	-m 							Mods commands"
+	echo "	-mp 							Mods commands"
 	echo ""
 	case $1 in
 		-r)
@@ -175,8 +176,9 @@ function helpModPacks {
 	echo "	-mp 							ModPack commands"
 	echo "	   -c 		[ModName]			   	   Create a ModPack"
 	echo "	   -d 		[ModName]			   	   Delete a ModPack"
-	echo "	   -a 		[ModPackName] [ModName]	   	   Add a mod to a ModPack"
-	echo "	   -r 		[ModPackName] [ModName]	   	   Remove a mod from a ModPack"
+	echo "	   -a 		[ModPackName] [ModName]	   	   	   Add mod to ModPack"
+	echo "	   -r 		[ModPackName] [ModName]	   	   	   Remove mod from ModPack"
+	echo "	   -i 		[ModName]			   	   Get ModPack info"
 }
 
 #Uninstall
@@ -674,9 +676,6 @@ function parseModsCMDS {
 			;;
 		-i)
 			ImportMod $2
-			;;
-		-p)
-			parseModPackCMDS $2 $3 $4
 			;;
 		-l)
 			ListMods $2
@@ -1299,31 +1298,35 @@ function removeModFromModPack {
 	echo ""
 }
 function infoModPack {
-	PACK=$1
-
 	echo ""
-	if [ -d $modPackDIR ]; then
-		if [ -d "$modPackDIR/$PACK" ]; then
-			echo "Name: $PACK"
-			k=0
-			for i in $(echo $(ls "$modPackDIR/$PACK") | sed "s/,/ /g")
-			do
-					let k=k+1
-			done
-			echo "# of Mods: $k"
-			if [ $k -gt 1 ]; then
-				echo ""
-				echo "List of included Mods:"
+	if [ "$1" == ""]; then
+		echo "No modpack name provided"
+	else
+		PACK=$1
+
+		if [ -d $modPackDIR ]; then
+			if [ -d "$modPackDIR/$PACK" ]; then
+				echo "Name: $PACK"
+				k=0
 				for i in $(echo $(ls "$modPackDIR/$PACK") | sed "s/,/ /g")
 				do
-						echo " - $i"
+						let k=k+1
 				done
+				echo "# of Mods: $k"
+				if [ $k -gt 1 ]; then
+					echo ""
+					echo "List of included Mods:"
+					for i in $(echo $(ls "$modPackDIR/$PACK") | sed "s/,/ /g")
+					do
+							echo " - $i"
+					done
+				fi
+			else
+				echo "No Mod Pack by the name \"$PACK\" exists"
 			fi
 		else
-			echo "No Mod Pack by the name \"$PACK\" exists"
+			echo "Mod Pack directory not found, $progName may not be installed"
 		fi
-	else
-		echo "Mod Pack directory not found, $progName may not be installed"
 	fi
 	echo ""
 }
