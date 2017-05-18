@@ -1784,7 +1784,7 @@ function devCMDs {
 			ModPortalCountWrapper
 			;;
 		-jq)
-			echo $(jq '.results[] | select(.$category=="$searchTerm")' "$modlistPath/$modlistName.$modlistEXT")
+			echo $(jq '.results[] | select(.$2=="$3")' "$modlistPath/$modlistName.$modlistEXT")
 			;;
 		-modlist)
 			updateModList
