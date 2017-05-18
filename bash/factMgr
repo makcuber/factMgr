@@ -672,6 +672,7 @@ function parseModsCMDS {
 	#updateModList
 	case $1 in
 		-d)
+			ModListVerify
 			FindMod $2 "name" "-d"
 			;;
 		-i)
@@ -681,6 +682,7 @@ function parseModsCMDS {
 			ListMods $2
 			;;
 		-s)
+			ModListVerify
 			FindMod $2 $3
 			;;
 		*)
@@ -1778,20 +1780,11 @@ function devCMDs {
 			cd $baseDIR
 			ls
 			;;
-		-modstat)
-			ModPortalStats $2
-			;;
-		-modinfo)
-			GetModInfo $2 $3
-			;;
 		-modcount)
 			ModPortalCountWrapper
 			;;
-		-mg)
-			ModPortalGetMod $2 $3
-			;;
-		-md)
-			ModPortalDownloadMod $2 $3
+		-jq)
+			echo $(jq ".results[] | select(.$category=="$searchTerm")" "$modlistPath/$modlistName.$modlistEXT")
 			;;
 		-modlist)
 			updateModList
@@ -1848,7 +1841,7 @@ function switchToController {
 		echo ""
 		echo "1: $1"
 	fi
-	su $USER_ID -c "bash -c $progName $1 $2 $3 $4 $5 $6 $7 $8 $9"
+	su $USER_ID -c "bash -c $progName $@"
 }
 function controllerCMDs {
 	case $1 in
