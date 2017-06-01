@@ -27,12 +27,13 @@
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
-ProgVer="0.0.32"
+ProgVer="0.0.33"
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_RUN=$(who -m | awk '{print $1;}')
 BOOTUP_DATETIME=$(date +%Y%m%d%H%M%S)
 DEBUG_STATUS=0
+CONTROLLER=0
 
 #defaults
 progName=factMgr
@@ -1938,23 +1939,25 @@ function parseUser {
 			#check to see if sudo has been invoked
 			if [[ $EUID -ne 0 ]]; then
 				#check to see if the active user is the control user
-				if [[ "$USER" == "$USER_ID" ]]; then
-					controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
-				else
-					#add check for control group here
-					echo ""
-					echo "ERROR: $progName can only be run by the control user \"$USER_ID\" or as root"
-					echo ""
-					if [ "$DEBUG_STATUS" == "1" ]; then
-						showUsers
+				if [ "$CONTROLLER" == "1" ]; then
+					if [[ "$USER" == "$USER_ID" ]]; then
+						controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
+					else
+						#add check for control group here
 						echo ""
+						echo "ERROR: $progName can only be run by the control user \"$USER_ID\" or as root"
+						echo ""
+						if [ "$DEBUG_STATUS" == "1" ]; then
+							showUsers
+							echo ""
+						fi
 					fi
+				else
+					controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
 				fi
-
 			else
 				adminCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
 			fi
-
 		fi
 	fi
 }
