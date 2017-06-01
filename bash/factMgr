@@ -1846,8 +1846,8 @@ function switchToController {
 		showUsers
 		echo "1: $1"
 	fi
-	su $USER_ID
-	/bin/factMgr $1 $2 $3 $4 $5 $6 $7 $8 $9
+	cmd=/bin/factMgr $1 $2 $3 $4 $5 $6 $7 $8 $9
+	su $USER_ID -c "$cmd"
 }
 function controllerCMDs {
 	case $1 in
