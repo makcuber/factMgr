@@ -1848,7 +1848,8 @@ function switchToController {
 	fi
 	#cmd="/bin/factMgr $1 $2 $3 $4 $5 $6 $7 $8 $9"
 	#su $USER_ID -c "$cmd"
-	sudo -u $USER_ID -s -c "$cmd"
+	sudo -H -u $USER_ID bash -c "$cmd"
+	#sudo -u $USER_ID -s -c "$cmd"
 }
 function controllerCMDs {
 	case $1 in
