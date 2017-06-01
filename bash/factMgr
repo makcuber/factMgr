@@ -263,6 +263,7 @@ function init {
 	verCurrentB=$verCurrentBDEF
 
 	USER_ID=factorio
+	USER_PASS=$USER_ID
 }
 function writeConf {
 	touch "$configFile"
@@ -1844,7 +1845,10 @@ function switchToController {
 		echo ""
 		echo "1: $1"
 	fi
-	su $USER_ID -c "bash -c $progName $@"
+	su - $USER_ID <<! >/dev/null 2>&1
+	$USER_PASS
+	controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
+	!
 }
 function controllerCMDs {
 	case $1 in
