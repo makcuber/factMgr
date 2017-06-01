@@ -1846,7 +1846,7 @@ function switchToController {
 		showUsers
 		echo "1: $1"
 	fi
-	su - $USER_ID "/bin/factMgr $1 $2 $3 $4 $5 $6 $7 $8 $9"
+	su - $USER_ID /bin/factMgr $1 $2 $3 $4 $5 $6 $7 $8 $9
 }
 function controllerCMDs {
 	case $1 in
@@ -1943,7 +1943,6 @@ function parseUser {
 			if [[ $EUID -ne 0 ]]; then
 				#check to see if the active user is the control user
 				if [ "$USER" == "$USER_ID" ]; then
-					echo "it works"
 					controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
 				else
 					if [ "$CONTROLLER_MONOPOLY" == "1" ]; then
