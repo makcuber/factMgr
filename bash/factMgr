@@ -1942,11 +1942,12 @@ function parseUser {
 			#check to see if sudo has been invoked
 			if [[ $EUID -ne 0 ]]; then
 				#check to see if the active user is the control user
-				if [ "$CONTROLLER_MONOPOLY" == "1" ]; then
-					if [[ "$USER" == "$USER_ID" ]]; then
-						echo "it works"
-						controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
-					else
+				if [ "$USER" == "$USER_ID" ]; then
+					echo "it works"
+					controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
+				else
+					if [ "$CONTROLLER_MONOPOLY" == "1" ]; then
+
 						#add check for control group here
 						echo ""
 						echo "ERROR: $progName can only be run by the control user \"$USER_ID\" or as root"
@@ -1955,10 +1956,10 @@ function parseUser {
 							showUsers
 							echo ""
 						fi
+					else
+						switchToController $1 $2 $3 $4 $5 $6 $7 $8 $9
 					fi
-				else
-					switchToController $1 $2 $3 $4 $5 $6 $7 $8 $9
-				fi
+				fi		
 			else
 				adminCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
 			fi
