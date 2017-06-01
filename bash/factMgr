@@ -22,6 +22,7 @@
 #UD: 5/5/5/2017
 #UD: 3/17/5/2017
 #UD: 3/31/5/2017
+#UD: 4/1/6/2017
 
 #VARIABLES
 execPath="$0"
@@ -33,7 +34,7 @@ VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_RUN=$(who -m | awk '{print $1;}')
 BOOTUP_DATETIME=$(date +%Y%m%d%H%M%S)
 DEBUG_STATUS=0
-CONTROLLER=0
+CONTROLLER_MONOPOLY=0
 
 #defaults
 progName=factMgr
@@ -1939,7 +1940,7 @@ function parseUser {
 			#check to see if sudo has been invoked
 			if [[ $EUID -ne 0 ]]; then
 				#check to see if the active user is the control user
-				if [ "$CONTROLLER" == "1" ]; then
+				if [ "$CONTROLLER_MONOPOLY" == "1" ]; then
 					if [[ "$USER" == "$USER_ID" ]]; then
 						controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
 					else
@@ -1953,7 +1954,7 @@ function parseUser {
 						fi
 					fi
 				else
-					controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
+					switchToController $1 $2 $3 $4 $5 $6 $7 $8 $9
 				fi
 			else
 				adminCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
