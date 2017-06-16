@@ -1,35 +1,108 @@
+<<<<<<< HEAD
 #!/bin/bash
 
 #Developer: Mak Cuber
 #DC: 7/30/10/2016
 #UD1: 1/31/10/2016
+=======
+#!/bin/bash +e
+
+#Developer: Mak Cuber
+#DC: 7/30/10/2016
+#UD: 1/31/10/2016
+#UD: 2/17/1/2017
+#UD: 3/18/1/2017
+#UD: 4/19/1/2017
+#UD: 5/28/1/2017
+#UD: 2/31/1/2017
+#UD: 4/2/2/2017
+#UD: 4/2/3/2017
+#UD: 5/3/3/2017
+#UD: 6/11/3/2017
+#UD: 6/22/4/2017
+#UD: 1/24/4/2017
+#UD: 4/27/4/2017
+#UD: 6/29/4/2017
+#UD: 1/1/5/2017
+#UD: 2/2/5/2017
+#UD: 3/3/5/2017
+#UD: 5/5/5/2017
+#UD: 3/17/5/2017
+#UD: 3/31/5/2017
+#UD: 4/1/6/2017
+>>>>>>> greenstone/master
 
 #VARIABLES
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
+<<<<<<< HEAD
+=======
+ProgVer="0.0.33"
+VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
+VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
+USER_RUN=$(who -m | awk '{print $1;}')
+BOOTUP_DATETIME=$(date +%Y%m%d%H%M%S)
+DEBUG_STATUS=0
+CONTROLLER_MONOPOLY=0
+>>>>>>> greenstone/master
 
 #defaults
 progName=factMgr
 configSuffix=conf
 SAVEINT=20
+<<<<<<< HEAD
 BinPathDEF="/bin/"
 ConfigPathDEF="/etc/$progName"
 RunPathDEF="/var/factorio"
 binFileDEF="/bin/$progName"
 configFileDEF="$ConfigPathDEF/$progName.$configSuffix"
+=======
+BinPathDEF="/bin"
+ConfigPathDEF="/etc/$progName"
+RunPathDEF="/var/factorio"
+UpdatePathDEF="/home/git/git/factMgr.git/bash/factMgr"
+binFileDEF="/bin/$progName"
+configFileDEF="$ConfigPathDEF/$progName.$configSuffix"
+modlistPathDEF=$ConfigPathDEF/modlist
+saveExtDEF="zip"
+editorDEF="nano"
+tarNameDEF="factorio"
+VER_LATEST_DEF=0.14.22
+
+runFileDEF=bin/x64/factorio
+downloadFileDEF=linux64
+
+urlPrefixDEF=https://www.factorio.com/get-download
+urlTailDEF=headless/$downloadFileDEF
+modlistEXTDEF=json
+modlistNameDEF=modlist
+modlistSizeDEF=2000
+modAPIDomainDEF=https://mods.factorio.com
+modlistURLDEF=$modAPIDomainDEF/api/mods?page_size=$modlistSizeDEF
+
+verMaxBDEF=16
+verMaxCDEF=35
+verCurrentBDEF=15
+>>>>>>> greenstone/master
 
 #Directories
 baseDir=$RunPathDEF
 versionsDIR=$baseDir/versions
 mapsDIR=$baseDir/maps
 modsDIR=$baseDir/mods
+<<<<<<< HEAD
 savesDIR=$baseDir/saves
 
 #file names
 runFile=/bin/x64/factorio
 downloadFILE=linux64
 
+=======
+modPackDIR=$baseDir/modpacks
+savesDIR=$baseDir/saves
+
+>>>>>>> greenstone/master
 #commands
 createSaveCMD=--create
 AutoSaveIntCMD=--autosave-interval
@@ -41,7 +114,11 @@ PASS=hello
 rconPORT=7890
 
 #FUNCTIONS
+<<<<<<< HEAD
 function verbose{
+=======
+function verbose {
+>>>>>>> greenstone/master
 	if [ "$verboseOn" = "1" ]; then
 		if ! [ -z $1 ]; then
 			var_name=(${!1@})
@@ -49,6 +126,7 @@ function verbose{
 		fi
 	fi
 }
+<<<<<<< HEAD
 function init{
 	if ! [ -e $binFileDEF ]; then
 
@@ -88,11 +166,110 @@ function Syntax {
 	echo ""
 }
 function uninstall{
+=======
+
+#Help
+function help {
+	echo ""
+	echo "$progName version $ProgVer"
+	echo ""
+	echo "Syntax: $progName [Cmd] [subCmd] [args]"
+	echo ""
+	echo "===Main Commands==="
+	echo "	-r 							Server commands"
+	echo "	-v 							Version commands"
+	echo "	-s 							Saves commands"
+	echo "	-m 							Mods commands"
+	echo "	-mp 							Modpack commands"
+	echo ""
+	case $1 in
+		-r)
+			helpRun
+			;;
+		-v)
+			helpVersions
+			;;
+		-s)
+			helpSaves
+			;;
+		-m)
+			helpMods
+			;;
+		-mp)
+			helpModPacks
+			;;
+		*)
+			helpMain
+			;;
+	esac
+	echo ""
+	echo "===Help==="
+	echo "	-h		[command]				Show help for a command"
+	echo ""
+}
+function helpMain {
+	echo "===Configuration==="
+	echo "	-install	[BinPath] [ConfigPath] [RunPath]	Install $progName"
+	echo "	-update		[UpdatePath]				Update $progName"
+	echo "	-uninstall						Uninstall $progName"
+	echo "	-config							Edit configuration file"
+}
+function helpRun {
+	echo "===Server Control==="
+	echo "	-r 							Server commands"
+	echo "	   -s		[MapName] [#.#.#] [ModPackName]		   Start server"
+	echo "	   -k		[MapName] [PID#]			   Stop server"
+	echo "	   -c 		[MapName]			     	   Connect to a server console"
+	echo "	   -cmd 	[MapName] [cmd]				   Send a command to a server"
+	echo "	   -p		[ProfileName]				   Create a server profile"
+}
+function helpVersions {
+	echo "===Versions==="
+	echo "	-v 							Version commands"
+	echo "	   -l 						   	   List local versions"
+	echo "	   -r 						   	   List remote versions"
+	echo "	   -u 						   	   Get latest version"
+	echo "	   -d 		[#.#.#]			   	   	   Download a version"
+	echo "	   -p 		[#.#.#]	[#.#.#]				   Prune a range of versions"
+}
+function helpSaves {
+	echo "===Saves==="
+	echo "	-s 							Saves commands"
+	echo "	   -l 						   	   List available saves"
+	echo "	   -n		[#.#.#] [name]				   Create new save"
+	echo "	   -d 		[#.#.#]			   	   	   Delete a save"
+}
+function helpMods {
+	echo "===Mods==="
+	echo "	-m 							Mods commands"
+	echo "	   -l 						   	   List local mods"
+	echo "	   -s 		[ModName]			   	   Search for a mod"
+	echo "	   -g 		[ModName]			   	   Download a mod"
+	echo "	   -i 		[FilePath]			   	   Import a mod"
+}
+function helpModPacks {
+	echo "===ModPacks==="
+	echo "	-mp 							ModPack commands"
+	echo "	   -c 		[ModName]			   	   Create a ModPack"
+	echo "	   -d 		[ModName]			   	   Delete a ModPack"
+	echo "	   -a 		[ModPackName] [ModName]	   	   	   Add mod to ModPack"
+	echo "	   -r 		[ModPackName] [ModName]	   	   	   Remove mod from ModPack"
+	echo "	   -i 		[ModName]			   	   Get ModPack info"
+}
+
+#Uninstall
+function Uninstall {
+>>>>>>> greenstone/master
 	if [ -e "$BinPath/$progName" ]; then
 		echo "$progName does not appear to be installed on this system"
 		echo "Uninstallation cancelled"
 	else
+<<<<<<< HEAD
 		read "Uninstall $progName script? (y/n):" select
+=======
+		echo -n "Uninstall $progName script? (y/n):"
+		read select
+>>>>>>> greenstone/master
 		if [ $select = "y" ]; then
 			rm "$BinPath/$progName"
 			if [ -e "$BinPath/$progName" ]; then
@@ -109,7 +286,12 @@ function uninstall{
 		echo "$progName does not appear to be installed on this system"
 		echo "Uninstallation cancelled"
 	else
+<<<<<<< HEAD
 		read "Uninstall $progName script? (y/n):" select
+=======
+		echo -n "Uninstall $progName script? (y/n):"
+		read select
+>>>>>>> greenstone/master
 		if [ $select = "y" ]; then
 			rm "$BinPath/$progName"
 			if [ -e "$BinPath/$progName" ]; then
@@ -122,6 +304,7 @@ function uninstall{
 		fi
 	fi
 }
+<<<<<<< HEAD
 function installScript{
 	echo "Installing script..."
 	cat "$execPath" > "$BinPath/$progName"
@@ -162,16 +345,220 @@ function install{
 		if [ -e "$BinPath/$progName" ]; then
 				echo "$progName Script appears to already be installed on this system"
 				read "Do you want to reinstall the script? (y/n):" select
+=======
+
+#configuration
+function init {
+
+	#add config file parsing here
+
+	BinPath="$BinPathDEF"
+	ConfigPath="$ConfigPathDEF"
+	RunPath="$RunPathDEF"
+
+	baseDir=$RunPath
+	versionsDIR=$baseDir/versions
+	mapsDIR=$baseDir/maps
+	modsDIR=$baseDir/mods
+	modPackDIR=$baseDir/modpacks
+	logFileDIR=$baseDir/logs
+	savesDIR=$baseDir/saves
+	VER_LATEST=$VER_LATEST_DEF
+
+	downloadLogFile=$logFileDIR/$BOOTUP_DATETIME.log
+
+	runFile=$runFileDEF
+	downloadFILE=linux64
+	configFile=$configFileDEF
+	urlPrefix=$urlPrefixDEF
+	urlTail=$urlTailDEF
+	saveExt=$saveExtDEF
+	editor=$editorDEF
+	tarName=$tarNameDEF
+
+	modAPIDomain=$modAPIDomainDEF
+	modlistURL=$modlistURLDEF
+	modlistPath=$modlistPathDEF
+	modlistEXT=$modlistEXTDEF
+	modlistName=$modlistNameDEF
+
+	verMaxB=$verMaxBDEF
+	verMaxC=$verMaxCDEF
+	verCurrentB=$verCurrentBDEF
+
+	USER_ID=factorio
+	USER_PASS=$USER_ID
+}
+function writeConf {
+	touch "$configFile"
+	(echo "$conf")>>"$configFile"
+}
+function Config {
+	if [ -e "$configFile" ]; then
+		$editor $configFile
+	else
+		echo ""
+		echo "No configuration file was found"
+		echo -n "Do you want to generate a new configuration file? (y/n):"
+		read select
+		if [ "$select" == "y" ]; then
+			writeConf
+			if [ -e "$configFile" ]; then
+				$editor $configFile
+			else
+				echo ""
+				echo "Something went wrong, configuration file could not be created :("
+			fi
+		fi
+		echo ""
+	fi
+}
+
+#Install
+function installScript {
+	echo -n "Generating Checksums..."
+	HASH_OLD=$(md5sum "$BinPath/$progName" | awk '{ print $1 }')
+	HASH_NEW=$(md5sum "$execPath" | awk '{ print $1 }')
+	if [ "$HASH_OLD" == "$HASH_NEW" ]; then
+		echo "FAILED"
+		return 1
+	else
+		echo "SUCCESS"
+		echo -n "Installing script..."
+		cat "$execPath" > "$BinPath/$progName"
+		echo "DONE"
+		echo -n "Verifying script installation..."
+		HASH_CURRENT=$(md5sum "$BinPath/$progName" | awk '{ print $1 }')
+		if [ "$HASH_CURRENT" == "$HASH_NEW" ]; then
+			echo "SUCCESS"
+			echo -n "Creating executable..."
+			(chmod +x "$BinPath/$progName")>/dev/null
+			if [ -x "$BinPath/$progName" ]; then
+				echo "SUCCESS"
+			else
+				echo "FAILED"
+				return 3
+			fi
+		else
+			echo "FAILED"
+			return 2
+		fi
+	fi
+	return 0
+}
+function installConfig {
+	#config
+	echo ""
+	echo "Checking for existing configuration directory..."
+	if ! [ -d "$ConfigPath" ]; then
+		echo "Creating configuration directory..."
+		mkdir "$ConfigPath"
+		if ! [ -d "$modlistPath" ]; then
+			echo "Creating modlist directory..."
+			mkdir "$modlistPath"
+		fi
+	fi
+	echo "Checking for existing configuration files..."
+	if [ -e "$configFile" ]; then
+			echo "A $progName configuration file appears to already exist on this system"
+			echo -n "Do you want overwrite the existing configuration file? (y/n): "
+			read select
+			if [ "$select" = "y" ]; then
+				writeConf
+			else
+				echo "Skipping configuration file generation"
+			fi
+	else
+		echo "Creating configuration file..."
+		writeConf
+	fi
+}
+function installFileStructure {
+	#file structure
+	echo ""
+	echo "Checking for existing file structure..."
+	if ! [ -d "$RunPath" ]; then
+		echo "Building file structure:"
+		mkdir "$RunPath"
+	else
+		echo "Verifying file structure:"
+	fi
+
+	buildVerifyFolder $RunPath versions
+	buildVerifyFolder $RunPath saves
+	buildVerifyFolder $RunPath mods
+	buildVerifyFolder $RunPath modpacks
+	buildVerifyFolder $RunPath logs
+
+	echo ""
+	echo "Setting file structure ownership to user \"$USER_ID\"..."
+	chown -R $USER_ID $RunPath
+	echo "Configuring file structure permissions..."
+	chmod -R 774 $RunPath
+}
+function buildVerifyFolder {
+	echo -n "	$2 folder..."
+	if ! [ -d "$1/$2" ]; then
+		echo "BUILT"
+		mkdir "$1"/"$2"
+	else
+		echo "FOUND"
+	fi
+}
+function Install {
+	if [ "$1" == "" ]; then
+		BinPath="$BinPathDEF"
+	else
+		BinPath="$1"
+	fi
+	if [ "$2" == "" ]; then
+		ConfigPath="$ConfigPathDEF"
+	else
+		ConfigPath="$2"
+	fi
+	if [ "$3" == "" ]; then
+		RunPath="$RunPathDEF"
+	else
+		RunPath="$3"
+	fi
+
+
+	#script
+	echo ""
+	echo "Initiating installation of $progName version $ProgVer"
+	echo ""
+	echo "Will install script to:			$BinPath"
+	echo "Creating configuration file in: 	$ConfigPath"
+	echo "Creating file structure in:		$RunPath"
+	echo "Will set control user to:		$USER_ID"
+	echo ""
+	echo -n "Install with this configuration? (y/n): "
+	read select
+	if [ "$select" = "y" ]; then
+		#install scripts
+		echo ""
+		echo -n "Checking for existing installation..."
+		if [ -e "$BinPath/$progName" ]; then
+				echo "SUCCESS"
+				echo "$progName Script appears to already be installed on this system"
+				echo -n "Do you want to reinstall the script? (y/n): "
+				read select
+>>>>>>> greenstone/master
 				if [ "$select" = "y" ]; then
 					installScript
 				else
 					echo "Skipping script installation"
 				fi
 		else
+<<<<<<< HEAD
+=======
+			echo "FAILED"
+>>>>>>> greenstone/master
 			installScript
 		fi
 
 		#generate configuration files
+<<<<<<< HEAD
 		echo "Checking for existing configuration files..."
 		if [ -e "$configFile" ]; then
 				echo "A $progName configuration file appears to already exist on this system"
@@ -342,3 +729,1548 @@ else
 			;;
 	esac
 fi
+=======
+		installConfig
+
+		#build file structure
+		installFileStructure
+
+		echo ""
+		echo "DONE"
+		echo ""
+	else
+		echo ""
+		echo "Installation cancelled"
+		echo ""
+	fi
+}
+
+#Update
+function verifyRespond {
+	if [ "$1" == "$VerifyKeySend" ]; then
+		echo "$VerifyKeyRecive"
+	else
+		echo "Invalid Key"
+	fi
+}
+function Update {
+	UpdatePath=""
+
+	if [ "$1" == "" ]; then
+		echo ""
+		echo "No update path provided"
+		echo "Will use default \"$UpdatePathDEF\""
+		UpdatePath="$UpdatePathDEF"
+	else
+		UpdatePath="$1"
+	fi
+
+	echo ""
+	echo -n "Searching for update at path \"$UpdatePath\"..."
+	if [ -e "$UpdatePath" ]; then
+		echo "SUCCESS"
+
+		echo -n "Verifying update..."
+		KEY=$("$UpdatePath" -verify $VerifyKeySend)
+		if [ "$KEY" == "$VerifyKeyRecive" ]; then
+			echo "SUCCESS"
+
+			#add version comparison here
+			updateVer=$("$UpdatePath" -version)
+
+			echo ""
+			echo "You currently have $progName version $ProgVer installed"
+			echo -n "Do you want to update $progName to version $updateVer? (y/n): "
+			read select
+
+			if [ $select == "y" ]; then
+				echo ""
+				exec "$UpdatePath" -install
+			else
+				echo ""
+				echo "Update aborted"
+			fi
+		else
+			echo "FAILED"
+			echo ""
+			echo "The specified file: $UpdatePath"
+			echo "does not appear to be a valid update for $progName"
+		fi
+	else
+		echo "FAILED"
+		echo ""
+		echo "The specified file does not exist"
+	fi
+	echo ""
+}
+
+#Saves
+function parseSaveCMDS {
+	case $1 in
+		-n)
+			MakeMap $2 $3
+			;;
+		-d)
+			delMap $2
+			;;
+		-c)
+			copyMap $2 $3
+			;;
+		*)
+			ListSaves $2
+			;;
+	esac
+}
+function ListSaves {
+	echo ""
+	if [ -d $savesDIR ]; then
+		currentSaves=$(ls $savesDIR)
+		if [ "$currentSaves" == "" ]; then
+			echo "No saves are currently installed on the local system"
+			echo "Use \"sudo $progName -m\" to generate a new save game"
+		else
+			echo "Saves currently available on local system:"
+			for i in $(echo $(ls $savesDIR) | sed "s/,/ /g")
+			do
+			    echo " - $i"
+			done
+		fi
+	else
+		echo "Saves directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function genMap {
+	VER=$1
+	NAME=$2
+
+	echo "Version: $VER"
+	echo "Name: $NAME"
+	echo ""
+	echo -n "Generate new map with these parameters? (y/n): "
+	read select
+	if [ "$select" = "y" ]; then
+		echo ""
+		echo "Generating new map \"$NAME\" using version $VER..."
+		echo ""
+		$versionsDIR/$VER/$runFile $createSaveCMD $savesDIR/$NAME
+		echo ""
+		if [ -e $savesDIR/$NAME.$saveExt ]; then
+			echo "SUCCESS"
+		else
+			echo "FAILED"
+			echo ""
+			echo "It appears that something went wrong :("
+		fi
+	fi
+}
+function mapGenNameCheck {
+	VER=$1
+	NAME=$2
+
+	if [ -d $versionsDIR/$VER ]; then
+		if [ -e $versionsDIR/$VER/$runFile ]; then
+			if [ -e "$savesDIR/$NAME.$saveExt" ]; then
+				i=1;
+				while [ -e "$savesDIR/$NAME_$i.$saveExt" ]; do
+					let i=i+1
+				done
+				NAME+="_$i"
+				genMap $VER $NAME
+			else
+				genMap $VER $NAME
+			fi
+		else
+			echo "Version $VER appears to be corupted, executable is missing"
+		fi
+	else
+		echo "Version $VER is not available on the local system"
+	fi
+}
+function MakeMap {
+	VER=$1
+	NAME=$2
+	#echo $VER
+
+	echo ""
+	if [ -d $versionsDIR ]; then
+		if [ -d $savesDIR ]; then
+			if [ "$VER" == "" ]; then
+				echo "No Version specified"
+				echo ""
+				echo -n "Use latest version? (y/n): "
+				read select
+				if [ "$select" == "y" ]; then
+					determineLatestVersion
+					mapGenNameCheck $VER_LATEST $NAME
+				fi
+			else
+				mapGenNameCheck $VER $NAME
+			fi
+		else
+			echo "Saves directory not found, $progName may not be installed"
+		fi
+	else
+		echo "Versions directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function delMap {
+	NAME=$1
+
+	echo ""
+	if [ -d $savesDIR ]; then
+		if [ -e $savesDIR/$NAME.$saveExt ]; then
+			echo -n "Are you sure you want to the delete the save file \"$NAME\"? (y/n): "
+			read select
+			if [ "$select" = "y" ]; then
+				echo ""
+				echo -n "Deleting save file \"$NAME\"..."
+				rm -r "$savesDIR/$NAME.$saveExt"
+				if [ -e $savesDIR/$NAME.$saveExt ]; then
+					echo "FAILED"
+				else
+					echo "SUCCESS"
+				fi
+			else
+				echo ""
+				echo "Deletion cancelled"
+			fi
+		else
+			echo "No save file by the name of \"$NAME\" exists on the local system"
+		fi
+		echo ""
+	else
+		echo "Saves directory not found, $progName may not be installed"
+	fi
+}
+function copyMap {
+	SOURCE=$1
+	TARGET=$2
+
+	echo ""
+	if [ -d $savesDIR ]; then
+		if [ -e $savesDIR/$SOURCE.$saveExt ]; then
+			if [ -e $savesDIR/$TARGET.$saveExt ]; then
+				echo "A save file by the name of \"$TARGET\" already exists on the local system"
+			else
+				echo -n "Copying $SOURCE to $TARGET..."
+				cp $savesDIR/$SOURCE.$saveExt $savesDIR/$TARGET.$saveExt
+				if [ -e $savesDIR/$TARGET.$saveExt ]; then
+					echo "SUCCESS"
+				else
+					echo "FAILED"
+				fi
+			fi
+		else
+			echo "No save file by the name of \"$SOURCE\" exists on the local system"
+		fi
+		echo ""
+	else
+		echo "Saves directory not found, $progName may not be installed"
+	fi
+}
+
+#Mods
+function parseModsCMDS {
+	#updateModList
+	case $1 in
+		-d)
+			ModListVerify
+			FindMod $2 "name" "-d"
+			;;
+		-i)
+			ImportMod $2
+			;;
+		-l)
+			ListMods $2
+			;;
+		-s)
+			ModListVerify
+			FindMod $2 $3
+			;;
+		*)
+			ModCountWrapper
+			;;
+	esac
+}
+
+function getModList {
+	#download a new copy of the modlist from the remote server if the modlist URL
+	#checks out
+	echo -n "Connecting to remote mods database..."
+	if [[ $(wget $modlistURL -O-) ]] 2>/dev/null; then
+		echo "SUCCESS"
+		echo -n "Downloading modlist data..."
+		wget $modlistURL --output-document "$modlistPath/$modlistName.$modlistEXT" -a $downloadLogFile
+		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			echo "SUCCESS"
+		else
+			echo "FAILED"
+		fi
+	else
+		echo "FAILED"
+	fi
+}
+function updateModList {
+	#if modlist directory exists, download a new copy of the modlist from the
+	#remote server, backing up the old modlist with a datetime stamp. If modlist
+	#backup fails prompt user for permission to overwrite old modlist
+	echo ""
+	if [ -d $modlistPath ]; then
+		if [ -e "$modlistPath/$modlistName.$modlistEXT" ]; then
+			echo -n "Creating backup of old modlist data..."
+			mv "$modlistPath/$modlistName.$modlistEXT" "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT"
+			if [ -e "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT" ]; then
+				echo "SUCCESS"
+				getModList
+				if [ -e "$modlistPath/$modlistName.$modlistEXT" ]; then
+					#remove backup file to prevent excessive backups of outdated information
+					echo -n "Removing modlist backup..."
+					rm "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT"
+					if [ -e "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT" ]; then
+						echo "FAILED"
+					else
+						echo "SUCCESS"
+					fi
+				else
+					#Restore modlist from backup
+					echo "Restoring modlist from backup..."
+					mv "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT" "$modlistPath/$modlistName.$modlistEXT"
+					if [ -e "$modlistPath/$modlistName.$modlistEXT" ]; then
+						echo "SUCCESS"
+						#remove backup file to prevent excessive backups of outdated information
+						echo -n "Removing modlist backup..."
+						rm "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT"
+						if [ -e "$modlistPath/$modlistName-$BOOTUP_DATETIME.$modlistEXT" ]; then
+							echo "FAILED"
+						else
+							echo "SUCCESS"
+						fi
+					else
+						echo "FAILED"
+					fi
+				fi
+			else
+				echo "FAILED"
+				echo ""
+				echo -n "Overwrite modlist? (y/n): "
+				read select
+				if [ "$select" == "y" ]; then
+					echo ""
+					getModList
+				fi
+			fi
+		else
+			getModList
+		fi
+	else
+		echo "Modlist configuration directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function ModListVerify {
+	#verify the modlist exists, download if not, and retrive given mod URL
+	echo ""
+	if [ -d $modlistPath ]; then
+		echo -n "Verifying Modlist..."
+		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			#add datetime check
+			echo "SUCCESS"
+		else
+			echo "FAILED"
+			updateModList
+		fi
+	else
+		echo "Modlist configuration directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+
+function ModPortalCount {
+	if [ -d $modlistPath ]; then
+		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			echo -n "# of mods available in the ModPortal: "
+			jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT"
+		else
+			echo "Modlist does not appear to exist"
+		fi
+	else
+		echo "Modlist configuration directory not found, $progName may not be installed"
+	fi
+}
+function ModPortalCountWrapper {
+	echo ""
+	ModPortalCount
+	echo ""
+}
+function ModCount {
+	ModPortalCount
+
+	k=0
+	for i in $(echo $(ls "$modsDIR") | sed "s/,/ /g")
+	do
+			let k=k+1
+	done
+	echo "# of Mods available on the local system: $k"
+}
+function ModCountWrapper {
+	echo ""
+	ModCount
+	echo ""
+}
+
+function downloadMod {
+	#download the target mod from the remote server if the URL checks out
+	echo -n "Connecting to remote mods database..."
+	if [[ $(wget $modAPIDomain$1 -O-) ]] 2>/dev/null; then
+		echo "SUCCESS"
+		echo -n "Downloading mod..."
+		wget $modAPIDomain$1 --output-document "$modsDIR/$2/$3" -a $downloadLogFile
+		if [ -e $modsDIR/$2/$3 ]; then
+			echo "SUCCESS"
+		else
+			echo "FAILED"
+		fi
+	else
+		echo "FAILED"
+		echo ""
+		echo "The mod \"$4\" does not appear to exist at the given URL:"
+		echo "$modAPIDomain$1"
+	fi
+}
+function downloadModWrapper {
+	#check to see if the mods directory exists, and create a subfolder to contain
+	#multiple versions of the target mod if such folder does not already exist
+	echo ""
+	if [ -d $modsDIR ]; then
+		if [ -d $modsDIR/$2 ]; then
+			echo "Existing mod folder found for mod \"$4\""
+			downloadMod $1 $2 $3 "$4"
+		else
+			echo "No mod folder found for mod \"$4\""
+			echo -n "Creating mod folder..."
+			mkdir "$modsDIR/$2"
+			if [ -d "$modsDIR/$2" ]; then
+				echo "SUCCESS"
+				downloadMod $1 $2 $3 "$4"
+			else
+				echo "FAILED"
+			fi
+		fi
+	else
+		echo "Mods directory not found, $progName may not be installed"
+	fi
+}
+
+function FindMod {
+	echo ""
+	if [ "$1" == "" ]; then
+		echo "No search term provided"
+	else
+		searchTerm=$1
+		if [ -d $modlistPath ]; then
+			if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+				i=0
+				#sort by first letter to speed up search
+				#use $query:0:1 to get first letter
+				i_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
+				ModPortalCount
+				if [ "$2" == "" ]; then
+					category="name"
+				else
+					category=$2
+				fi
+
+				echo "Searching for \"$category\" = \"$searchTerm\""
+				echo -en "Mods searched: \033[1D"
+				while [ $i -lt $i_max ]
+				do
+					echo -en "\033[1D$i"
+
+					result=$(jq -r ".results[$i].$category" "$modlistPath/$modlistName.$modlistEXT")
+					searchResult=${result,,}
+					searchReference=${searchTerm,,}
+
+					if [ "$searchResult:0:1" == "$searchReference:0:1" ]; then
+						if [ "$searchResult" == "$searchReference" ]; then
+							echo ""
+							echo ""
+							echo "Mod matching condition \"$category\" = \"$searchTerm\" found:"
+							echo "=============================================="
+							if [ "$3" == "-d" ]; then
+								modDownload_url=$(jq -r ".results[$i].latest_release.download_url" "$modlistPath/$modlistName.$modlistEXT")
+								fileName=$(jq -r ".results[$i].latest_release.file_name" "$modlistPath/$modlistName.$modlistEXT")
+								modName=$(jq -r ".results[$i].name" "$modlistPath/$modlistName.$modlistEXT")
+								modTitle=$(jq -r ".results[$i].title" "$modlistPath/$modlistName.$modlistEXT")
+								echo "Mod Title = $modTitle"
+								echo "Mod Name = $modName"
+								echo "Download URL = $modAPIDomain$modDownload_url"
+								echo "File Name = $fileName"
+								echo "=============================================="
+								echo -n "Proceed with download? (y/n): "
+								read select
+								if [ "$select" == "y" ]; then
+									downloadModWrapper $modDownload_url $modName $fileName "$modTitle"
+								fi
+							else
+								echo -n "Name: "
+								jq -r ".results[$i].latest_release.info_json.name" "$modlistPath/$modlistName.$modlistEXT"
+								echo -n "Author: "
+								jq -r ".results[$i].latest_release.info_json.author" "$modlistPath/$modlistName.$modlistEXT"
+								echo -n "Description: "
+								jq -r ".results[$i].latest_release.info_json.description" "$modlistPath/$modlistName.$modlistEXT"
+
+								echo ""
+								echo -n "Target Factorio Version: "
+								jq -r ".results[$i].latest_release.info_json.factorio_version" "$modlistPath/$modlistName.$modlistEXT"
+								echo -n "Current Mod Version: "
+								jq -r ".results[$i].latest_release.info_json.version" "$modlistPath/$modlistName.$modlistEXT"
+								echo -n "Current Mod Version Downloads: "
+								jq -r ".results[$i].latest_release.downloads_count" "$modlistPath/$modlistName.$modlistEXT"
+								echo -n "Lifetime Mod Downloads: "
+								jq -r ".results[$i].downloads_count" "$modlistPath/$modlistName.$modlistEXT"
+
+								echo ""
+								echo "Dependencies: "
+								k=0
+								k_max=$(jq -r ".results[$i].latest_release.info_json.dependencies | length" "$modlistPath/$modlistName.$modlistEXT")
+								while [ $k -lt $k_max ]
+								do
+									echo -n " - "
+									jq -r ".results[$i].latest_release.info_json.dependencies[$k]" "$modlistPath/$modlistName.$modlistEXT"
+									let k=$k+1
+								done
+
+								echo ""
+								echo "=============================================="
+							fi
+							let i=$i_max
+						else
+							let i=i+1
+						fi
+					else
+						let i=i+1
+					fi
+				done
+			else
+				echo "Modlist does not appear to exist"
+			fi
+		else
+			echo "Modlist configuration directory not found, $progName may not be installed"
+		fi
+	fi
+	echo ""
+}
+
+function ListMods {
+	echo ""
+	if [ -d $modsDIR ]; then
+		ModCount
+		echo ""
+		currentMods=$(ls $modsDIR)
+		if [ "$currentMods" == "" ]; then
+			echo "No mods are currently installed on the local system"
+			echo "Use \"sudo $progName -m -g\" to download mods from the offical portal"
+			echo "Or use \"sudo $progName -m -i\" to import mods on the local system into $progName"
+		else
+			echo "Mods currently available on local system:"
+			for i in $(echo $(ls $modsDIR) | sed "s/,/ /g")
+			do
+			    echo " - $i"
+			done
+		fi
+	else
+		echo "Mods directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+
+function ImportMod {
+	#extract mod name from path
+	xbase=${1##*/}
+	modName=${xbase%.*}
+	echo -n "Importing mod \"$modName\"..."
+	(cp $1 $modDIR/$modName)>NULL
+	if [ -e $modDIR/$modName/$xbase]; then
+		echo "SUCCESS"
+	else
+		echo "FAILED"
+	fi
+}
+function ImportModWrapper {
+	echo ""
+	if [ "$1" == "" ]; then
+		echo "No path provided"
+	else
+		if [ -e "$1" ]; then
+			if [ -d "$1" ]; then
+				if [ -d $modDIR ]; then
+					#extract mod name from path
+					xbase=${1##*/}
+					modName=${xbase%.*}
+					if [ -d $modDIR/$modName ]; then
+						ImportMod "$1"
+					else
+						echo "No mod folder found for mod \"$modName\""
+						echo -n "Creating mod folder..."
+						(mkdir "$modsDIR/$modName")>NULL
+						if [ -d "$modsDIR/$modName" ]; then
+							echo "SUCCESS"
+							ImportMod "$1"
+						else
+							echo "FAILED"
+						fi
+					fi
+				else
+					echo "Mods directory not found, $progName may not be installed"
+				fi
+			else
+				echo "Invalid file format, provided file is a directory"
+			fi
+		fi
+	fi
+	echo ""
+}
+
+function GetModInfo {
+	echo ""
+	if [ -d $modlistPath ]; then
+		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			if [ "$2" == "" ]; then
+				echo "No mod name provided"
+			else
+				i=0
+				#sort by first letter to speed up search
+				#use $query:0:1 to get first letter
+				i_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
+				ModPortalCount
+				echo "Searching for \"$1\" = \"$2\""
+				echo -en "Mods searched: \033[s"
+				while [ $i -lt $i_max ]
+				do
+					echo -en "\033[u$i"
+
+					result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
+					if [ "$result:0:1" == "$2:0:1" ]; then
+						if [ "$result" == "$2" ]; then
+							#show only key info
+							echo ""
+							echo ""
+							echo "===================================="
+							echo ""
+							echo -n "Name: "
+							jq -r ".results[$i].latest_release.info_json.name" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Author: "
+							jq -r ".results[$i].latest_release.info_json.author" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Description: "
+							jq -r ".results[$i].latest_release.info_json.description" "$modlistPath/$modlistName.$modlistEXT"
+
+							echo ""
+							echo -n "Target Factorio Version: "
+							jq -r ".results[$i].latest_release.info_json.factorio_version" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Current Mod Version: "
+							jq -r ".results[$i].latest_release.info_json.version" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Current Mod Version Downloads: "
+							jq -r ".results[$i].latest_release.downloads_count" "$modlistPath/$modlistName.$modlistEXT"
+							echo -n "Lifetime Mod Downloads: "
+							jq -r ".results[$i].downloads_count" "$modlistPath/$modlistName.$modlistEXT"
+
+							echo ""
+							echo "Dependencies: "
+							k=0
+							k_max=$(jq -r ".results[$i].latest_release.info_json.dependencies | length" "$modlistPath/$modlistName.$modlistEXT")
+							while [ $k -lt $k_max ]
+							do
+								echo -n " - "
+								jq -r ".results[$i].latest_release.info_json.dependencies[$k]" "$modlistPath/$modlistName.$modlistEXT"
+								let k=$k+1
+							done
+
+							echo ""
+							echo "===================================="
+							#jq -r ".results[$i]" "$modlistPath/$modlistName.$modlistEXT"
+							let i=$i_max
+						else
+							let i=i+1
+						fi
+					else
+						let i=i+1
+					fi
+				done
+			fi
+		else
+			echo "Modlist does not appear to exist, attempting to download..."
+		fi
+	else
+		echo "Modlist configuration directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function ModPortalStats {
+	echo ""
+	if [ -d $modlistPath ]; then
+		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			jq -r ".results[].$1" "$modlistPath/$modlistName.$modlistEXT"
+		else
+			echo "Modlist does not appear to exist, attempting to download..."
+		fi
+	else
+		echo "Modlist configuration directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function getModURL {
+	#search modlist for given mod, retrive info and download if found and prompted
+	echo ""
+	if [ -d $modlistPath ]; then
+		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			i=0
+			#sort by first letter to speed up search
+			#use $query:0:1 to get first letter
+			i_max=$(jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT")
+			ModPortalCount
+			echo "Searching for \"$1\" = \"$2\""
+			echo -en "Mods searched: \033[s"
+			while [ $i -lt $i_max ]
+			do
+				echo -en "\033[u$i"
+
+				result=$(jq -r ".results[$i].$1" "$modlistPath/$modlistName.$modlistEXT")
+				if [ "$result:0:1" == "$2:0:1" ]; then
+					if [ "$result" == "$2" ]; then
+						#show only key info
+						modDownload_url=$(jq -r ".results[$i].latest_release.download_url" "$modlistPath/$modlistName.$modlistEXT")
+						fileName=$(jq -r ".results[$i].latest_release.file_name" "$modlistPath/$modlistName.$modlistEXT")
+						modName=$(jq -r ".results[$i].name" "$modlistPath/$modlistName.$modlistEXT")
+						modTitle=$(jq -r ".results[$i].title" "$modlistPath/$modlistName.$modlistEXT")
+						echo ""
+						echo ""
+						echo "Mod matching condition \"$1\" = \"$2\" found:"
+						echo "---------------------------------------------"
+						echo "Mod Title = $modTitle"
+						echo "Mod Name = $modName"
+						echo "Download URL = $modAPIDomain$modDownload_url"
+						echo "File Name = $fileName"
+						echo ""
+						echo -n "Proceed with download? (y/n): "
+						read select
+						if [ "$select" == "y" ]; then
+							downloadModWrapper $modDownload_url $modName $fileName "$modTitle"
+						fi
+						let i=$i_max
+					fi
+				else
+					let i=i+1
+				fi
+			done
+		else
+			echo "Modlist does not appear to exist"
+		fi
+	else
+		echo "Modlist configuration directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+
+#modPacks
+function parseModPackCMDS {
+	case $1 in
+		-c)
+			createModPack $2
+			;;
+		-d)
+			deleteModPack $2
+			;;
+		-a)
+			addModToModPack $2 $3
+			;;
+		-r)
+			removeModFromModPack $2 $3
+			;;
+		-i)
+			infoModPack $2
+			;;
+		*)
+			ListModPacks
+			;;
+	esac
+}
+function createModPack {
+	PACK=$1
+
+	echo ""
+	if [ -d $modPackDIR ]; then
+		if [ -d "$modPackDIR/$PACK" ]; then
+			echo "A Mod Pack by the name \"$PACK\" already exists"
+		else
+			echo -n "Creating Mod Pack \"$PACK\"..."
+			mkdir "$modPackDIR/$PACK"
+			if [ -d "$modPackDIR/$PACK" ]; then
+				echo "SUCCESS"
+			else
+				echo "FAILED"
+			fi
+		fi
+	else
+		echo "Mod Pack directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function deleteModPack {
+	PACK=$1
+
+	echo ""
+	if [ -d $modPackDIR ]; then
+		if [ -d "$modPackDIR/$PACK" ]; then
+			echo -n "Are you sure you want to delete the Mod Pack \"$PACK\"? (Y/n): "
+			read select
+
+			if [ $select == "Y" ]; then
+				echo -n "Deleting Mod Pack \"$PACK\"..."
+				rm -r "$modPackDIR/$PACK"
+				if [ -d "$modPackDIR/$PACK" ]; then
+					echo "SUCCESS"
+				else
+					echo "FAILED"
+				fi
+			fi
+		else
+			echo "No Mod Pack by the name \"$PACK\" exists"
+		fi
+	else
+		echo "Mod Pack directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function addModToModPack {
+	PACK=$1
+	MOD=$2
+
+	echo ""
+	if [ -d $modPackDIR ]; then
+		if [ -d "$modPackDIR/$PACK" ]; then
+			if [ -e "$modPackDIR/$PACK/$MOD.zip" ]; then
+				echo "A Mod by the name \"$MOD\" already exists in the Mod Pack \"$PACK\""
+			else
+				if [ -e "$modsDIR/$MOD.zip" ]; then
+					echo "Are you sure you want to add the Mod $MOD"
+					echo -n "to the Mod Pack \"$PACK\"? (y/n): "
+					read select
+
+					if [ $select == "y" ]; then
+						echo -n "Adding Mod \"$MOD\" to Mod Pack \"$PACK\"..."
+						cp "$modsDIR/$MOD.zip" "$modPackDIR/$PACK/"
+						if [ -e "$modPackDIR/$PACK/$MOD.zip" ]; then
+							echo "SUCCESS"
+						else
+							echo "FAILED"
+						fi
+					fi
+				else
+					echo "No Mod by the name \"$MOD\" exists on the local system"
+				fi
+			fi
+		fi
+	else
+		echo "Mod Pack directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function removeModFromModPack {
+	PACK=$1
+	MOD=$2
+
+	echo ""
+	if [ -d $modPackDIR ]; then
+		if [ -d "$modPackDIR/$PACK" ]; then
+			if [ -e "$modPackDIR/$PACK/$MOD" ]; then
+				echo "Are you sure you want to remove the Mod $MOD"
+				echo -n "from the Mod Pack \"$PACK\"? (Y/n): "
+				read select
+
+				if [ $select == "Y" ]; then
+					echo -n "Removing Mod \"$MOD\" from Mod Pack \"$PACK\"..."
+					(rm -r "$modPackDIR/$PACK/$MOD")>/dev/null
+					if [ -e "$modPackDIR/$PACK/$MOD" ]; then
+						echo "SUCCESS"
+					else
+						echo "FAILED"
+					fi
+				fi
+			else
+				echo "No Mod by the name \"$MOD\" exists in the Mod Pack \"$PACK\""
+			fi
+		else
+			echo "No Mod Pack by the name \"$PACK\" exists"
+		fi
+	else
+		echo "Mod Pack directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function infoModPack {
+	echo ""
+	if [ "$1" == "" ]; then
+		echo "No modpack name provided"
+	else
+		PACK=$1
+
+		if [ -d $modPackDIR ]; then
+			if [ -d "$modPackDIR/$PACK" ]; then
+				echo "Name: $PACK"
+				k=0
+				for i in $(echo $(ls "$modPackDIR/$PACK") | sed "s/,/ /g")
+				do
+						let k=k+1
+				done
+				echo "# of Mods: $k"
+				if [ $k -gt 1 ]; then
+					echo ""
+					echo "List of included Mods:"
+					for i in $(echo $(ls "$modPackDIR/$PACK") | sed "s/,/ /g")
+					do
+							echo " - $i"
+					done
+				fi
+			else
+				echo "No Mod Pack by the name \"$PACK\" exists"
+			fi
+		else
+			echo "Mod Pack directory not found, $progName may not be installed"
+		fi
+	fi
+	echo ""
+}
+function ListModPacks {
+	echo ""
+	if [ -d $modPackDIR ]; then
+		echo "Existing Mod Packs:"
+		for i in $(echo $(ls $modPackDIR) | sed "s/,/ /g")
+		do
+				echo " - $i"
+		done
+	else
+		echo "Mod Pack directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+
+#Versions
+function parseVersionsCMDS {
+	case $1 in
+		-u)
+			getLatestVersion
+			;;
+		-d)
+			getVersionWrapper $2
+			;;
+		-p)
+			pruneVersion $2
+			;;
+		-r)
+			listRemoteVersionWrapper $2
+			;;
+		*)
+			ListVersions $2
+			;;
+	esac
+}
+function pruneVersion {
+	VER=$1
+	echo ""
+	if [ -d $versionsDIR ]; then
+		deleteVersion $VER
+	else
+		echo "Versions directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function deleteVersion {
+	VER=$1
+	if [ -e $versionsDIR/$VER ]; then
+		echo  "Are you sure you want to delete"
+		echo -n "the version \"$VER\" from the local system? (Y/n): "
+		read select
+
+		if [ "$select" == "Y" ]; then
+			echo -n "Deleting version \"$VER\"..."
+			(rm -r $versionsDIR/$VER)>/dev/null
+			if [ -e $versionsDIR/$VER ]; then
+				echo "FAILED"
+			else
+				echo "SUCCESS"
+			fi
+		fi
+	else
+		echo "Version \"$VER\" does not exist on the local system"
+	fi
+}
+function ListVersions {
+	echo ""
+	if [ -d $versionsDIR ]; then
+		currentVerisons=$(ls $versionsDIR)
+		if [ "$currentVerisons" == "" ]; then
+			echo "No versions are currently installed on the local system"
+			echo "Use \"sudo $progName -u\" to download the latest version"
+		else
+			echo "Versions currently available on local system:"
+			for i in $(echo $(ls $versionsDIR) | sed "s/,/ /g")
+			do
+			    echo " - $i"
+			done
+		fi
+	else
+		echo "Versions directory not found, $progName may not be installed"
+	fi
+	echo ""
+}
+function determineLatestVersion {
+	VER_LATEST=0.15.0
+}
+function getLatestVersion {
+	echo ""
+	echo -n "Checking for latest version..."
+	echo "FAILED"
+	echo ""
+}
+function listRemoteVersionWrapper {
+	echo ""
+	echo "Versions available on remote server: "
+
+	if [ -z $1 ]; then
+		listRemoteVersion $1
+	else
+		k=11
+		while [ $k -lt $verMaxC ]
+		do
+			let k=k+1
+			listRemoteVersion $k
+		done
+	fi
+	echo ""
+}
+function testRemoteVersion {
+	VER=$1
+	URL=$urlPrefix/$VER/$urlTail
+	if [[ $(wget $URL -O-) ]] 2>/dev/null; then
+		echo " - $VER"
+	fi
+}
+function listRemoteVersion {
+
+	testRemoteVersion 0.12.35
+	testRemoteVersion 0.13.20
+	testRemoteVersion 0.14.23
+
+	i=$verCurrentB
+	k=0
+	while [ $k -lt $verMaxC ]
+	do
+		VER=0.$i.$k
+		testRemoteVersion $VER
+		let k=k+1
+	done
+}
+function logfileCheck {
+	if [ -e $downloadLogFile ]; then
+		echo ""
+		echo -n "Do you want to read the log file? (y/n): "
+		read select
+		if [ "$select" == "y" ]; then
+			$editor $downloadLogFile
+		fi
+		echo ""
+	fi
+}
+function getVersionWrapper {
+	VER="$1"
+
+	if [ "$VER" == "" ]; then
+		getLatestVersion
+	else
+		echo ""
+		if [ -d "$versionsDIR/$VER" ]; then
+			echo "Version $VER appears to already exist on the local system"
+			echo -n "Do you want to re-download this version? (y/n)"
+			read select
+
+			if [ $select == "y" ]; then
+				echo -n "This will delete the existing copy of this version, continue? (Y/n)"
+				read select
+
+				if [ $select == "Y" ]; then
+					echo ""
+					echo -n "Deleting old copy of version \"$VER\"..."
+					(rm -r "$versionsDIR/$VER")>>$downloadLogFile
+					if [ -d "$versionsDIR/$VER" ]; then
+						echo "FAILED"
+						logfileCheck
+					else
+						echo "SUCCESS"
+						getVersion $VER
+					fi
+				fi
+			fi
+		else
+			getVersion $VER
+		fi
+		echo ""
+	fi
+}
+function getVersion {
+	VER="$1"
+
+	if [ -d $versionsDIR ]; then
+		URL=$urlPrefix/$VER/$urlTail
+
+		echo -n "Searching for verison $VER on remote system..."
+		if [[ $(wget $URL -O-) ]] 2>/dev/null; then
+			echo "SUCCESS"
+			echo -n "Downloading factorio headless server version $VER to local system..."
+			(echo "")>>$downloadLogFile
+			(echo "")>>$downloadLogFile
+			(date +%Y%m%d%H%M%S)>>$downloadLogFile
+			(echo "")>>$downloadLogFile
+			OUTFILE="$versionsDIR/$VER.tar.gz"
+			wget "$URL" --output-document "$OUTFILE" -a "$downloadLogFile"
+			if [ -e "$OUTFILE" ]; then
+				echo "SUCCESS"
+
+				echo -n "Unpacking headless server..."
+				(echo "")>>$downloadLogFile
+				(tar -xf "$OUTFILE" -C $versionsDIR)>>$downloadLogFile
+				if [ -d "$versionsDIR/$tarName" ]; then
+					echo "SUCCESS"
+
+					echo -n "Configuring headless server files..."
+					mv "$versionsDIR/$tarName" "$versionsDIR/$VER"
+					if [ -d "$versionsDIR/$VER" ]; then
+						echo "SUCCESS"
+
+						echo -n "Cleaning up..."
+						if [ -e "$versionsDIR/$VER.tar.gz" ]; then
+							rm "$versionsDIR/$VER.tar.gz"
+							if [ -e "$versionsDIR/$VER.tar.gz" ]; then
+								echo "FAILED"
+								logfileCheck
+							else
+								echo "SUCCESS"
+							fi
+						else
+							echo "SUCCESS"
+						fi
+						echo ""
+						echo "DONE"
+					else
+						echo "FAILED"
+						logfileCheck
+					fi
+				else
+					echo "FAILED"
+					logfileCheck
+				fi
+			else
+				echo "FAILED"
+				logfileCheck
+			fi
+		else
+			echo "FAILED"
+			echo "Version $VER of the factorio headless server is not available on the remote system"
+		fi
+	else
+			echo "Versions directory not found, $progName may not be installed"
+	fi
+}
+
+#run
+function parseRunCMDS {
+	case $1 in
+		-s)
+			Run $2 $3 $4 $5
+			;;
+		-k)
+			killServer $2 $3
+			;;
+		-c)
+			connectToServer $2
+			;;
+		-cmd)
+			sendCmdToServer $2 $3 $4 $5 $6 $7 $8 $9
+			;;
+		*)
+			ListActiveServers
+			;;
+	esac
+}
+function ListActiveServers {
+	echo ""
+	echo "Syntax: PID#.UserName-ProgramName-ServerName"
+	echo "Running Factorio Servers for user \"$USER_ID\":"
+	for i in $(echo $(ls /var/run/screens/S-$USER_ID) | sed "s/,/ /g")
+	do
+	        if test "${i#*$progName}" != "$i"; then
+	                echo " - $i"
+	        fi
+	done
+	echo ""
+}
+function connectToServer {
+	screenName=$USER_ID-$progName-$1
+
+	(screen -S "$screenName" -Q select . )>/dev/null
+	screenTest=$?
+
+	echo ""
+	if [ $screenTest == "0" ]; then
+		echo "REMINDER: Use Ctrl+a followed by Ctrl+d to exit the server console"
+		echo -n "Ready to connect to server \"$1\"? (y/n): "
+		read select
+		if [ "$select" == "y" ]; then
+			screen -r $screenName
+			clear
+		fi
+	else
+		echo "No server by the name \"$1\" is currently running for the user \"$USER_ID\""
+	fi
+}
+function sendCmdToServer {
+	screenName=$USER_ID-$progName-$1
+
+	(screen -S "$screenName" -Q select . )>/dev/null
+	screenTest=$?
+
+	echo ""
+	if [ $screenTest == "0" ]; then
+		screen -S $screenName -p 0 -X stuff "$2 $3 $4 $5 $6 $7 $8 $9$(printf \\r)"
+	else
+		echo "No server by the name \"$1\" is currently running for the user \"$USER_ID\""
+	fi
+}
+
+function startServer {
+	screenName=$USER_ID-$progName-$1
+
+	(screen -S "$screenName" -Q select . )>/dev/null
+	screenTest=$?
+
+	echo ""
+	echo -n "Verifying server is in stop state..."
+	if [ $screenTest == "0" ]; then
+		echo "FAILED"
+		echo ""
+		echo "A server by the name \"$1\" is already running for the user \"$USER_ID\""
+	else
+		echo "SUCCESS"
+		echo -n "Starting Factorio server $VER using map \"$1\"..."
+		(screen -dm -S "$screenName" $2)>/dev/null
+	fi
+}
+function killServer {
+	screenName=$USER_ID-$progName-$1
+
+	screenTest=""
+	if [ "$2" == "" ]; then
+		(screen -S "$screenName" -Q select . )>/dev/null
+		screenTest=$?
+	else
+		(screen -S "$2.$screenName" -Q select . )>/dev/null
+		screenTest=$?
+	fi
+
+	(screen -S "$screenName" -Q select . )>/dev/null
+	screenTest=$?
+
+	echo ""
+	if [ "$screenTest" == "0" ]; then
+		echo -n "Stopping server \"$1\"..."
+		(screen -S $screenName -X quit )>/dev/null
+		(screen -wipe)>/dev/null
+		(screen -S $screenName -Q select . )>/dev/null
+		screenTest=$?
+
+		if [ "$screenTest" == "0" ]; then
+			echo "FAILED"
+		else
+			echo "SUCCESS"
+
+			#fixPermissions $1
+		fi
+	else
+		echo "No server by the name \"$1\" is currently running for the user \"$USER_ID\""
+	fi
+	echo ""
+}
+function fixPermissions {
+	if [ -e $savesDIR/$1.$saveExt ]; then
+		(chmod 774 $savesDIR/$1.$saveExt)>/dev/null
+		(chgrp factorio $savesDIR/$1.$saveExt)>/dev/null
+	fi
+}
+function Run {
+	logPath="$baseDir/factMgr.log"
+	if ! [ -z "$4" ]; then
+		SAVEINT="$4"
+		AUTO="$AutoSaveIntCMD $SAVEINT"
+	else
+		AUTO=""
+	fi
+
+	if [ -z $1 ] || [ -z $2 ]; then
+		Syntax
+	else
+		mapName="$1.$saveExt"
+		VER=$2
+		if [ -e "$savesDIR/$mapName" ]; then
+			SAVE="$savesDIR/$mapName"
+		else
+			ERRORMSG="Specified save file does not exist"
+		fi
+		if [ -z "$3" ]; then
+			MOD=""
+		else
+			MODPATH="$modPackDIR/$3"
+			#echo $modPackDIR
+			#echo "$MODPATH"
+			if [ -d "$MODPATH" ]; then
+				if [ "$(ls -A $MODPATH)" ]; then
+				   MOD="$MODPATH"
+				else
+				   ERRORMSG="Specified Mod pack is empty"
+				fi
+			else
+				ERRORMSG="Specified Mod pack does not exist"
+			fi
+		fi
+		if [ -z "$ERRORMSG" ]; then
+			if [ "$MOD" = "" ]; then
+				startServer $1 "$versionsDIR/$VER/$runFile $startCMD $SAVE $AUTO"
+			else
+				startServer $1 "$versionsDIR/$VER/$runFile $startCMD $SAVE $setModCMD $MOD $AUTO"
+			fi
+
+			(screen -S $USER_ID-$progName-$1 -Q select . )>/dev/null
+			screenTest=$?
+
+			if [ $screenTest == "0" ]; then
+				echo "SUCCESS"
+
+				echo ""
+				echo "Settings:"
+				if ! [ "$MOD" = "" ]; then
+					echo "Mod pack: $MOD"
+				fi
+				if ! [ "$AUTO" = "" ]; then
+					echo "Autosave interval: $AUTO"
+				fi
+				echo "Port: 34197"
+			else
+				echo "FAILED"
+			fi
+		else
+			echo "ERROR: "$ERRORMSG
+		fi
+	fi
+	echo ""
+}
+
+#Developer
+function devCMDs {
+	case $1 in
+		-v)
+			progVersion
+			;;
+		-cd)
+			cd $baseDIR
+			ls
+			;;
+		-modcount)
+			ModPortalCountWrapper
+			;;
+		-jq)
+			echo $(jq '.results[] | select(.$2=="$3")' "$modlistPath/$modlistName.$modlistEXT")
+			;;
+		-modlist)
+			updateModList
+			;;
+		-update)
+			devUpdate $2 $3 $4 $5 $6 $7 $8 $9
+			;;
+		-fixperm)
+			fixPermissions $2
+			;;
+		*)
+			secret
+			;;
+	esac
+}
+function devUpdate {
+	UpdatePath=""
+
+	if [ "$1" == "" ]; then
+		echo ""
+		echo "No update path provided"
+		echo "Will use default \"$UpdatePathDEF\""
+		UpdatePath="$UpdatePathDEF"
+	else
+		UpdatePath="$1"
+	fi
+
+	echo ""
+	echo -n "Searching for update at path \"$UpdatePath\"..."
+	if [ -e "$UpdatePath" ]; then
+		echo "SUCCESS"
+		"$UpdatePath" $2 $3 $4 $5 $6 $7 $8 $9
+	else
+		echo "FAILED"
+	fi
+}
+function progVersion {
+	echo "$ProgVer"
+}
+function secret {
+	echo ""
+	echo "This is a Bunny, and he is unimpressed that you found his secret command"
+	echo ""
+	echo "(\(\\"
+	echo "(- -)"
+	echo "((‘)((‘)"
+	echo ""
+}
+
+#MAIN
+
+function switchToController {
+	if [ "$DEBUG_STATUS" == "1" ]; then
+		echo ""
+		showUsers
+		echo "1: $1"
+	fi
+	#cmd="/bin/factMgr $1 $2 $3 $4 $5 $6 $7 $8 $9"
+	#su $USER_ID -c "$cmd"
+	sudo -H -u $USER_ID /bin/factMgr $1 $2 $3 $4 $5 $6 $7 $8 $9
+	#sudo -u $USER_ID -s -c "$cmd"
+}
+function controllerCMDs {
+	case $1 in
+		-config)
+			Config
+			;;
+		-verify)
+			verifyRespond $2
+			;;
+		-version)
+			progVersion
+			;;
+
+		#Command Parsing
+		-r)
+			parseRunCMDS $2 $3 $4 $5 $6 $7 $8 $9
+			;;
+		-s)
+			parseSaveCMDS $2 $3 $4
+			;;
+		-v)
+			parseVersionsCMDS $2 $3 $4
+			;;
+		-m)
+			parseModsCMDS $2 $3 $4 $5
+			;;
+		-mp)
+			parseModPackCMDS $2 $3 $4
+			;;
+		-secret)
+			secret
+			;;
+		*)
+			if [ "$DEBUG_STATUS" == "1" ]; then
+				echo ""
+				showUsers
+				echo "1: $1"
+			fi
+			help $2
+			;;
+	esac
+}
+function showUsers {
+	echo "Invoker: $USER_RUN"
+	echo "User: $USER"
+}
+function adminCMDs {
+	case $1 in
+		#configuration
+		-install)
+			Install
+			;;
+		-update)
+			Update $2
+			;;
+		-uninstall)
+			Uninstall
+			;;
+		-verify)
+			verifyRespond $2
+			;;
+		-version)
+			progVersion
+			;;
+
+		#Other
+		-dev)
+			devCMDs $2 $3 $4
+			;;
+		*)
+			if [ "$DEBUG_STATUS" == "1" ]; then
+				echo ""
+				showUsers
+				echo "1: $1"
+			fi
+			switchToController $1 $2 $3 $4 $5 $6 $7 $8 $9
+			;;
+	esac
+}
+function parseUser {
+	#verify that the Control user exists
+	if [ "$1" == "-u" ]; then
+		echo ""
+		showUsers
+		echo ""
+	else
+		USER_TEST=$(cat /etc/passwd | grep $USER_ID)
+		if [ "$USER_TEST" == "0" ]; then
+			echo ""
+			echo "ERROR: Configured control user \"$USER_ID\" does not exist"
+			echo ""
+		else
+			#check to see if sudo has been invoked
+			if [[ $EUID -ne 0 ]]; then
+				#check to see if the active user is the control user
+				if [ "$USER" == "$USER_ID" ]; then
+					controllerCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
+				else
+					if [ "$CONTROLLER_MONOPOLY" == "1" ]; then
+
+						#add check for control group here
+						echo ""
+						echo "ERROR: $progName can only be run by the control user \"$USER_ID\" or as root"
+						echo ""
+						if [ "$DEBUG_STATUS" == "1" ]; then
+							showUsers
+							echo ""
+						fi
+					else
+						switchToController $1 $2 $3 $4 $5 $6 $7 $8 $9
+					fi
+				fi
+			else
+				adminCMDs $1 $2 $3 $4 $5 $6 $7 $8 $9
+			fi
+		fi
+	fi
+}
+
+#Startup
+
+init
+parseUser $1 $2 $3 $4 $5 $6 $7 $8 $9
+>>>>>>> greenstone/master
