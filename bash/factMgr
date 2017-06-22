@@ -790,10 +790,12 @@ function ModListVerify {
 function ModPortalCount {
 	if [ -d $modlistPath ]; then
 		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			#add date check for modlist
 			echo -n "# of mods available in the ModPortal: "
 			jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT"
 		else
 			echo "Modlist does not appear to exist"
+			#get modlist
 		fi
 	else
 		echo "Modlist configuration directory not found, $progName may not be installed"
@@ -823,7 +825,9 @@ function ModCountWrapper {
 function downloadMod {
 	#download the target mod from the remote server if the URL checks out
 	echo -n "Connecting to remote mods database..."
-	if [[ $(wget $modAPIDomain$1 -O-) ]] 2>/dev/null; then
+	curl -s --head http://myurl/ | head -n 1 | grep "HTTP/1.[01] [23].." > /dev/null
+	urlTest=$?
+	if [ "$urlTest" == "0" ]; then
 		echo "SUCCESS"
 		echo -n "Downloading mod..."
 		wget $modAPIDomain$1 --output-document "$modsDIR/$2/$3" -a $downloadLogFile
@@ -1453,7 +1457,8 @@ function listRemoteVersionWrapper {
 function testRemoteVersion {
 	VER=$1
 	URL=$urlPrefix/$VER/$urlTail
-	if [[ $(wget $URL -O-) ]] 2>/dev/null; then
+	status=$(curl -s --head -w %{http_code} $URL -o /dev/null)
+	if [ "$status" == "200" ]; then
 		echo " - $VER"
 	fi
 }
