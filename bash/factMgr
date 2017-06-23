@@ -30,15 +30,23 @@
 #UD: 3/17/5/2017
 #UD: 3/31/5/2017
 #UD: 4/1/6/2017
+<<<<<<< HEAD
 >>>>>>> greenstone/master
+=======
+#UD: 4/22/6/2017
+>>>>>>> 0.0.34
 
 #VARIABLES
 execPath="$0"
 OpSys=$(uname -rv)
 verboseOn="1"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 ProgVer="0.0.33"
+=======
+ProgVer="0.0.34"
+>>>>>>> 0.0.34
 VerifyKeySend="nXskfs4eGL1M5aQiCqgEygAl9e5YqE8e"
 VerifyKeyRecive="dfkkDUkaFlA6yNZFVuuThI0gkwoX3Jh3"
 USER_RUN=$(who -m | awk '{print $1;}')
@@ -68,7 +76,7 @@ modlistPathDEF=$ConfigPathDEF/modlist
 saveExtDEF="zip"
 editorDEF="nano"
 tarNameDEF="factorio"
-VER_LATEST_DEF=0.14.22
+VER_LATEST_DEF=0.15.21
 
 runFileDEF=bin/x64/factorio
 downloadFileDEF=linux64
@@ -999,7 +1007,9 @@ function getModList {
 	#download a new copy of the modlist from the remote server if the modlist URL
 	#checks out
 	echo -n "Connecting to remote mods database..."
-	if [[ $(wget $modlistURL -O-) ]] 2>/dev/null; then
+	status=$(curl -s --head -w %{http_code} $modlistURL -o /dev/null)
+	#echo $status
+	if ! [[ "$status" == "404" ]]; then
 		echo "SUCCESS"
 		echo -n "Downloading modlist data..."
 		wget $modlistURL --output-document "$modlistPath/$modlistName.$modlistEXT" -a $downloadLogFile
@@ -1090,10 +1100,12 @@ function ModListVerify {
 function ModPortalCount {
 	if [ -d $modlistPath ]; then
 		if [ -e $modlistPath/$modlistName.$modlistEXT ]; then
+			#add date check for modlist
 			echo -n "# of mods available in the ModPortal: "
 			jq -r ".results | length" "$modlistPath/$modlistName.$modlistEXT"
 		else
 			echo "Modlist does not appear to exist"
+			#get modlist
 		fi
 	else
 		echo "Modlist configuration directory not found, $progName may not be installed"
@@ -1123,7 +1135,9 @@ function ModCountWrapper {
 function downloadMod {
 	#download the target mod from the remote server if the URL checks out
 	echo -n "Connecting to remote mods database..."
-	if [[ $(wget $modAPIDomain$1 -O-) ]] 2>/dev/null; then
+	status=$(curl -s --head -w %{http_code} $modlistURL -o /dev/null)
+	#echo $status
+	if ! [[ "$status" == "404" ]]; then
 		echo "SUCCESS"
 		echo -n "Downloading mod..."
 		wget $modAPIDomain$1 --output-document "$modsDIR/$2/$3" -a $downloadLogFile
@@ -1753,7 +1767,9 @@ function listRemoteVersionWrapper {
 function testRemoteVersion {
 	VER=$1
 	URL=$urlPrefix/$VER/$urlTail
-	if [[ $(wget $URL -O-) ]] 2>/dev/null; then
+	status=$(curl -s --head -w %{http_code} $URL -o /dev/null)
+	#echo $status
+	if ! [[ "$status" == "404" ]]; then
 		echo " - $VER"
 	fi
 }
@@ -1825,7 +1841,9 @@ function getVersion {
 		URL=$urlPrefix/$VER/$urlTail
 
 		echo -n "Searching for verison $VER on remote system..."
-		if [[ $(wget $URL -O-) ]] 2>/dev/null; then
+		status=$(curl -s --head -w %{http_code} $URL -o /dev/null)
+		#echo $status
+		if ! [[ "$status" == "404" ]]; then
 			echo "SUCCESS"
 			echo -n "Downloading factorio headless server version $VER to local system..."
 			(echo "")>>$downloadLogFile
